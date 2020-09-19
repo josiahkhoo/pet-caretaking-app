@@ -1,0 +1,22 @@
+- Users are identified by a user id, and their names, addresses and contact number can be recorded.
+- Users accounts are identified by an login id, and their display name and passwords can be recorded.
+- Every user has exactly one user account.
+- Every user account belongs to exactly one user.
+- Every user is a pet owner, caretaker or a PCS administrator (Covering constraint, not shown in ER diagram)
+- A user can be both a pet owner and caretaker (Overlap constraint, not shown in ER diagram)
+- Every care taker’s pet limit can be recorded.
+- Every caretaker is able to take care of certain pets at a daily price.
+- Every caretaker can take care of 0 or more pets
+- Every pet can be taken care of by 0 or more caretakers. (This refers to caretakers satisfying requirements of the pet category/special needs)
+- Pets are identified by a pet id, and their category and special requirements must be recorded.
+- Every pet owner owns at least 1 pet
+- Every pet must be owned by exactly 1 pet owner.
+- Every owned pet can participate in 0 or more bids for a caretaker
+- Every caretaker can participate in 0 or more bids for an owned pet.
+- Every bid is identified by a BidID, has a start date and an end date.
+- Every bid is either an unsuccessful bid or a successful bid. (Covering constraint, not shown in ER diagram)
+- A successful bid contains payment type, transfer type, timestamp, total price, review and rating.
+- A caretaker can be either full time or part time (Overlap and covering constraint, not shown in ER diagram)
+- A full-time caretaker’s bonus percent, base salary, and minimum base quota can be recorded
+- A part-time caretaker’s commission rate can be recorded
+
