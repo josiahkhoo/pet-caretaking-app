@@ -81,7 +81,7 @@ CREATE TABLE Bid (
     available_date DATE,
     pet_owner_user_id INTEGER,
     pet_name VARCHAR(100),
-    is_success BOOLEAN NOT NULL,
+    is_success BOOLEAN NOT NULL DEFAULT FALSE,
     payment_type VARCHAR(100) NOT NULL,
     transfer_type VARCHAR(100) NOT NULL,
     total_price INTEGER,
