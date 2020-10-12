@@ -26,8 +26,10 @@ app.post("/register", async(req, res) => {
 app.get("/users", async(req, res) => {
     try {
         const allUsers = await pool.query("SELECT * FROM users");
+        console.log(allUsers)
         res.json(allUsers.rows);
     } catch (error) {
+        console.error("fail")
         console.error(error.message)
     }
 })
