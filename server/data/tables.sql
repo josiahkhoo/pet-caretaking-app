@@ -60,7 +60,6 @@ CREATE TABLE OwnedPets (
     FOREIGN KEY (pet_owner_user_id) REFERENCES Users(user_id),
     FOREIGN KEY (category_name) REFERENCES Categories(name)
 );
--- TODO: Add trigger to check if owner is a pet owner
 CREATE TABLE CanTakeCare (
     care_taker_user_id INTEGER,
     category_name VARCHAR(100),
@@ -117,4 +116,3 @@ CREATE TABLE Bid (
         )
     )
 );
--- TODO: Add trigger to check if care taker can tke care of the pet
