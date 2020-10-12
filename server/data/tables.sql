@@ -6,6 +6,7 @@ CREATE TABLE Users (
     name VARCHAR(100) NOT NULL,
     is_pcs_admin BOOLEAN NOT NULL,
     is_pet_owner BOOLEAN NOT NULL,
+    image_url VARCHAR(255),
     unique(username)
 );
 CREATE TABLE CareTakers (
