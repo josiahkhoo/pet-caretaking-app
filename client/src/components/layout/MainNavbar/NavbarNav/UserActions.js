@@ -7,7 +7,7 @@ import {
   DropdownItem,
   Collapse,
   NavItem,
-  NavLink
+  NavLink,
 } from "shards-react";
 
 export default class UserActions extends React.Component {
@@ -15,7 +15,8 @@ export default class UserActions extends React.Component {
     super(props);
 
     this.state = {
-      visible: false
+      visible: false,
+      user: this.props.user,
     };
 
     this.toggleUserActions = this.toggleUserActions.bind(this);
@@ -23,12 +24,13 @@ export default class UserActions extends React.Component {
 
   toggleUserActions() {
     this.setState({
-      visible: !this.state.visible
+      visible: !this.state.visible,
     });
   }
 
   render() {
-    return (
+    const { user } = this.state;
+    return user ? (
       <NavItem tag={Dropdown} caret toggle={this.toggleUserActions}>
         <DropdownToggle caret tag={NavLink} className="text-nowrap px-3">
           <img
@@ -36,7 +38,7 @@ export default class UserActions extends React.Component {
             src={require("./../../../../images/avatars/0.jpg")}
             alt="User Avatar"
           />{" "}
-          <span className="d-none d-md-inline-block">Sierra Brooks</span>
+          <span className="d-none d-md-inline-block">{user.name}</span>
         </DropdownToggle>
         <Collapse tag={DropdownMenu} right small open={this.state.visible}>
           <DropdownItem tag={Link} to="user-profile">
@@ -57,6 +59,16 @@ export default class UserActions extends React.Component {
           </DropdownItem>
         </Collapse>
       </NavItem>
+    ) : (
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        Login
+      </div>
     );
   }
 }

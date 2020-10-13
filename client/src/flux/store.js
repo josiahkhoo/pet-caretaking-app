@@ -6,7 +6,8 @@ import getSidebarNavItems from "../data/sidebar-nav-items";
 
 let _store = {
   menuVisible: false,
-  navItems: getSidebarNavItems()
+  navItems: getSidebarNavItems(),
+  user: null,
 };
 
 class Store extends EventEmitter {
@@ -24,6 +25,9 @@ class Store extends EventEmitter {
       case Constants.TOGGLE_SIDEBAR:
         this.toggleSidebar();
         break;
+      case Constants.USER_LOG_IN:
+        this.addUser();
+        break;
       default:
     }
   }
@@ -33,12 +37,21 @@ class Store extends EventEmitter {
     this.emit(Constants.CHANGE);
   }
 
+  addUser() {
+    _store.user = JSON.parse(sessionStorage.getItem("user"));
+    this.emit(Constants.CHANGE);
+  }
+
   getMenuState() {
     return _store.menuVisible;
   }
 
   getSidebarItems() {
     return _store.navItems;
+  }
+
+  getUser() {
+    return _store.user;
   }
 
   addChangeListener(callback) {

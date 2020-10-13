@@ -35,11 +35,11 @@ MainNavbar.propTypes = {
   /**
    * Whether the main navbar is sticky to the top, or not.
    */
-  stickyTop: PropTypes.bool
+  stickyTop: PropTypes.bool,
 };
 
 MainNavbar.defaultProps = {
-  stickyTop: true
+  stickyTop: true,
 };
 
 export default MainNavbar;
