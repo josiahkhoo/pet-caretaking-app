@@ -6,18 +6,6 @@ import UserDetails from "../components/user-profile-lite/UserDetails";
 import UserAccountDetails from "../components/user-profile-lite/UserAccountDetails";
 
 const UserProfileLite = () => {
-  function getUserDetails() {
-    console.log("GET USER");
-    var userJson = sessionStorage.getItem("user");
-    var user = JSON.parse(userJson);
-    return {
-      userDetails: {
-        name: user.name,
-        avatar: user.image_url,
-      },
-    };
-  }
-
   return (
     <Container fluid className="main-content-container px-4">
       <Row noGutters className="page-header py-4">
