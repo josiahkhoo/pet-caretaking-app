@@ -1,13 +1,13 @@
 CREATE TABLE Admin (
     good_review_full_time_total_price_multiplier FLOAT NOT NULL DEFAULT 1.2,
     full_time_base_salary INT NOT NULL DEFAULT 3000,
-    poor_review_pet_limit INT NOT NULL DEFAULT 2, 
+    poor_review_pet_limit INT NOT NULL DEFAULT 2,
     pet_limit INT NOT NULL DEFAULT 5,
     minimum_work_days_in_block INT NOT NULL DEFAULT 150,
     minimum_work_blocks INT NOT NULL DEFAULT 2,
     full_time_bonus_pet_day_threshold INT NOT NULL DEFAULT 60,
-    part_time_commission_rate NUMERIC(3,3) NOT NULL DEFAULT 0.75,
-    full_time_bonus_rate NUMERIC(3,3) NOT NULL DEFAULT 0.80,
+    part_time_commission_rate NUMERIC(3, 3) NOT NULL DEFAULT 0.75,
+    full_time_bonus_rate NUMERIC(3, 3) NOT NULL DEFAULT 0.80,
     PRIMARY KEY (
         good_review_full_time_total_price_multiplier,
         full_time_base_salary,
@@ -19,33 +19,19 @@ CREATE TABLE Admin (
         part_time_commission_rate,
         full_time_bonus_rate
     ),
-    CONSTRAINT full_time_base_salary_positive CHECK (
-        full_time_base_salary >= 0
-    ),
+    CONSTRAINT full_time_base_salary_positive CHECK (full_time_base_salary >= 0),
     CONSTRAINT good_review_full_time_total_price_multiplier_positive CHECK (
         good_review_full_time_total_price_multiplier >= 0
     ),
-    CONSTRAINT poor_review_pet_limit_positive CHECK (
-        poor_review_pet_limit >= 0
-    ),
-    CONSTRAINT positive_pet_limit_positive CHECK (
-        pet_limit >= 0
-    ),
-    CONSTRAINT minimum_work_days_in_block_positive CHECK (
-        minimum_work_days_in_block >= 0
-    ),
-    CONSTRAINT minimum_work_blocks_positive CHECK (
-        minimum_work_blocks >= 0
-    ),
+    CONSTRAINT poor_review_pet_limit_positive CHECK (poor_review_pet_limit >= 0),
+    CONSTRAINT positive_pet_limit_positive CHECK (pet_limit >= 0),
+    CONSTRAINT minimum_work_days_in_block_positive CHECK (minimum_work_days_in_block >= 0),
+    CONSTRAINT minimum_work_blocks_positive CHECK (minimum_work_blocks >= 0),
     CONSTRAINT full_time_bonus_pet_day_threshold_positive CHECK (
         full_time_bonus_pet_day_threshold >= 0
     ),
-    CONSTRAINT part_time_commission_rate_positive CHECK (
-        part_time_commission_rate >= 0
-    ),
-    CONSTRAINT full_time_bonus_rate_positive CHECK (
-        full_time_bonus_rate >= 0
-    )
+    CONSTRAINT part_time_commission_rate_positive CHECK (part_time_commission_rate >= 0),
+    CONSTRAINT full_time_bonus_rate_positive CHECK (full_time_bonus_rate >= 0)
 );
 CREATE TABLE Users (
     user_id SERIAL PRIMARY KEY,
@@ -100,7 +86,11 @@ CREATE TABLE CareTakers (
         )
     )
 );
-CREATE TABLE Categories (name VARCHAR(100) PRIMARY KEY);
+CREATE TABLE Categories (
+    name VARCHAR(100) PRIMARY KEY,
+    full_time_daily_price INTEGER NOT NULL,
+    CONSTRAINT full_time_daily_price_positive CHECK (full_time_daily_price >= 0)
+);
 CREATE TABLE OwnedPets (
     pet_owner_user_id INTEGER,
     category_name VARCHAR(100),

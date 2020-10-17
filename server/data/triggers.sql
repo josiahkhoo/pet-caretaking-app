@@ -58,8 +58,10 @@ CREATE OR REPLACE FUNCTION bid_care_taker_is_available_to_insert() RETURNS TRIGG
 DECLARE available_days INTEGER;
 DECLARE total_days INTEGER;
 BEGIN
-SELECT COUNT(*), NEW.end_date - NEW.start_date + 1 INTO available_days, total_days
-FROM IsAvailableOnWithPetCareCount a, 
+SELECT COUNT(*),
+    NEW.end_date - NEW.start_date + 1 INTO available_days,
+    total_days
+FROM IsAvailableOnWithPetCareCount a,
     CareTakersWithPetLimitAndRating c
 WHERE NEW.care_taker_user_id = a.care_taker_user_id
     AND NEW.care_taker_user_id = c.user_id
@@ -79,17 +81,17 @@ RETURN NEW;
 END;
 $$ LANGUAGE PLPGSQL;
 DROP TRIGGER IF EXISTS bid_care_taker_is_available_to_insert_trigger on Bid CASCADE;
-CREATE TRIGGER bid_care_taker_is_available_to_insert_trigger
-	BEFORE INSERT ON Bid
-	FOR EACH ROW
-	EXECUTE FUNCTION bid_care_taker_is_available_to_insert();
+CREATE TRIGGER bid_care_taker_is_available_to_insert_trigger BEFORE
+INSERT ON Bid FOR EACH ROW EXECUTE FUNCTION bid_care_taker_is_available_to_insert();
 -- This trigger checks if the care taker in the bid can take care of pet between start day to end day before update
 CREATE OR REPLACE FUNCTION bid_care_taker_is_available_to_update() RETURNS TRIGGER AS $$
 DECLARE available_days INTEGER;
 DECLARE total_days INTEGER;
 BEGIN
-SELECT COUNT(*), NEW.end_date - NEW.start_date + 1 INTO available_days, total_days
-FROM IsAvailableOnWithPetCareCount a, 
+SELECT COUNT(*),
+    NEW.end_date - NEW.start_date + 1 INTO available_days,
+    total_days
+FROM IsAvailableOnWithPetCareCount a,
     CareTakersWithPetLimitAndRating c
 WHERE NEW.care_taker_user_id = a.care_taker_user_id
     AND NEW.care_taker_user_id = c.user_id
@@ -109,7 +111,76 @@ RETURN NEW;
 END;
 $$ LANGUAGE PLPGSQL;
 DROP TRIGGER IF EXISTS bid_care_taker_is_available_to_update_trigger on Bid CASCADE;
-CREATE TRIGGER bid_care_taker_is_available_to_update_trigger
-	BEFORE UPDATE ON Bid
-	FOR EACH ROW
-	EXECUTE FUNCTION bid_care_taker_is_available_to_update();
+CREATE TRIGGER bid_care_taker_is_available_to_update_trigger BEFORE
+UPDATE ON Bid FOR EACH ROW EXECUTE FUNCTION bid_care_taker_is_available_to_update();
+-- This trigger injects the pets default daily price if caretaker is a full time caretaker
+CREATE OR REPLACE FUNCTION can_take_care_full_time_care_taker_daily_price() RETURNS TRIGGER AS $$
+DECLARE daily_price INTEGER;
+DECLARE is_full_time BOOLEAN;
+BEGIN
+SELECT cat.full_time_daily_price,
+    caretaker.is_full_time INTO daily_price,
+    is_full_time
+FROM CareTakers caretaker,
+    Categories cat
+WHERE caretaker.user_id = NEW.care_taker_user_id
+    AND cat.name = NEW.category_name
+LIMIT 1;
+IF is_full_time THEN NEW.daily_price = daily_price;
+END IF;
+RETURN NEW;
+END;
+$$ LANGUAGE PLPGSQL;
+DROP TRIGGER IF EXISTS can_take_care_full_time_care_taker_daily_price_trigger ON CanTakeCare CASCADE;
+CREATE TRIGGER can_take_care_full_time_care_taker_daily_price_trigger BEFORE
+INSERT ON CanTakeCare FOR EACH ROW EXECUTE FUNCTION can_take_care_full_time_care_taker_daily_price();
+-- This trigger checks if the care taker in the bid is a full time caretaker, if it is, set it to true automatically and inserts the price
+CREATE OR REPLACE FUNCTION bid_full_time_care_taker_auto_confirm () RETURNS TRIGGER AS $$
+DECLARE is_full_time BOOLEAN;
+DECLARE base_price INTEGER;
+DECLARE rating FLOAT;
+DECLARE multiplier FLOAT;
+BEGIN
+SELECT c.is_full_time,
+    ctc.daily_price,
+    c.rating,
+    a.good_review_full_time_total_price_multiplier INTO is_full_time,
+    base_price,
+    rating,
+    multiplier
+FROM CareTakersWithPetLimitAndRating c,
+    CanTakeCare ctc,
+    OwnedPets p,
+    Admin a
+WHERE c.user_id = NEW.care_taker_user_id
+    AND p.pet_owner_user_id = NEW.pet_owner_user_id
+    AND p.pet_name = NEW.pet_name
+    AND p.category_name = ctc.category_name
+    AND ctc.care_taker_user_id = NEW.care_taker_user_id;
+IF is_full_time = TRUE THEN IF rating >= 4 THEN
+UPDATE bid
+SET total_price = base_price * multiplier,
+    is_success = TRUE
+WHERE bid.care_taker_user_id = NEW.care_taker_user_id
+    AND bid.start_date = NEW.start_date
+    AND bid.end_date = NEW.end_date
+    AND bid.pet_owner_user_id = NEW.pet_owner_user_id
+    AND bid.pet_name = NEW.pet_name;
+ELSE
+UPDATE bid
+SET total_price = base_price,
+    is_success = TRUE
+WHERE bid.care_taker_user_id = NEW.care_taker_user_id
+    AND bid.start_date = NEW.start_date
+    AND bid.end_date = NEW.end_date
+    AND bid.pet_owner_user_id = NEW.pet_owner_user_id
+    AND bid.pet_name = NEW.pet_name;
+END IF;
+END IF;
+RETURN NEW;
+END;
+$$ LANGUAGE PLPGSQL;
+DROP TRIGGER IF EXISTS bid_full_time_care_taker_auto_confirm_trigger ON Bid CASCADE;
+CREATE TRIGGER bid_full_time_care_taker_auto_confirm_trigger
+AFTER
+INSERT ON Bid FOR EACH ROW EXECUTE FUNCTION bid_full_time_care_taker_auto_confirm();
