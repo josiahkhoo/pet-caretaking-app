@@ -48,8 +48,68 @@ END IF;
 RETURN NEW;
 END;
 $$ LANGUAGE PLPGSQL;
-DROP TRIGGER IF EXISTS bid_trigger on Bid CASCADE;
-CREATE TRIGGER big_trigger BEFORE
+DROP TRIGGER IF EXISTS bid_care_taker_can_take_care_of_pet_trigger on Bid CASCADE;
+CREATE TRIGGER bid_care_taker_can_take_of_pet_trigger BEFORE
 INSERT
     OR
 UPDATE ON Bid FOR EACH ROW EXECUTE FUNCTION bid_care_taker_can_take_care_of_pet();
+-- This trigger checks if the care taker in the bid can take care of pet between start day to end day before insert
+CREATE OR REPLACE FUNCTION bid_care_taker_is_available_to_insert() RETURNS TRIGGER AS $$
+DECLARE available_days INTEGER;
+DECLARE total_days INTEGER;
+BEGIN
+SELECT COUNT(*), NEW.end_date - NEW.start_date + 1 INTO available_days, total_days
+FROM IsAvailableOnWithPetCareCount a, 
+    CareTakersWithPetLimitAndRating c
+WHERE NEW.care_taker_user_id = a.care_taker_user_id
+    AND NEW.care_taker_user_id = c.user_id
+    AND a.available_date >= NEW.start_date
+    AND a.available_date <= NEW.end_date
+    AND a.pet_care_count < c.pet_limit;
+IF available_days <> total_days THEN RAISE EXCEPTION '% cannot take care of the pet between % and %',
+(
+    SELECT username
+    FROM Users
+    WHERE NEW.care_taker_user_id = Users.user_id
+),
+NEW.start_date,
+NEW.end_date;
+END IF;
+RETURN NEW;
+END;
+$$ LANGUAGE PLPGSQL;
+DROP TRIGGER IF EXISTS bid_care_taker_is_available_to_insert_trigger on Bid CASCADE;
+CREATE TRIGGER bid_care_taker_is_available_to_insert_trigger
+	BEFORE INSERT ON Bid
+	FOR EACH ROW
+	EXECUTE FUNCTION bid_care_taker_is_available_to_insert();
+-- This trigger checks if the care taker in the bid can take care of pet between start day to end day before update
+CREATE OR REPLACE FUNCTION bid_care_taker_is_available_to_update() RETURNS TRIGGER AS $$
+DECLARE available_days INTEGER;
+DECLARE total_days INTEGER;
+BEGIN
+SELECT COUNT(*), NEW.end_date - NEW.start_date + 1 INTO available_days, total_days
+FROM IsAvailableOnWithPetCareCount a, 
+    CareTakersWithPetLimitAndRating c
+WHERE NEW.care_taker_user_id = a.care_taker_user_id
+    AND NEW.care_taker_user_id = c.user_id
+    AND a.available_date >= NEW.start_date
+    AND a.available_date <= NEW.end_date
+    AND a.pet_care_count <= c.pet_limit;
+IF available_days <> total_days THEN RAISE EXCEPTION '% cannot take care of the pet between % and %',
+(
+    SELECT username
+    FROM Users
+    WHERE NEW.care_taker_user_id = Users.user_id
+),
+NEW.start_date,
+NEW.end_date;
+END IF;
+RETURN NEW;
+END;
+$$ LANGUAGE PLPGSQL;
+DROP TRIGGER IF EXISTS bid_care_taker_is_available_to_update_trigger on Bid CASCADE;
+CREATE TRIGGER bid_care_taker_is_available_to_update_trigger
+	BEFORE UPDATE ON Bid
+	FOR EACH ROW
+	EXECUTE FUNCTION bid_care_taker_is_available_to_update();
