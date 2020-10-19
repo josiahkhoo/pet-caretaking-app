@@ -17,6 +17,7 @@ app.post("/login", AuthController.login);
 // caretaker input availability for part-time
 // takes leave for full-time
 app.post("/caretakers/availability", CaretakerController.specifyAvailablity);
+app.get("/caretakers/earnings", CaretakerController.getEarnings);
 
 
 // Get all users
