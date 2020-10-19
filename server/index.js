@@ -6,43 +6,19 @@ const pool = require("./db");
 app.use(cors());
 app.use(express.json());
 
+const AuthController = require("./controllers/AuthController");
+const CaretakerController = require("./controllers/CaretakerController");
 // Routes
 
-// create users
-app.post("/register", async (req, res) => {
-  try {
-    const { email, password } = req.body;
-    const newUser = await pool.query(
-      "INSERT INTO users(email, password) VALUES($1, $2) RETURNING *",
-      [email, password]
-    );
+// User
+app.post("/register", AuthController.register);
+app.post("/login", AuthController.login);
 
-    res.json(newUser.rows[0]);
-    console.log(newUser.rows[0]);
-  } catch (error) {
-    console.error(error.message);
-  }
-});
+// caretaker input availability for part-time
+// takes leave for full-time
+app.post("/caretakers/availability", CaretakerController.specifyAvailablity);
+app.get("/caretakers/earnings", CaretakerController.getEarnings);
 
-// login
-app.post("/login", async (req, res) => {
-  try {
-    const { username, password } = req.body;
-    const user = await pool.query(
-      "SELECT * FROM Users WHERE username=$1 AND password=$2",
-      [username, password]
-    );
-    if (user.rows.length == 1) {
-      res.status(200).json(user.rows[0]);
-    } else {
-      res.status(400).send("Invalid user details");
-    }
-    console.log(user.rows[0]);
-  } catch (error) {
-    res.status(500);
-    console.error(error.message);
-  }
-});
 
 // Get all users
 app.get("/users", async (req, res) => {
@@ -98,6 +74,8 @@ app.delete("/user/:id", async (req, res) => {
     console.error("error", error.message);
   }
 });
+
+
 
 app.listen(5000, () => {
   console.log("server listening at 5000");
