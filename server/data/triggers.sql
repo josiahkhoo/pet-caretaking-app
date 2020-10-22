@@ -111,7 +111,7 @@ RETURN NEW;
 END;
 $$ LANGUAGE PLPGSQL;
 DROP TRIGGER IF EXISTS bid_care_taker_is_available_to_update_trigger on Bid CASCADE;
-CREATE TRIGGER bid_care_taker_is_available_to_update_trigger BEFORE
+CREATE TRIGGER bid_care_taker_is_available_to_update_trigger AFTER
 UPDATE ON Bid FOR EACH ROW EXECUTE FUNCTION bid_care_taker_is_available_to_update();
 -- This trigger injects the pets default daily price if caretaker is a full time caretaker
 CREATE OR REPLACE FUNCTION can_take_care_full_time_care_taker_daily_price() RETURNS TRIGGER AS $$
