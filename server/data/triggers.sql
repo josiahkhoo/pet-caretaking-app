@@ -220,3 +220,22 @@ DROP TRIGGER IF EXISTS bid_full_time_care_taker_auto_confirm_trigger ON Bid CASC
 CREATE TRIGGER bid_full_time_care_taker_auto_confirm_trigger
 AFTER
 INSERT ON Bid FOR EACH ROW EXECUTE FUNCTION bid_full_time_care_taker_auto_confirm();
+-- This trigger populates the is available on table when are caretaker is inserted until 2021
+CREATE OR REPLACE FUNCTION full_time_care_taker_populate_is_available_on () RETURNS TRIGGER AS $$
+DECLARE counter INTEGER := 0;
+BEGIN IF NEW.is_full_time = TRUE THEN WHILE counter <= (DATE('12-31-2021') - DATE(NOW())) LOOP
+INSERT INTO IsAvailableOn(
+        care_taker_user_id,
+        available_date
+    )
+VALUES (NEW.user_id, DATE(NOW()) + counter);
+counter := counter + 1;
+END LOOP;
+END IF;
+RETURN NEW;
+END;
+$$ LANGUAGE PLPGSQL;
+DROP TRIGGER IF EXISTS full_time_care_taker_populate_is_available_on_trigger ON CareTakers;
+CREATE TRIGGER full_time_care_taker_populate_is_available_on_trigger
+AFTER
+INSERT ON CareTakers FOR EACH ROW EXECUTE FUNCTION full_time_care_taker_populate_is_available_on();
