@@ -114,6 +114,29 @@ DROP TRIGGER IF EXISTS bid_care_taker_is_available_to_update_trigger on Bid CASC
 CREATE TRIGGER bid_care_taker_is_available_to_update_trigger
 AFTER
 UPDATE ON Bid FOR EACH ROW EXECUTE FUNCTION bid_care_taker_is_available_to_update();
+-- This trigger checks if the pet is currently being taken care of before confirmation
+CREATE OR REPLACE FUNCTION bid_pet_not_already_taken_care_of() RETURNS TRIGGER AS $$
+DECLARE days_taken_care_during_bid_period INTEGER;
+BEGIN
+SELECT COUNT(*) INTO days_taken_care_during_bid_period
+FROM OwnedPetsWithTakenCareDate ownedpets
+WHERE ownedpets.pet_owner_user_id = NEW.pet_owner_user_id
+    AND ownedpets.pet_name = NEW.pet_name
+    AND taken_care_date >= NEW.start_date
+    AND taken_care_date <= NEW.end_date;
+IF days_taken_care_during_bid_period > 0 THEN RAISE EXCEPTION '% is already being taken care of between % and %',
+NEW.pet_name,
+NEW.start_date,
+NEW.end_date;
+END IF;
+RETURN NEW;
+END;
+$$ LANGUAGE PLPGSQL;
+DROP TRIGGER IF EXISTS bid_pet_not_already_taken_care_of_trigger ON Bid CASCADE;
+CREATE TRIGGER bid_pet_not_already_taken_care_of_trigger BEFORE
+INSERT
+    OR
+UPDATE ON Bid FOR EACH ROW EXECUTE FUNCTION bid_pet_not_already_taken_care_of();
 -- This trigger injects the pets default daily price if caretaker is a full time caretaker
 CREATE OR REPLACE FUNCTION can_take_care_full_time_care_taker_daily_price() RETURNS TRIGGER AS $$
 DECLARE daily_price INTEGER;
