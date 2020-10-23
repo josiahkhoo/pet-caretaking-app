@@ -223,7 +223,7 @@ INSERT ON Bid FOR EACH ROW EXECUTE FUNCTION bid_full_time_care_taker_auto_confir
 -- This trigger populates the is available on table when are caretaker is inserted until 2021
 CREATE OR REPLACE FUNCTION full_time_care_taker_populate_is_available_on () RETURNS TRIGGER AS $$
 DECLARE counter INTEGER := 0;
-BEGIN IF NEW.is_full_time = TRUE THEN WHILE counter <= (DATE('12-31-2021') - DATE(NOW())) LOOP
+BEGIN IF NEW.is_full_time = TRUE THEN WHILE counter <= (DATE('01-01-2022') - DATE(NOW())) LOOP
 INSERT INTO IsAvailableOn(
         care_taker_user_id,
         available_date
@@ -239,3 +239,115 @@ DROP TRIGGER IF EXISTS full_time_care_taker_populate_is_available_on_trigger ON 
 CREATE TRIGGER full_time_care_taker_populate_is_available_on_trigger
 AFTER
 INSERT ON CareTakers FOR EACH ROW EXECUTE FUNCTION full_time_care_taker_populate_is_available_on();
+-- This trigger checks if minimum 2 x 150 consecutive days requirement is fulfilled
+CREATE OR REPLACE FUNCTION full_time_care_taker_block_leave () RETURNS TRIGGER AS $$
+DECLARE current_leave_length INTEGER;
+DECLARE first_period_length INTEGER;
+DECLARE first_period_end_date DATE;
+DECLARE second_period_length INTEGER;
+DECLARE second_period_start_date DATE;
+BEGIN
+SELECT (365 - COUNT(*)) INTO current_leave_length
+FROM IsAvailableOn iao
+WHERE iao.care_taker_user_id = OLD.care_taker_user_id
+    AND EXTRACT(
+        YEAR
+        FROM iao.available_date
+    ) = EXTRACT(
+        YEAR
+        FROM OLD.available_date
+    );
+SELECT iao.available_date INTO first_period_end_date
+FROM IsAvailableOn iao
+WHERE iao.care_taker_user_id = OLD.care_taker_user_id
+    AND EXTRACT(
+        YEAR
+        FROM iao.available_date
+    ) = EXTRACT(
+        YEAR
+        FROM OLD.available_date
+    )
+    AND NOT EXISTS (
+        SELECT *
+        FROM IsAvailableOn inner_iao
+        WHERE inner_iao.care_taker_user_id = iao.care_taker_user_id
+            AND inner_iao.available_date = iao.available_date + 1
+    );
+SELECT iao.available_date INTO second_period_start_date
+FROM IsAvailableOn iao
+WHERE iao.care_taker_user_id = OLD.care_taker_user_id
+    AND EXTRACT(
+        YEAR
+        FROM iao.available_date
+    ) = EXTRACT(
+        YEAR
+        FROM OLD.available_date
+    )
+    AND NOT EXISTS (
+        SELECT *
+        FROM IsAvailableOn inner_iao
+        WHERE inner_iao.care_taker_user_id = iao.care_taker_user_id
+            AND inner_iao.available_date = iao.available_date - 1
+    );
+SELECT first_period_end_date - make_date(
+        CAST(
+            EXTRACT(
+                YEAR
+                FROM OLD.available_date
+            ) AS INTEGER
+        ),
+        1,
+        1
+    ) + 1 INTO first_period_length;
+SELECT make_date(
+        CAST(
+            EXTRACT(
+                YEAR
+                FROM OLD.available_date
+            ) AS INTEGER
+        ),
+        12,
+        31
+    ) - second_period_start_date + 1 INTO second_period_length;
+IF first_period_length < (
+    SELECT minimum_work_days_in_block
+    FROM Admin
+    LIMIT 1
+)
+OR second_period_length < (
+    SELECT minimum_work_days_in_block
+    FROM Admin
+    LIMIT 1
+) THEN RAISE EXCEPTION '% cannot take leave on % because it violates the minimum work days in a block',
+(
+    SELECT username
+    FROM Users
+    WHERE OLD.care_taker_user_id = Users.user_id
+),
+OLD.available_date;
+END IF;
+IF current_leave_length > (
+    SELECT 365 - (
+            SELECT minimum_work_days_in_block
+            FROM Admin
+            LIMIT 1
+        ) * (
+            SELECT minimum_work_blocks
+            FROM Admin
+            LIMIT 1
+        )
+) THEN RAISE EXCEPTION '%s cannot take leave on % because he has already taken % leave day(s)',
+(
+    SELECT username
+    FROM Users
+    WHERE OLD.care_taker_user_id = Users.user_id
+),
+OLD.available_date,
+current_leave_length;
+END IF;
+RETURN OLD;
+END;
+$$ LANGUAGE PLPGSQL;
+DROP TRIGGER IF EXISTS full_time_care_taker_block_leave_trigger ON IsAvailableOn CASCADE;
+CREATE TRIGGER full_time_care_taker_block_leave_trigger
+AFTER DELETE ON IsAvailableOn FOR EACH ROW EXECUTE FUNCTION full_time_care_taker_block_leave();
