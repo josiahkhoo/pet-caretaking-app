@@ -32,6 +32,124 @@ app.get("/users", async (req, res) => {
   }
 });
 
+// get people with average ratings > k
+app.get("/bid/:rating", async (req, res) => {
+  try {
+    const { rating } = req.params;
+    const caretakerRating = await pool.query(`SELECT u.name as name,
+    u.contact_number as contact,
+    ROUND(AVG(b.rating), 2) as avg_rating
+    FROM Bid b INNER JOIN Users u
+    ON b.care_taker_user_id = u.user_id
+    GROUP BY (b.care_taker_user_id, u.name, u.contact_number)
+    HAVING AVG(b.rating) > ${rating}
+    ORDER BY AVG(b.rating) DESC`);
+    console.log(caretakerRating);
+    res.json(caretakerRating.rows);
+  } catch (error) {
+    console.error("fail");
+    console.error(error.message);
+  }
+});
+
+// get summary petdays of all caretakers
+app.get("/admin/:workdays", async (req, res) => {
+  try {
+    const petDays = await pool.query(`SELECT b.care_taker_user_id , u.name as name,
+    SUM (CASE
+       WHEN b.start_date != b.end_date
+       THEN b.end_date - b.start_date + 1
+       ELSE 1
+       END)
+      AS petdays
+  FROM Bid b
+  INNER JOIN Users u ON b.care_taker_user_id = u.user_id
+  GROUP BY (b.care_taker_user_id, u.name)
+  ORDER BY petdays DESC`);
+    console.log(petDays);
+    res.json(petDays.rows);
+  } catch (error) {
+    console.error("fail");
+    console.error(error.message);
+  }
+});
+
+//insert into ownedpets
+app.put("/pets/:newpet", async (req, res) => {
+  try{
+    const { pet_owner_user_id, category_name, pet_name } = req.params;
+    console.log(pet_owner_user_id, category_name, pet_name)
+    const insertPet = await pool.query(
+      `INSERT INTO OwnedPets (${pet_owner_user_id}, ${category_name}, ${pet_name})`
+    );
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+
+// get available dates of between a given interval
+app.get("/available/:daterange", async (req, res) => {
+  try{
+    const { start_date, end_date } = req.params;
+    console.log(start_date, end_date)
+    const findAvailableInterval = await pool.query(`
+    SELECT u.user_id as userid, 
+            u.name as name, 
+            u.contact_number as contact,
+            c.daily_price as price
+    FROM isAvailableOn a 
+    INNER JOIN Users u ON a.care_taker_user_id = u.user_id 
+    INNER JOIN CanTakeCare c ON a.care_taker_user_id = c.care_taker_user_id
+    WHERE (a.available_date > ${start_date} AND a.available_date <= ${end_date})`
+    );
+    console.log(findAvailableInterval);
+    res.json(findAvailableInterval.rows);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+
+// get all availability for a given carer name
+app.get("/available/:name", async (req, res) => {
+  try{
+    const { caretakerName } = req.params;
+    console.log(caretakerName)
+    const findAvailableName = await pool.query(`
+    SELECT u.user_id as userid,
+        u.name as name,
+        u.contact_number as contact,
+        c.daily_price as price
+    FROM isAvailableOn a 
+    INNER JOIN Users u ON a.care_taker_user_id = u.user_id 
+    INNER JOIN CanTakeCare c ON a.care_taker_user_id = c.care_taker_user_id
+    WHERE u.name = ${caretakerName}`)
+    console.log(findAvailableName);
+    res.json(findAvailableName.rows);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+
+// get all availability for a given pet catagory
+app.get("/available/:petcategory", async (req, res) => {
+  try{
+    const { petType } = req.params;
+    console.log(petType)
+    const findAvailablePetType = await pool.query(`
+    SELECT u.user_id as userid,
+        u.name as name,
+        u.contact_number as contact,
+        c.daily_price as price
+    FROM isAvailableOn a
+    INNER JOIN Users u ON a.care_taker_user_id = u.user_id
+    INNER JOIN CanTakeCare c ON a.care_taker_user_id = c.care_taker_user_id
+    WHERE c.category_name = ${petType}`)
+    console.log(findAvailablePetType);
+    res.json(findAvailablePetType.rows);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
 // get user by id
 app.get("/users/:id", async (req, res) => {
   try {
@@ -74,7 +192,6 @@ app.delete("/user/:id", async (req, res) => {
     console.error("error", error.message);
   }
 });
-
 
 
 app.listen(5000, () => {
