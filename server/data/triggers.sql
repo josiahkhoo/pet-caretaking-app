@@ -240,56 +240,12 @@ CREATE TRIGGER full_time_care_taker_populate_is_available_on_trigger
 AFTER
 INSERT ON CareTakers FOR EACH ROW EXECUTE FUNCTION full_time_care_taker_populate_is_available_on();
 -- This trigger checks if minimum 2 x 150 consecutive days requirement is fulfilled
+-- TODO: Only for full time
 CREATE OR REPLACE FUNCTION full_time_care_taker_block_leave () RETURNS TRIGGER AS $$
-DECLARE current_leave_length INTEGER;
-DECLARE first_period_length INTEGER;
-DECLARE first_period_end_date DATE;
-DECLARE second_period_length INTEGER;
-DECLARE second_period_start_date DATE;
-BEGIN
-SELECT (365 - COUNT(*)) INTO current_leave_length
-FROM IsAvailableOn iao
-WHERE iao.care_taker_user_id = OLD.care_taker_user_id
-    AND EXTRACT(
-        YEAR
-        FROM iao.available_date
-    ) = EXTRACT(
-        YEAR
-        FROM OLD.available_date
-    );
-SELECT iao.available_date INTO first_period_end_date
-FROM IsAvailableOn iao
-WHERE iao.care_taker_user_id = OLD.care_taker_user_id
-    AND EXTRACT(
-        YEAR
-        FROM iao.available_date
-    ) = EXTRACT(
-        YEAR
-        FROM OLD.available_date
-    )
-    AND NOT EXISTS (
-        SELECT *
-        FROM IsAvailableOn inner_iao
-        WHERE inner_iao.care_taker_user_id = iao.care_taker_user_id
-            AND inner_iao.available_date = iao.available_date + 1
-    );
-SELECT iao.available_date INTO second_period_start_date
-FROM IsAvailableOn iao
-WHERE iao.care_taker_user_id = OLD.care_taker_user_id
-    AND EXTRACT(
-        YEAR
-        FROM iao.available_date
-    ) = EXTRACT(
-        YEAR
-        FROM OLD.available_date
-    )
-    AND NOT EXISTS (
-        SELECT *
-        FROM IsAvailableOn inner_iao
-        WHERE inner_iao.care_taker_user_id = iao.care_taker_user_id
-            AND inner_iao.available_date = iao.available_date - 1
-    );
-SELECT first_period_end_date - make_date(
+DECLARE number_work_blocks INTEGER := 0;
+DECLARE number_consecutive_work_days INTEGER := 0;
+DECLARE highest_consecutive_work_days INTEGER := 0;
+DECLARE current_day DATE := MAKE_DATE (
         CAST(
             EXTRACT(
                 YEAR
@@ -298,8 +254,8 @@ SELECT first_period_end_date - make_date(
         ),
         1,
         1
-    ) + 1 INTO first_period_length;
-SELECT make_date(
+    );
+DECLARE last_day_of_year DATE := MAKE_DATE (
         CAST(
             EXTRACT(
                 YEAR
@@ -308,42 +264,57 @@ SELECT make_date(
         ),
         12,
         31
-    ) - second_period_start_date + 1 INTO second_period_length;
-IF first_period_length < (
+    );
+BEGIN WHILE current_day <= last_day_of_year LOOP IF EXISTS (
+    SELECT 1
+    FROM IsAvailableOn iao
+    WHERE iao.care_taker_user_id = OLD.care_taker_user_id
+        AND iao.available_date = current_day
+) THEN number_consecutive_work_days := number_consecutive_work_days + 1;
+ELSEIF number_consecutive_work_days >= (
     SELECT minimum_work_days_in_block
+    FROM Admin
+    LIMIT 1
+) THEN number_work_blocks := number_work_blocks + 1;
+IF number_consecutive_work_days > highest_consecutive_work_days THEN highest_consecutive_work_days := number_consecutive_work_days;
+END IF;
+number_consecutive_work_days := 0;
+END IF;
+current_day := current_day + 1;
+END LOOP;
+IF number_consecutive_work_days >= (
+    SELECT minimum_work_days_in_block
+    FROM Admin
+    LIMIT 1
+) THEN number_work_blocks := number_work_blocks + 1;
+IF number_consecutive_work_days > highest_consecutive_work_days THEN highest_consecutive_work_days := number_consecutive_work_days;
+END IF;
+END IF;
+IF (
+    SELECT is_full_time
+    FROM CareTakers c
+    WHERE c.user_id = OLD.care_taker_user_id
+)
+AND number_work_blocks < (
+    SELECT minimum_work_blocks
     FROM Admin
     LIMIT 1
 )
-OR second_period_length < (
+AND highest_consecutive_work_days < (
     SELECT minimum_work_days_in_block
     FROM Admin
     LIMIT 1
-) THEN RAISE EXCEPTION '% cannot take leave on % because it violates the minimum work days in a block',
+) * (
+    SELECT minimum_work_blocks
+    FROM Admin
+    LIMIT 1
+) THEN RAISE EXCEPTION '% cannot take leave on % because it violates the minimum consecutive days in a year',
 (
     SELECT username
     FROM Users
     WHERE OLD.care_taker_user_id = Users.user_id
 ),
 OLD.available_date;
-END IF;
-IF current_leave_length > (
-    SELECT 365 - (
-            SELECT minimum_work_days_in_block
-            FROM Admin
-            LIMIT 1
-        ) * (
-            SELECT minimum_work_blocks
-            FROM Admin
-            LIMIT 1
-        )
-) THEN RAISE EXCEPTION '%s cannot take leave on % because he has already taken % leave day(s)',
-(
-    SELECT username
-    FROM Users
-    WHERE OLD.care_taker_user_id = Users.user_id
-),
-OLD.available_date,
-current_leave_length;
 END IF;
 RETURN OLD;
 END;
