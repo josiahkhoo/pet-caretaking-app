@@ -29,3 +29,20 @@
     "post_60_days_earnings": null,
     "is_full_time": true
 }
+
+## pets owned
+- GET `/allPets/:uid` - `<petDetails>`
+- petDetails: {
+        "owner": "yumingchen",
+        "pname": "Roger",
+        "bio": null,
+        "pic": null
+    }
+
+## reviews 
+- GET `/reviews/:owner/:category` - `<review>`
+- review : {
+        "review": "best"
+    }
+
+
