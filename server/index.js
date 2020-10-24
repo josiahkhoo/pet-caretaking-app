@@ -75,6 +75,7 @@ app.delete("/user/:id", async (req, res) => {
   }
 });
 
+// get all bids for a certain pet from a pet owner
 app.get("/pet-owner/bid/:pet_owner_user_id/:pet_name", async (req, res) => {
   try {
     const { pet_owner_user_id, pet_name } = req.params;
@@ -89,6 +90,22 @@ app.get("/pet-owner/bid/:pet_owner_user_id/:pet_name", async (req, res) => {
   }
 });
 
+// get all bids for a pet owner
+app.get("/pet-owner/bid/:pet_owner_user_id", async (req, res) => {
+  try {
+    const { pet_owner_user_id } = req.params;
+    const bids = await pool.query(
+      `SELECT * FROM Bid WHERE pet_owner_user_id = $1`,
+      [pet_owner_user_id]
+    );
+    res.status(200).json(bids.rows);
+  } catch (error) {
+    console.error("error", error.message);
+    res.status(400).json(error.message);
+  }
+});
+
+// create a bid
 app.post("/pet-owner/bid/", async (req, res) => {
   try {
     const {
@@ -136,7 +153,101 @@ app.post("/pet-owner/bid/", async (req, res) => {
   }
 });
 
-app.get("/caretaker/bid");
+// get all bids for a caretaker
+app.get("/caretaker/bid/:care_taker_user_id", async (req, res) => {
+  try {
+    const { care_taker_user_id } = req.params;
+    const bids = await pool.query(
+      `SELECT * FROM Bid WHERE care_taker_user_id = $1`,
+      [care_taker_user_id]
+    );
+    res.status(200).json(bids.rows);
+  } catch (error) {
+    console.error("error", error.message);
+    res.status(400).json(error.message);
+  }
+});
+
+// confirm a bid for a part-time caretaker (specify price)
+app.post("/caretaker/part-time/bid/confirm", async (req, res) => {
+  try {
+    const {
+      care_taker_user_id,
+      start_date,
+      end_date,
+      pet_owner_user_id,
+      pet_name,
+      total_price,
+    } = req.body;
+    const bids = await pool.query(
+      `UPDATE bid 
+      SET is_success = TRUE, total_price = $1
+      WHERE care_taker_user_id = $2 
+      AND start_date = $3
+      AND end_date = $4
+      AND pet_owner_user_id = $5
+      AND pet_name = $6`,
+      [
+        total_price,
+        care_taker_user_id,
+        start_date,
+        end_date,
+        pet_owner_user_id,
+        pet_name,
+      ]
+    );
+    res.status(200).json({
+      care_taker_user_id: care_taker_user_id,
+      pet_owner_user_id: pet_owner_user_id,
+      pet_name: pet_name,
+      start_date: start_date,
+      end_date: end_date,
+      total_price: total_price,
+    });
+  } catch (error) {
+    console.error("error", error.message);
+    res.status(400).json(error.message);
+  }
+});
+
+// insert is available on for part time caretaker
+app.post("/caretaker/part-time/available", async (req, res) => {
+  try {
+    const { care_taker_user_id, available_date } = req.body;
+    const isAvailableOn = await pool.query(
+      `INSERT INTO 
+      IsAvailableOn (care_taker_user_id, available_date)
+      VALUES ($1, $2)`,
+      [care_taker_user_id, available_date]
+    );
+    res.status(200).json({
+      care_taker_user_id: care_taker_user_id,
+      available_date: available_date,
+    });
+  } catch (error) {
+    console.error("error", error.message);
+    res.status(400).json(error.message);
+  }
+});
+
+// delete is available on for full time caretaker (taking leave)
+// constraints are enforced in DB trigger
+app.post("/caretaker/full-time/leave", async (req, res) => {
+  try {
+    const { care_taker_user_id, available_date } = req.body;
+    const isAvailableOn = await pool.query(
+      `DELETE FROM IsAvailableOn WHERE care_taker_user_id = $1 AND available_date = $2`,
+      [care_taker_user_id, available_date]
+    );
+    res.status(200).json({
+      care_taker_user_id: care_taker_user_id,
+      available_date: available_date,
+    });
+  } catch (error) {
+    console.error("error", error.message);
+    res.status(400).json(error.message);
+  }
+});
 
 app.listen(5000, () => {
   console.log("server listening at 5000");

@@ -240,7 +240,6 @@ CREATE TRIGGER full_time_care_taker_populate_is_available_on_trigger
 AFTER
 INSERT ON CareTakers FOR EACH ROW EXECUTE FUNCTION full_time_care_taker_populate_is_available_on();
 -- This trigger checks if minimum 2 x 150 consecutive days requirement is fulfilled
--- TODO: Only for full time
 CREATE OR REPLACE FUNCTION full_time_care_taker_block_leave () RETURNS TRIGGER AS $$
 DECLARE number_work_blocks INTEGER := 0;
 DECLARE number_consecutive_work_days INTEGER := 0;
@@ -279,6 +278,7 @@ ELSEIF number_consecutive_work_days >= (
 IF number_consecutive_work_days > highest_consecutive_work_days THEN highest_consecutive_work_days := number_consecutive_work_days;
 END IF;
 number_consecutive_work_days := 0;
+ELSE number_consecutive_work_days := 0;
 END IF;
 current_day := current_day + 1;
 END LOOP;
