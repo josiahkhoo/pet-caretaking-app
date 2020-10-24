@@ -167,7 +167,7 @@ $$ LANGUAGE PLPGSQL;
 DROP TRIGGER IF EXISTS can_take_care_full_time_care_taker_daily_price_trigger ON CanTakeCare CASCADE;
 CREATE TRIGGER can_take_care_full_time_care_taker_daily_price_trigger BEFORE
 INSERT ON CanTakeCare FOR EACH ROW EXECUTE FUNCTION can_take_care_full_time_care_taker_daily_price();
--- This trigger checks if the care taker in the bid is a full time caretaker, if it is, set it to true automatically and inserts the price
+-- This trigger checks if the care taker in the bid is a full time caretaker, if it is, set it to true automatically and inserts the price (for both)
 CREATE OR REPLACE FUNCTION bid_full_time_care_taker_auto_confirm () RETURNS TRIGGER AS $$
 DECLARE is_full_time BOOLEAN;
 DECLARE base_price INTEGER;
@@ -212,6 +212,15 @@ WHERE bid.care_taker_user_id = NEW.care_taker_user_id
     AND bid.pet_owner_user_id = NEW.pet_owner_user_id
     AND bid.pet_name = NEW.pet_name;
 END IF;
+ELSE
+UPDATE bid
+SET total_price = base_price * number_days,
+    is_success = FALSE
+WHERE bid.care_taker_user_id = NEW.care_taker_user_id
+    AND bid.start_date = NEW.start_date
+    AND bid.end_date = NEW.end_date
+    AND bid.pet_owner_user_id = NEW.pet_owner_user_id
+    AND bid.pet_name = NEW.pet_name;
 END IF;
 RETURN NEW;
 END;
