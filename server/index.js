@@ -22,7 +22,7 @@ app.get("/caretakers/earnings", CaretakerController.getEarnings);
 
 // Get all users
 app.get("/users", async (req, res) => {
-  try {
+  try { 
     const allUsers = await pool.query("SELECT * FROM users");
     console.log(allUsers);
     res.json(allUsers.rows);
@@ -178,7 +178,68 @@ app.get("/totalPet/:month", async (req, res) => {
   }
 });
 
+// specify categories that CT can take care
+app.post("/petCategory/:uid/:category/:price", async (req, res) => {
+  try {
+    const { uid, category, price } = req.params;
+    const canTakeCare = await pool.query(
+        "INSERT INTO cantakecare VALUES($1, $2, $3)",
+        [uid, category, price]
+    );
+    res.json("Category updated");
+  } catch (error) {
+    res.status(500);
+    console.error(error.message);
+  }
+});
 
+// view all pets owned by a certain pet owner
+app.get("/allPets/:uid", async (req, res) => {
+  try {
+    const { uid } = req.params;
+    const pets = await pool.query(
+        "SELECT p.owner, p.pname, p.bio, p.pic FROM petownerpets p WHERE p.id = $1;",
+        [uid]
+    );
+    if (pets.rows) {
+      if (pets.rowCount == 0) {
+        res.json("No pets or invalid id");
+      } else {
+        res.status(200).json(pets.rows);
+      }
+    } else {
+      res.status(400).send("Invalid user id");
+    }
+    console.log(pets.rows);
+  } catch (error) {
+    res.status(500);
+    console.error(error.message);
+  }
+});
+
+// View reviews from a PetOwner for a pet category
+app.get("/reviews/:owner/:category", async (req, res) => {
+  try {
+    const { owner, category } = req.params;
+    const reviews = await pool.query(
+        "SELECT r.review FROM review r WHERE r.username = $1 AND r.category_name = $2;",
+        [owner, category]
+    );
+    if (reviews.rows) {
+      if (reviews.rowCount == 0) {
+        res.json("No pets or invalid id");
+      } else {
+        res.status(200).json(reviews.rows);
+      }
+    } else {
+      res.status(400).send("Invalid user id");
+    }
+    console.log(reviews.rows);
+  } catch (error) {
+    res.status(500);
+    console.error(error.message);
+  }
+});
 
 
 app.listen(5000, () => {
