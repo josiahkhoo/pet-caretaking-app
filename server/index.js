@@ -75,6 +75,110 @@ app.delete("/user/:id", async (req, res) => {
   }
 });
 
+//Get current number of pets taken by caretaker with UID for date range
+app.get("/caretaker/:uid/:start_date/:end_date", async (req, res) => {
+  try {
+    const { uid, start_date, end_date } = req.params;
+    const petCount = await pool.query(
+        "SELECT DISTINCT COUNT (*) FROM Bid WHERE is_success = TRUE AND start_date >= $2 AND end_date <= $3 " +
+        "AND care_taker_user_id = $1 ",
+        [uid, start_date, end_date]
+    );
+    if (petCount.rows.length == 1) {
+      res.status(200).json(petCount.rows[0]);
+    } else {
+      res.status(400).send("Invalid user id or date range");
+    }
+    console.log(petCount.rows[0]);
+  } catch (error) {
+    res.status(500);
+    console.error(error.message);
+  }
+});
+
+// Average Satisfaction Per Pet Category
+app.get("/satisfaction/:month", async (req, res) => {
+  try {
+    const { month } = req.params;
+    const satisfaction = await pool.query(
+        "SELECT category_name, AVG(rating) AS Satisfaction FROM bid NATURAL JOIN ownedpets WHERE " +
+        "EXTRACT(MONTH FROM end_date) = $1 AND is_success = TRUE GROUP BY category_name ",
+        [month]
+    );
+    if (satisfaction.rows) {
+      res.status(200).json(satisfaction.rows);
+    } else {
+      res.status(400).send("Invalid user id or date range");
+    }
+    console.log(satisfaction.rows);
+  } catch (error) {
+    res.status(500);
+    console.error(error.message);
+  }
+});
+
+// Month with highest number of jobs -> highest number of petdays
+app.get("/highestPetDaysMonth", async (req, res) => {
+  try {
+    const highest = await pool.query(
+        "SELECT extract(MONTH FROM end_date) AS month, sum(end_date - start_date + 1) AS petdays FROM bid GROUP BY " +
+        "extract(MONTH FROM end_date) ORDER by petdays DESC LIMIT 1",
+    );
+    if (highest.rows.length == 1) {
+      res.status(200).json(highest.rows[0]);
+    } else {
+      res.status(400).send("Invalid user id or date range");
+    }
+    console.log(highest.rows[0]);
+  } catch (error) {
+    res.status(500);
+    console.error(error.message);
+  }
+});
+
+//Underperforming Fulltime Care Takers ( months) -> Number of Pet Days < 60 or average rating < 2.5
+app.get("/underPerforming/:month", async (req, res) => {
+  try {
+    const { month } = req.params;
+    const underPerforming = await pool.query(
+        "SELECT care_taker_user_id AS underperfoming FROM bid WHERE EXTRACT(MONTH FROM end_date) = $1 " +
+        "AND is_success = TRUE GROUP BY care_taker_user_id HAVING (sum(end_date - start_date + 1) < 60 " +
+        "OR AVG(rating) < 2.5)",
+        [month]
+    );
+    if (underPerforming.rows) {
+      res.status(200).json(underPerforming.rows);
+    } else {
+      res.status(400).send("Invalid user id or date range");
+    }
+    console.log(underPerforming.rows);
+  } catch (error) {
+    res.status(500);
+    console.error(error.message);
+  }
+});
+
+// Total number of Pet taken care of in the month.
+app.get("/totalPet/:month", async (req, res) => {
+  try {
+    const { month } = req.params;
+    const totalPet = await pool.query(
+        "SELECT COUNT(*) FROM bid WHERE EXTRACT(MONTH FROM end_date) = $1 AND is_success = TRUE",
+        [month]
+    );
+    if (totalPet.rows.length == 1) {
+      res.status(200).json(totalPet.rows[0]);
+    } else {
+      res.status(400).send("Invalid user id or date range");
+    }
+    console.log(totalPet.rows[0]);
+  } catch (error) {
+    res.status(500);
+    console.error(error.message);
+  }
+});
+
+
 
 
 app.listen(5000, () => {
