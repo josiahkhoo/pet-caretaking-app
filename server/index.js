@@ -117,7 +117,7 @@ app.post("/pet-owner/bid/", async (req, res) => {
       payment_type,
       transfer_type,
     } = req.body;
-    const bid = await pool.query(
+    await pool.query(
       `INSERT INTO Bid (
         care_taker_user_id,
         start_date,
@@ -127,7 +127,9 @@ app.post("/pet-owner/bid/", async (req, res) => {
         payment_type,
         transfer_type
       )
-      VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+      VALUES ($1, $2, $3, $4, $5, $6, $7)
+
+      `,
       [
         care_taker_user_id,
         start_date,
@@ -138,15 +140,17 @@ app.post("/pet-owner/bid/", async (req, res) => {
         transfer_type,
       ]
     );
-    res.status(200).json({
-      care_taker_user_id: care_taker_user_id,
-      pet_owner_user_id: pet_owner_user_id,
-      pet_name: pet_name,
-      start_date: start_date,
-      end_date: end_date,
-      payment_type: payment_type,
-      transfer_type: transfer_type,
-    });
+    const bid = await pool.query(
+      `SELECT * 
+      FROM Bid 
+      WHERE care_taker_user_id = $1 
+      AND start_date = $2 
+      AND end_date = $3 
+      AND pet_owner_user_id = $4 
+      AND pet_name = $5`,
+      [care_taker_user_id, start_date, end_date, pet_owner_user_id, pet_name]
+    );
+    res.status(200).json(bid.rows[0]);
   } catch (error) {
     console.error("error", error.message);
     res.status(400).json(error.message);
@@ -177,24 +181,16 @@ app.post("/caretaker/part-time/bid/confirm", async (req, res) => {
       end_date,
       pet_owner_user_id,
       pet_name,
-      total_price,
     } = req.body;
     const bids = await pool.query(
       `UPDATE bid 
-      SET is_success = TRUE, total_price = $1
+      SET is_success = TRUE
       WHERE care_taker_user_id = $2 
       AND start_date = $3
       AND end_date = $4
       AND pet_owner_user_id = $5
       AND pet_name = $6`,
-      [
-        total_price,
-        care_taker_user_id,
-        start_date,
-        end_date,
-        pet_owner_user_id,
-        pet_name,
-      ]
+      [care_taker_user_id, start_date, end_date, pet_owner_user_id, pet_name]
     );
     res.status(200).json({
       care_taker_user_id: care_taker_user_id,
@@ -202,7 +198,6 @@ app.post("/caretaker/part-time/bid/confirm", async (req, res) => {
       pet_name: pet_name,
       start_date: start_date,
       end_date: end_date,
-      total_price: total_price,
     });
   } catch (error) {
     console.error("error", error.message);
