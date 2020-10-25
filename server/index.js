@@ -76,13 +76,13 @@ app.delete("/user/:id", async (req, res) => {
 });
 
 //Get current number of pets taken by caretaker with UID for date range
-app.get("/caretaker/:uid/:start_date/:end_date", async (req, res) => {
+app.get("/petOwner/currentPetCountForCaretaker/:cid/:start_date/:end_date", async (req, res) => {
   try {
-    const { uid, start_date, end_date } = req.params;
+    const { cid, start_date, end_date } = req.params;
     const petCount = await pool.query(
         "SELECT DISTINCT COUNT (*) FROM Bid WHERE is_success = TRUE AND start_date >= $2 AND end_date <= $3 " +
         "AND care_taker_user_id = $1 ",
-        [uid, start_date, end_date]
+        [cid, start_date, end_date]
     );
     if (petCount.rows.length == 1) {
       res.status(200).json(petCount.rows[0]);
@@ -97,7 +97,7 @@ app.get("/caretaker/:uid/:start_date/:end_date", async (req, res) => {
 });
 
 // Average Satisfaction Per Pet Category
-app.get("/satisfaction/:month", async (req, res) => {
+app.get("/pcadmin/satisfaction/:month", async (req, res) => {
   try {
     const { month } = req.params;
     const satisfaction = await pool.query(
@@ -108,7 +108,7 @@ app.get("/satisfaction/:month", async (req, res) => {
     if (satisfaction.rows) {
       res.status(200).json(satisfaction.rows);
     } else {
-      res.status(400).send("Invalid user id or date range");
+      res.status(400).send("Invalid month");
     }
     console.log(satisfaction.rows);
   } catch (error) {
@@ -118,7 +118,7 @@ app.get("/satisfaction/:month", async (req, res) => {
 });
 
 // Month with highest number of jobs -> highest number of petdays
-app.get("/highestPetDaysMonth", async (req, res) => {
+app.get("/pcadmin/highestPetDaysMonth", async (req, res) => {
   try {
     const highest = await pool.query(
         "SELECT extract(MONTH FROM end_date) AS month, sum(end_date - start_date + 1) AS petdays FROM bid GROUP BY " +
@@ -127,7 +127,7 @@ app.get("/highestPetDaysMonth", async (req, res) => {
     if (highest.rows.length == 1) {
       res.status(200).json(highest.rows[0]);
     } else {
-      res.status(400).send("Invalid user id or date range");
+      res.status(400).send("Invalid request.");
     }
     console.log(highest.rows[0]);
   } catch (error) {
@@ -137,7 +137,7 @@ app.get("/highestPetDaysMonth", async (req, res) => {
 });
 
 //Underperforming Fulltime Care Takers ( months) -> Number of Pet Days < 60 or average rating < 2.5
-app.get("/underPerforming/:month", async (req, res) => {
+app.get("/pcadmin/underPerformingCaretaker/:month", async (req, res) => {
   try {
     const { month } = req.params;
     const underPerforming = await pool.query(
@@ -149,7 +149,7 @@ app.get("/underPerforming/:month", async (req, res) => {
     if (underPerforming.rows) {
       res.status(200).json(underPerforming.rows);
     } else {
-      res.status(400).send("Invalid user id or date range");
+      res.status(400).send("Invalid month");
     }
     console.log(underPerforming.rows);
   } catch (error) {
@@ -159,7 +159,7 @@ app.get("/underPerforming/:month", async (req, res) => {
 });
 
 // Total number of Pet taken care of in the month.
-app.get("/totalPetTakenCare", async (req, res) => {
+app.get("/pcadmin/totalPetTakenCare", async (req, res) => {
   try {
     const totalPet = await pool.query(
         "SELECT EXTRACT(MONTH FROM end_date) AS month, COUNT(*)\n" +
@@ -171,7 +171,7 @@ app.get("/totalPetTakenCare", async (req, res) => {
     if (totalPet.rows) {
       res.status(200).json(totalPet.rows);
     } else {
-      res.status(400).send("Invalid user id or date range");
+      res.status(400).send("Invalid request");
     }
     console.log(totalPet.rows);
   } catch (error) {
