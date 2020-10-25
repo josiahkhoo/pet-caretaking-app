@@ -30,7 +30,15 @@
     "is_full_time": true
 }
 
-## pets owned
+## caretaker category
+- POST `/petCategory/:ctid/:category/:price` - `<categoryPrice>`
+- categoryPrice: {
+        "care_taker_user_id": 27,
+        "category_name": "Cats",
+        "daily_price": 2000
+    }
+
+## pets owned by owner
 - GET `/allPets/:uid` - `<petDetails>`
 - petDetails: {
         "owner": "yumingchen",
@@ -39,7 +47,7 @@
         "pic": null
     }
 
-## reviews 
+## get reviews by owner & category
 - GET `/reviews/:owner/:category` - `<review>`
 - review : {
         "review": "best"
