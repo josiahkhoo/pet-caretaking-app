@@ -53,6 +53,29 @@ module.exports = {
     }
   },
 
+  async getAllPets(req, res) {
+    try {
+      const { uid } = req.params;
+      const pets = await pool.query(
+        "SELECT p.owner, p.pname, p.bio, p.pic FROM petownerpets p WHERE p.id = $1;",
+        [uid]
+      );
+      if (pets.rows) {
+        if (pets.rowCount == 0) {
+          res.json("No pets or invalid id");
+        } else {
+          res.status(200).json(pets.rows);
+        }
+      } else {
+        res.status(400).send("Invalid user id");
+      }
+      console.log(pets.rows);
+    } catch (error) {
+      res.status(500);
+      console.error(error.message);
+    }
+  },
+
   async createBid(req, res) {
     try {
       const {
@@ -94,6 +117,20 @@ module.exports = {
         payment_type: payment_type,
         transfer_type: transfer_type,
       });
+    } catch (error) {
+      console.error("error", error.message);
+      res.status(400).json(error.message);
+    }
+  },
+
+  async getAllBids(req, res) {
+    try {
+      const { pet_owner_user_id } = req.params;
+      const bids = await pool.query(
+        `SELECT * FROM Bid WHERE pet_owner_user_id = $1`,
+        [pet_owner_user_id]
+      );
+      res.status(200).json(bids.rows);
     } catch (error) {
       console.error("error", error.message);
       res.status(400).json(error.message);

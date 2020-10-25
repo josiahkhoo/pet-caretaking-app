@@ -200,4 +200,86 @@ module.exports = {
       console.error(error.message);
     }
   },
+
+  async partTimeCareTakerBidConfirm(req, res) {
+    try {
+      const {
+        care_taker_user_id,
+        start_date,
+        end_date,
+        pet_owner_user_id,
+        pet_name,
+      } = req.body;
+      const bids = await pool.query(
+        `UPDATE bid 
+        SET is_success = TRUE
+        WHERE care_taker_user_id = $2 
+        AND start_date = $3
+        AND end_date = $4
+        AND pet_owner_user_id = $5
+        AND pet_name = $6`,
+        [care_taker_user_id, start_date, end_date, pet_owner_user_id, pet_name]
+      );
+      res.status(200).json({
+        care_taker_user_id: care_taker_user_id,
+        pet_owner_user_id: pet_owner_user_id,
+        pet_name: pet_name,
+        start_date: start_date,
+        end_date: end_date,
+      });
+    } catch (error) {
+      res.status(500);
+      console.error(error.message);
+    }
+  },
+
+  async partTimeCareTakerAddAvailable(req, res) {
+    try {
+      const { care_taker_user_id, available_date } = req.body;
+      const isAvailableOn = await pool.query(
+        `INSERT INTO 
+        IsAvailableOn (care_taker_user_id, available_date)
+        VALUES ($1, $2)`,
+        [care_taker_user_id, available_date]
+      );
+      res.status(200).json({
+        care_taker_user_id: care_taker_user_id,
+        available_date: available_date,
+      });
+    } catch (error) {
+      console.error("error", error.message);
+      res.status(400).json(error.message);
+    }
+  },
+
+  async fullTimeCareTakerTakeLeave(req, res) {
+    try {
+      const { care_taker_user_id, available_date } = req.body;
+      const isAvailableOn = await pool.query(
+        `DELETE FROM IsAvailableOn WHERE care_taker_user_id = $1 AND available_date = $2`,
+        [care_taker_user_id, available_date]
+      );
+      res.status(200).json({
+        care_taker_user_id: care_taker_user_id,
+        available_date: available_date,
+      });
+    } catch (error) {
+      console.error("error", error.message);
+      res.status(400).json(error.message);
+    }
+  },
+
+  async getAllBids(req, res) {
+    try {
+      const { care_taker_user_id } = req.params;
+      const bids = await pool.query(
+        `SELECT * FROM Bid WHERE care_taker_user_id = $1`,
+        [care_taker_user_id]
+      );
+      res.status(200).json(bids.rows);
+    } catch (error) {
+      console.error("error", error.message);
+      res.status(400).json(error.message);
+    }
+  },
 };

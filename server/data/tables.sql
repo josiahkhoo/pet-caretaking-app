@@ -141,7 +141,7 @@ CREATE TABLE Bid (
     CONSTRAINT bid_success CHECK (
         CASE
             WHEN is_success THEN (total_price IS NOT NULL)
-            ELSE total_price IS NULL
+            ELSE TRUE
         END
     ),
     CONSTRAINT total_price_positive CHECK (

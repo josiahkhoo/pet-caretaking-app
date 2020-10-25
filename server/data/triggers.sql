@@ -152,13 +152,9 @@ WHERE caretaker.user_id = NEW.care_taker_user_id
     AND cat.name = NEW.category_name
 LIMIT 1;
 IF (
-    is_full_time
-    AND caretaker.rating >= 4
-) THEN NEW.daily_price = daily_price * a.good_review_full_time_total_price_multiplier;
-END IF;
-IF (
-    is_full_time
-    AND caretaker.rating < 4
+    SELECT c.is_full_time
+    FROM CareTakers c
+    WHERE c.user_id = NEW.care_taker_user_id
 ) THEN NEW.daily_price = daily_price;
 END IF;
 RETURN NEW;
@@ -167,7 +163,7 @@ $$ LANGUAGE PLPGSQL;
 DROP TRIGGER IF EXISTS can_take_care_full_time_care_taker_daily_price_trigger ON CanTakeCare CASCADE;
 CREATE TRIGGER can_take_care_full_time_care_taker_daily_price_trigger BEFORE
 INSERT ON CanTakeCare FOR EACH ROW EXECUTE FUNCTION can_take_care_full_time_care_taker_daily_price();
--- This trigger checks if the care taker in the bid is a full time caretaker, if it is, set it to true automatically and inserts the price
+-- This trigger checks if the care taker in the bid is a full time caretaker, if it is, set it to true automatically and inserts the price (for both)
 CREATE OR REPLACE FUNCTION bid_full_time_care_taker_auto_confirm () RETURNS TRIGGER AS $$
 DECLARE is_full_time BOOLEAN;
 DECLARE base_price INTEGER;
@@ -212,6 +208,15 @@ WHERE bid.care_taker_user_id = NEW.care_taker_user_id
     AND bid.pet_owner_user_id = NEW.pet_owner_user_id
     AND bid.pet_name = NEW.pet_name;
 END IF;
+ELSE
+UPDATE bid
+SET total_price = base_price * number_days,
+    is_success = FALSE
+WHERE bid.care_taker_user_id = NEW.care_taker_user_id
+    AND bid.start_date = NEW.start_date
+    AND bid.end_date = NEW.end_date
+    AND bid.pet_owner_user_id = NEW.pet_owner_user_id
+    AND bid.pet_name = NEW.pet_name;
 END IF;
 RETURN NEW;
 END;
@@ -220,3 +225,105 @@ DROP TRIGGER IF EXISTS bid_full_time_care_taker_auto_confirm_trigger ON Bid CASC
 CREATE TRIGGER bid_full_time_care_taker_auto_confirm_trigger
 AFTER
 INSERT ON Bid FOR EACH ROW EXECUTE FUNCTION bid_full_time_care_taker_auto_confirm();
+-- This trigger populates the is available on table when are caretaker is inserted until 2021
+CREATE OR REPLACE FUNCTION full_time_care_taker_populate_is_available_on () RETURNS TRIGGER AS $$
+DECLARE counter INTEGER := 0;
+BEGIN IF NEW.is_full_time = TRUE THEN WHILE counter <= (DATE('01-01-2022') - DATE(NOW())) LOOP
+INSERT INTO IsAvailableOn(
+        care_taker_user_id,
+        available_date
+    )
+VALUES (NEW.user_id, DATE(NOW()) + counter);
+counter := counter + 1;
+END LOOP;
+END IF;
+RETURN NEW;
+END;
+$$ LANGUAGE PLPGSQL;
+DROP TRIGGER IF EXISTS full_time_care_taker_populate_is_available_on_trigger ON CareTakers;
+CREATE TRIGGER full_time_care_taker_populate_is_available_on_trigger
+AFTER
+INSERT ON CareTakers FOR EACH ROW EXECUTE FUNCTION full_time_care_taker_populate_is_available_on();
+-- This trigger checks if minimum 2 x 150 consecutive days requirement is fulfilled
+CREATE OR REPLACE FUNCTION full_time_care_taker_block_leave () RETURNS TRIGGER AS $$
+DECLARE number_work_blocks INTEGER := 0;
+DECLARE number_consecutive_work_days INTEGER := 0;
+DECLARE highest_consecutive_work_days INTEGER := 0;
+DECLARE current_day DATE := MAKE_DATE (
+        CAST(
+            EXTRACT(
+                YEAR
+                FROM OLD.available_date
+            ) AS INTEGER
+        ),
+        1,
+        1
+    );
+DECLARE last_day_of_year DATE := MAKE_DATE (
+        CAST(
+            EXTRACT(
+                YEAR
+                FROM OLD.available_date
+            ) AS INTEGER
+        ),
+        12,
+        31
+    );
+BEGIN WHILE current_day <= last_day_of_year LOOP IF EXISTS (
+    SELECT 1
+    FROM IsAvailableOn iao
+    WHERE iao.care_taker_user_id = OLD.care_taker_user_id
+        AND iao.available_date = current_day
+) THEN number_consecutive_work_days := number_consecutive_work_days + 1;
+ELSEIF number_consecutive_work_days >= (
+    SELECT minimum_work_days_in_block
+    FROM Admin
+    LIMIT 1
+) THEN number_work_blocks := number_work_blocks + 1;
+IF number_consecutive_work_days > highest_consecutive_work_days THEN highest_consecutive_work_days := number_consecutive_work_days;
+END IF;
+number_consecutive_work_days := 0;
+ELSE number_consecutive_work_days := 0;
+END IF;
+current_day := current_day + 1;
+END LOOP;
+IF number_consecutive_work_days >= (
+    SELECT minimum_work_days_in_block
+    FROM Admin
+    LIMIT 1
+) THEN number_work_blocks := number_work_blocks + 1;
+IF number_consecutive_work_days > highest_consecutive_work_days THEN highest_consecutive_work_days := number_consecutive_work_days;
+END IF;
+END IF;
+IF (
+    SELECT is_full_time
+    FROM CareTakers c
+    WHERE c.user_id = OLD.care_taker_user_id
+)
+AND number_work_blocks < (
+    SELECT minimum_work_blocks
+    FROM Admin
+    LIMIT 1
+)
+AND highest_consecutive_work_days < (
+    SELECT minimum_work_days_in_block
+    FROM Admin
+    LIMIT 1
+) * (
+    SELECT minimum_work_blocks
+    FROM Admin
+    LIMIT 1
+) THEN RAISE EXCEPTION '% cannot take leave on % because it violates the minimum consecutive days in a year',
+(
+    SELECT username
+    FROM Users
+    WHERE OLD.care_taker_user_id = Users.user_id
+),
+OLD.available_date;
+END IF;
+RETURN OLD;
+END;
+$$ LANGUAGE PLPGSQL;
+DROP TRIGGER IF EXISTS full_time_care_taker_block_leave_trigger ON IsAvailableOn CASCADE;
+CREATE TRIGGER full_time_care_taker_block_leave_trigger
+AFTER DELETE ON IsAvailableOn FOR EACH ROW EXECUTE FUNCTION full_time_care_taker_block_leave();

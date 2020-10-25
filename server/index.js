@@ -9,7 +9,11 @@ app.use(express.json());
 const AuthController = require("./controllers/AuthController");
 const CaretakerController = require("./controllers/CaretakerController");
 const { end } = require("./db");
-const { addCanTakeCareOf } = require("./controllers/CaretakerController");
+const {
+  addCanTakeCareOf,
+  fullTimeCareTakerTakeLeave,
+  getAllBids,
+} = require("./controllers/CaretakerController");
 const { viewReviews } = require("./controllers/PetOwnerController");
 const PetOwnerController = require("./controllers/PetOwnerController");
 // Routes
@@ -113,6 +117,17 @@ app.get("/totalPet/:month", async (req, res) => {
   }
 });
 
+// get all bids for a pet owner
+app.get("/pet-owner/bid/:pet_owner_user_id", PetOwnerController.getAllBids);
+
+// get all bids for a caretaker
+app.get("/caretaker/bid/:care_taker_user_id", CaretakerController.getAllBids);
+
+// confirm a bid for a part-time caretaker (specify price)
+app.post(
+  "/caretaker/part-time/bid/confirm",
+  CaretakerController.partTimeCareTakerBidConfirm
+);
 // specify categories that CT can take care
 app.post(
   "/petCategory/:uid/:category/:price",
@@ -120,29 +135,20 @@ app.post(
 );
 
 // view all pets owned by a certain pet owner
-app.get("/allPets/:uid", async (req, res) => {
-  try {
-    const { uid } = req.params;
-    const pets = await pool.query(
-      "SELECT p.owner, p.pname, p.bio, p.pic FROM petownerpets p WHERE p.id = $1;",
-      [uid]
-    );
-    if (pets.rows) {
-      if (pets.rowCount == 0) {
-        res.json("No pets or invalid id");
-      } else {
-        res.status(200).json(pets.rows);
-      }
-    } else {
-      res.status(400).send("Invalid user id");
-    }
-    console.log(pets.rows);
-  } catch (error) {
-    res.status(500);
-    console.error(error.message);
-  }
-});
+app.get("/allPets/:uid", PetOwnerController.getAllPets);
 
+// insert is available on for part time caretaker
+app.post(
+  "/caretaker/part-time/available",
+  CaretakerController.partTimeCareTakerAddAvailable
+);
+
+// delete is available on for full time caretaker (taking leave)
+// constraints are enforced in DB trigger
+app.post(
+  "/caretaker/full-time/leave",
+  CaretakerController.fullTimeCareTakerTakeLeave
+);
 // View reviews from a PetOwner for a pet category
 app.get("/reviews/:owner/:category", PetOwnerController.viewGivenReviews);
 
