@@ -152,13 +152,9 @@ WHERE caretaker.user_id = NEW.care_taker_user_id
     AND cat.name = NEW.category_name
 LIMIT 1;
 IF (
-    is_full_time
-    AND caretaker.rating >= 4
-) THEN NEW.daily_price = daily_price * a.good_review_full_time_total_price_multiplier;
-END IF;
-IF (
-    is_full_time
-    AND caretaker.rating < 4
+    SELECT c.is_full_time
+    FROM CareTakers c
+    WHERE c.user_id = NEW.care_taker_user_id
 ) THEN NEW.daily_price = daily_price;
 END IF;
 RETURN NEW;
