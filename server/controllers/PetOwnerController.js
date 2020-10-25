@@ -18,10 +18,10 @@ function getDates(startDate, stopDate) {
 module.exports = {
   async viewGivenReviews(req, res) {
     try {
-      const { owner, category } = req.params;
+      const { pet_owner_user_id, category_name } = req.params;
       const reviews = await pool.query(
         "SELECT r.review FROM review r WHERE r.username = $1 AND r.category_name = $2;",
-        [owner, category]
+        [pet_owner_user_id, category_name]
       );
       if (reviews.rows) {
         if (reviews.rowCount == 0) {
@@ -55,10 +55,10 @@ module.exports = {
 
   async getAllPets(req, res) {
     try {
-      const { uid } = req.params;
+      const { pet_owner_user_id } = req.params;
       const pets = await pool.query(
         "SELECT p.owner, p.pname, p.bio, p.pic FROM petownerpets p WHERE p.id = $1;",
-        [uid]
+        [pet_owner_user_id]
       );
       if (pets.rows) {
         if (pets.rowCount == 0) {

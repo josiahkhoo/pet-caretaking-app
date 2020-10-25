@@ -189,10 +189,10 @@ module.exports = {
 
   async addCanTakeCareOf(req, res) {
     try {
-      const { uid, category, price } = req.params;
+      const { care_taker_user_id, category_name, price } = req.body;
       const canTakeCare = await pool.query(
         "INSERT INTO cantakecare VALUES($1, $2, $3)",
-        [uid, category, price]
+        [care_taker_user_id, category_name, price]
       );
       res.json("Category updated");
     } catch (error) {
