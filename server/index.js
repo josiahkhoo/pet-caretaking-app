@@ -179,16 +179,20 @@ app.get("/totalPet/:month", async (req, res) => {
 });
 
 // specify categories that CT can take care
-app.post("/petCategory/:uid/:category/:price", async (req, res) => {
+app.post("/petCategory/:ctid/:category/:price", async (req, res) => {
   try {
-    const { uid, category, price } = req.params;
+    const { ctid, category, price } = req.params;
     const canTakeCare = await pool.query(
         "INSERT INTO cantakecare VALUES($1, $2, $3)",
-        [uid, category, price]
+        [ctid, category, price]
     );
-    res.json("Category updated");
+    const categoryPrice = await pool.query(
+      "SELECT * FROM cantakecare c WHERE c.care_taker_user_id = $1 AND c.category_name = $2",
+      [ctid, category]
+    );
+    res.status(200).json(categoryPrice.rows);
   } catch (error) {
-    res.status(500);
+    res.status(400).json(error.message);
     console.error(error.message);
   }
 });
