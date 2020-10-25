@@ -159,24 +159,27 @@ app.get("/underPerforming/:month", async (req, res) => {
 });
 
 // Total number of Pet taken care of in the month.
-app.get("/totalPet/:month", async (req, res) => {
+app.get("/totalPetTakenCare", async (req, res) => {
   try {
-    const { month } = req.params;
     const totalPet = await pool.query(
-        "SELECT COUNT(*) FROM bid WHERE EXTRACT(MONTH FROM end_date) = $1 AND is_success = TRUE",
-        [month]
+        "SELECT EXTRACT(MONTH FROM end_date) AS month, COUNT(*)\n" +
+        "FROM bid\n" +
+        "WHERE is_success = TRUE\n" +
+        "GROUP BY EXTRACT(MONTH FROM end_date)\n" +
+        "ORDER BY month",
     );
-    if (totalPet.rows.length == 1) {
-      res.status(200).json(totalPet.rows[0]);
+    if (totalPet.rows) {
+      res.status(200).json(totalPet.rows);
     } else {
       res.status(400).send("Invalid user id or date range");
     }
-    console.log(totalPet.rows[0]);
+    console.log(totalPet.rows);
   } catch (error) {
     res.status(500);
     console.error(error.message);
   }
 });
+
 //Get average rating of a caretaker
 app.get("/caretaker/avgRating/:cid", async (req, res) => {
   try {
