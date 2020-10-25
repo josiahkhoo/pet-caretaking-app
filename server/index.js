@@ -8,6 +8,10 @@ app.use(express.json());
 
 const AuthController = require("./controllers/AuthController");
 const CaretakerController = require("./controllers/CaretakerController");
+const { end } = require("./db");
+const { addCanTakeCareOf } = require("./controllers/CaretakerController");
+const { viewReviews } = require("./controllers/PetOwnerController");
+const PetOwnerController = require("./controllers/PetOwnerController");
 // Routes
 
 // User
@@ -19,10 +23,9 @@ app.post("/login", AuthController.login);
 app.post("/caretakers/availability", CaretakerController.specifyAvailablity);
 app.get("/caretakers/earnings", CaretakerController.getEarnings);
 
-
 // Get all users
 app.get("/users", async (req, res) => {
-  try { 
+  try {
     const allUsers = await pool.query("SELECT * FROM users");
     console.log(allUsers);
     res.json(allUsers.rows);
@@ -76,95 +79,27 @@ app.delete("/user/:id", async (req, res) => {
 });
 
 //Get current number of pets taken by caretaker with UID for date range
-app.get("/caretaker/:uid/:start_date/:end_date", async (req, res) => {
-  try {
-    const { uid, start_date, end_date } = req.params;
-    const petCount = await pool.query(
-        "SELECT DISTINCT COUNT (*) FROM Bid WHERE is_success = TRUE AND start_date >= $2 AND end_date <= $3 " +
-        "AND care_taker_user_id = $1 ",
-        [uid, start_date, end_date]
-    );
-    if (petCount.rows.length == 1) {
-      res.status(200).json(petCount.rows[0]);
-    } else {
-      res.status(400).send("Invalid user id or date range");
-    }
-    console.log(petCount.rows[0]);
-  } catch (error) {
-    res.status(500);
-    console.error(error.message);
-  }
-});
+app.get(
+  "/caretaker/:uid/:start_date/:end_date",
+  CaretakerController.getNumberTakenCarePets
+);
 
 // Average Satisfaction Per Pet Category
-app.get("/satisfaction/:month", async (req, res) => {
-  try {
-    const { month } = req.params;
-    const satisfaction = await pool.query(
-        "SELECT category_name, AVG(rating) AS Satisfaction FROM bid NATURAL JOIN ownedpets WHERE " +
-        "EXTRACT(MONTH FROM end_date) = $1 AND is_success = TRUE GROUP BY category_name ",
-        [month]
-    );
-    if (satisfaction.rows) {
-      res.status(200).json(satisfaction.rows);
-    } else {
-      res.status(400).send("Invalid user id or date range");
-    }
-    console.log(satisfaction.rows);
-  } catch (error) {
-    res.status(500);
-    console.error(error.message);
-  }
-});
+app.get(
+  "/satisfaction/:month",
+  CaretakerController.getAverageSatisfactionPerCategory
+);
 
 // Month with highest number of jobs -> highest number of petdays
-app.get("/highestPetDaysMonth", async (req, res) => {
-  try {
-    const highest = await pool.query(
-        "SELECT extract(MONTH FROM end_date) AS month, sum(end_date - start_date + 1) AS petdays FROM bid GROUP BY " +
-        "extract(MONTH FROM end_date) ORDER by petdays DESC LIMIT 1",
-    );
-    if (highest.rows.length == 1) {
-      res.status(200).json(highest.rows[0]);
-    } else {
-      res.status(400).send("Invalid user id or date range");
-    }
-    console.log(highest.rows[0]);
-  } catch (error) {
-    res.status(500);
-    console.error(error.message);
-  }
-});
-
-//Underperforming Fulltime Care Takers ( months) -> Number of Pet Days < 60 or average rating < 2.5
-app.get("/underPerforming/:month", async (req, res) => {
-  try {
-    const { month } = req.params;
-    const underPerforming = await pool.query(
-        "SELECT care_taker_user_id AS underperfoming FROM bid WHERE EXTRACT(MONTH FROM end_date) = $1 " +
-        "AND is_success = TRUE GROUP BY care_taker_user_id HAVING (sum(end_date - start_date + 1) < 60 " +
-        "OR AVG(rating) < 2.5)",
-        [month]
-    );
-    if (underPerforming.rows) {
-      res.status(200).json(underPerforming.rows);
-    } else {
-      res.status(400).send("Invalid user id or date range");
-    }
-    console.log(underPerforming.rows);
-  } catch (error) {
-    res.status(500);
-    console.error(error.message);
-  }
-});
+app.get("/highestPetDaysMonth", CaretakerController.getHighestPetDaysMonth);
 
 // Total number of Pet taken care of in the month.
 app.get("/totalPet/:month", async (req, res) => {
   try {
     const { month } = req.params;
     const totalPet = await pool.query(
-        "SELECT COUNT(*) FROM bid WHERE EXTRACT(MONTH FROM end_date) = $1 AND is_success = TRUE",
-        [month]
+      "SELECT COUNT(*) FROM bid WHERE EXTRACT(MONTH FROM end_date) = $1 AND is_success = TRUE",
+      [month]
     );
     if (totalPet.rows.length == 1) {
       res.status(200).json(totalPet.rows[0]);
@@ -179,27 +114,18 @@ app.get("/totalPet/:month", async (req, res) => {
 });
 
 // specify categories that CT can take care
-app.post("/petCategory/:uid/:category/:price", async (req, res) => {
-  try {
-    const { uid, category, price } = req.params;
-    const canTakeCare = await pool.query(
-        "INSERT INTO cantakecare VALUES($1, $2, $3)",
-        [uid, category, price]
-    );
-    res.json("Category updated");
-  } catch (error) {
-    res.status(500);
-    console.error(error.message);
-  }
-});
+app.post(
+  "/petCategory/:uid/:category/:price",
+  CaretakerController.addCanTakeCareOf
+);
 
 // view all pets owned by a certain pet owner
 app.get("/allPets/:uid", async (req, res) => {
   try {
     const { uid } = req.params;
     const pets = await pool.query(
-        "SELECT p.owner, p.pname, p.bio, p.pic FROM petownerpets p WHERE p.id = $1;",
-        [uid]
+      "SELECT p.owner, p.pname, p.bio, p.pic FROM petownerpets p WHERE p.id = $1;",
+      [uid]
     );
     if (pets.rows) {
       if (pets.rowCount == 0) {
@@ -218,29 +144,16 @@ app.get("/allPets/:uid", async (req, res) => {
 });
 
 // View reviews from a PetOwner for a pet category
-app.get("/reviews/:owner/:category", async (req, res) => {
-  try {
-    const { owner, category } = req.params;
-    const reviews = await pool.query(
-        "SELECT r.review FROM review r WHERE r.username = $1 AND r.category_name = $2;",
-        [owner, category]
-    );
-    if (reviews.rows) {
-      if (reviews.rowCount == 0) {
-        res.json("No pets or invalid id");
-      } else {
-        res.status(200).json(reviews.rows);
-      }
-    } else {
-      res.status(400).send("Invalid user id");
-    }
-    console.log(reviews.rows);
-  } catch (error) {
-    res.status(500);
-    console.error(error.message);
-  }
-});
+app.get("/reviews/:owner/:category", PetOwnerController.viewGivenReviews);
 
+app.get(
+  "/pet-owner/bid/:pet_owner_user_id/:pet_name",
+  PetOwnerController.getBidsByPets
+);
+
+app.post("/pet-owner/bid/", PetOwnerController.createBid);
+
+app.get("/caretaker/bid");
 
 app.listen(5000, () => {
   console.log("server listening at 5000");

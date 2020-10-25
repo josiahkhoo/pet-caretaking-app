@@ -173,14 +173,17 @@ DECLARE is_full_time BOOLEAN;
 DECLARE base_price INTEGER;
 DECLARE rating FLOAT;
 DECLARE multiplier FLOAT;
+DECLARE number_days INTEGER;
 BEGIN
 SELECT c.is_full_time,
     ctc.daily_price,
     c.rating,
-    a.good_review_full_time_total_price_multiplier INTO is_full_time,
+    a.good_review_full_time_total_price_multiplier,
+    (NEW.end_date - NEW.start_date + 1) INTO is_full_time,
     base_price,
     rating,
-    multiplier
+    multiplier,
+    number_days
 FROM CareTakersWithPetLimitAndRating c,
     CanTakeCare ctc,
     OwnedPets p,
@@ -192,7 +195,7 @@ WHERE c.user_id = NEW.care_taker_user_id
     AND ctc.care_taker_user_id = NEW.care_taker_user_id;
 IF is_full_time = TRUE THEN IF rating >= 4 THEN
 UPDATE bid
-SET total_price = base_price * multiplier,
+SET total_price = base_price * multiplier * number_days,
     is_success = TRUE
 WHERE bid.care_taker_user_id = NEW.care_taker_user_id
     AND bid.start_date = NEW.start_date
@@ -201,7 +204,7 @@ WHERE bid.care_taker_user_id = NEW.care_taker_user_id
     AND bid.pet_name = NEW.pet_name;
 ELSE
 UPDATE bid
-SET total_price = base_price,
+SET total_price = base_price * number_days,
     is_success = TRUE
 WHERE bid.care_taker_user_id = NEW.care_taker_user_id
     AND bid.start_date = NEW.start_date
