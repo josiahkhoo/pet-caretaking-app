@@ -70,3 +70,20 @@
     "end_date": "2020-10-12T16:00:00.000Z",
     "datetime_created": "2020-10-23T05:36:48.921Z"
 }
+
+## pets owned
+- GET `/allPets/:uid` - `<petDetails>`
+- petDetails: {
+        "owner": "yumingchen",
+        "pname": "Roger",
+        "bio": null,
+        "pic": null
+    }
+
+## reviews 
+- GET `/reviews/:owner/:category` - `<review>`
+- review : {
+        "review": "best"
+    }
+
+
