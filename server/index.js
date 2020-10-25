@@ -9,6 +9,9 @@ app.use(express.json());
 const AuthController = require("./controllers/AuthController");
 const CaretakerController = require("./controllers/CaretakerController");
 const { end } = require("./db");
+const { addCanTakeCareOf } = require("./controllers/CaretakerController");
+const { viewReviews } = require("./controllers/PetOwnerController");
+const PetOwnerController = require("./controllers/PetOwnerController");
 // Routes
 
 // User
@@ -75,66 +78,80 @@ app.delete("/user/:id", async (req, res) => {
   }
 });
 
-app.get("/pet-owner/bid/:pet_owner_user_id/:pet_name", async (req, res) => {
+//Get current number of pets taken by caretaker with UID for date range
+app.get(
+  "/caretaker/:uid/:start_date/:end_date",
+  CaretakerController.getNumberTakenCarePets
+);
+
+// Average Satisfaction Per Pet Category
+app.get(
+  "/satisfaction/:month",
+  CaretakerController.getAverageSatisfactionPerCategory
+);
+
+// Month with highest number of jobs -> highest number of petdays
+app.get("/highestPetDaysMonth", CaretakerController.getHighestPetDaysMonth);
+
+// Total number of Pet taken care of in the month.
+app.get("/totalPet/:month", async (req, res) => {
   try {
-    const { pet_owner_user_id, pet_name } = req.params;
-    const bids = await pool.query(
-      `SELECT * FROM Bid WHERE pet_owner_user_id = $1 AND pet_name = $2`,
-      [pet_owner_user_id, pet_name]
+    const { month } = req.params;
+    const totalPet = await pool.query(
+      "SELECT COUNT(*) FROM bid WHERE EXTRACT(MONTH FROM end_date) = $1 AND is_success = TRUE",
+      [month]
     );
-    res.status(200).json(bids.rows);
+    if (totalPet.rows.length == 1) {
+      res.status(200).json(totalPet.rows[0]);
+    } else {
+      res.status(400).send("Invalid user id or date range");
+    }
+    console.log(totalPet.rows[0]);
   } catch (error) {
-    console.error("error", error.message);
-    res.status(400).json(error.message);
+    res.status(500);
+    console.error(error.message);
   }
 });
 
-app.post("/pet-owner/bid/", async (req, res) => {
+// specify categories that CT can take care
+app.post(
+  "/petCategory/:uid/:category/:price",
+  CaretakerController.addCanTakeCareOf
+);
+
+// view all pets owned by a certain pet owner
+app.get("/allPets/:uid", async (req, res) => {
   try {
-    const {
-      start_date,
-      end_date,
-      pet_owner_user_id,
-      care_taker_user_id,
-      pet_name,
-      payment_type,
-      transfer_type,
-    } = req.body;
-    const bid = await pool.query(
-      `INSERT INTO Bid (
-        care_taker_user_id,
-        start_date,
-        end_date,
-        pet_owner_user_id,
-        pet_name,
-        payment_type,
-        transfer_type
-      )
-      VALUES ($1, $2, $3, $4, $5, $6, $7)`,
-      [
-        care_taker_user_id,
-        start_date,
-        end_date,
-        pet_owner_user_id,
-        pet_name,
-        payment_type,
-        transfer_type,
-      ]
+    const { uid } = req.params;
+    const pets = await pool.query(
+      "SELECT p.owner, p.pname, p.bio, p.pic FROM petownerpets p WHERE p.id = $1;",
+      [uid]
     );
-    res.status(200).json({
-      care_taker_user_id: care_taker_user_id,
-      pet_owner_user_id: pet_owner_user_id,
-      pet_name: pet_name,
-      start_date: start_date,
-      end_date: end_date,
-      payment_type: payment_type,
-      transfer_type: transfer_type,
-    });
+    if (pets.rows) {
+      if (pets.rowCount == 0) {
+        res.json("No pets or invalid id");
+      } else {
+        res.status(200).json(pets.rows);
+      }
+    } else {
+      res.status(400).send("Invalid user id");
+    }
+    console.log(pets.rows);
   } catch (error) {
-    console.error("error", error.message);
-    res.status(400).json(error.message);
+    res.status(500);
+    console.error(error.message);
   }
 });
+
+// View reviews from a PetOwner for a pet category
+app.get("/reviews/:owner/:category", PetOwnerController.viewGivenReviews);
+
+app.get(
+  "/pet-owner/bid/:pet_owner_user_id/:pet_name",
+  PetOwnerController.getBidsByPets
+);
+
+app.post("/pet-owner/bid/", PetOwnerController.createBid);
 
 app.get("/caretaker/bid");
 
