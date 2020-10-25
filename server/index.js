@@ -22,11 +22,6 @@ const PetOwnerController = require("./controllers/PetOwnerController");
 app.post("/register", AuthController.register);
 app.post("/login", AuthController.login);
 
-// caretaker input availability for part-time
-// takes leave for full-time
-app.post("/caretakers/availability", CaretakerController.specifyAvailablity);
-app.get("/caretakers/earnings", CaretakerController.getEarnings);
-
 // Get all users
 app.get("/users", async (req, res) => {
   try {
@@ -81,30 +76,6 @@ app.delete("/user/:id", async (req, res) => {
     console.error("error", error.message);
   }
 });
-
-// get all bids for a pet owner
-app.get("/pet-owners/:pet_owner_user_id/bid", PetOwnerController.getAllBids);
-
-// get all bids for a caretaker
-app.get("/caretakers/:care_taker_user_id/bid", CaretakerController.getAllBids);
-
-// confirm a bid for a part-time caretaker (specify price)
-app.post(
-  "/caretakers/part-time/bid/confirm",
-  CaretakerController.partTimeCareTakerBidConfirm
-);
-// specify categories that CT can take care
-app.post("/caretakers/categories/", CaretakerController.addCanTakeCareOf);
-
-// view all pets owned by a certain pet owner
-app.get("/pet-owners/:pet_owner_user_id/pets", PetOwnerController.getAllPets);
-
-// delete is available on for full time caretaker (taking leave)
-// constraints are enforced in DB trigger
-app.post(
-  "/caretakers/full-time/leave",
-  CaretakerController.fullTimeCareTakerTakeLeave
-);
 // View reviews from a PetOwner for a pet category
 app.get(
   "/pet-owners/:pet_owner_user_id/categories/:category_name/reviews",
@@ -117,6 +88,34 @@ app.get(
 );
 
 app.post("/pet-owners/bid/", PetOwnerController.createBid);
+// get all bids for a pet owner
+app.get("/pet-owners/:pet_owner_user_id/bid", PetOwnerController.getAllBids);
+
+// view all pets owned by a certain pet owner
+app.get("/pet-owners/:pet_owner_user_id/pets", PetOwnerController.getAllPets);
+
+// get all bids for a caretaker
+app.get("/caretakers/:care_taker_user_id/bid", CaretakerController.getAllBids);
+
+// confirm a bid for a part-time caretaker (specify price)
+app.post(
+  "/caretakers/part-time/bid/confirm",
+  CaretakerController.partTimeCareTakerBidConfirm
+);
+// specify categories that CT can take care
+app.post("/caretakers/categories/", CaretakerController.addCanTakeCareOf);
+
+// delete is available on for full time caretaker (taking leave)
+// constraints are enforced in DB trigger
+app.post(
+  "/caretakers/full-time/leave",
+  CaretakerController.fullTimeCareTakerTakeLeave
+);
+
+// caretaker input availability for part-time
+// takes leave for full-time
+app.post("/caretakers/availability", CaretakerController.specifyAvailablity);
+app.get("/caretakers/earnings", CaretakerController.getEarnings);
 
 app.listen(5000, () => {
   console.log("server listening at 5000");
