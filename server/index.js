@@ -177,6 +177,27 @@ app.get("/totalPet/:month", async (req, res) => {
     console.error(error.message);
   }
 });
+//Get average rating of a caretaker
+app.get("/caretaker/avgRating/:cid", async (req, res) => {
+  try {
+    const { cid } = req.params;
+    const avgRating = await pool.query(
+        "SELECT AVG(rating)\n" +
+        "FROM bid\n" +
+        "WHERE care_taker_user_id = $1",
+        [cid]
+    );
+    if (avgRating.rows.length == 1) {
+      res.status(200).json(avgRating.rows[0]);
+    } else {
+      res.status(400).send("Invalid caretaker id");
+    }
+    console.log(avgRating.rows[0]);
+  } catch (error) {
+    res.status(500);
+    console.error(error.message);
+  }
+});
 
 
 
