@@ -8,17 +8,19 @@ app.use(express.json());
 
 const AuthController = require("./controllers/AuthController");
 const CaretakerController = require("./controllers/CaretakerController");
+const { end } = require("./db");
+const {
+  addCanTakeCareOf,
+  fullTimeCareTakerTakeLeave,
+  getAllBids,
+} = require("./controllers/CaretakerController");
+const { viewReviews } = require("./controllers/PetOwnerController");
+const PetOwnerController = require("./controllers/PetOwnerController");
 // Routes
 
 // User
 app.post("/register", AuthController.register);
 app.post("/login", AuthController.login);
-
-// caretaker input availability for part-time
-// takes leave for full-time
-app.post("/caretakers/availability", CaretakerController.specifyAvailablity);
-app.get("/caretakers/earnings", CaretakerController.getEarnings);
-
 
 // Get all users
 app.get("/users", async (req, res) => {
@@ -74,136 +76,82 @@ app.delete("/user/:id", async (req, res) => {
     console.error("error", error.message);
   }
 });
+// View reviews from a PetOwner for a pet category
+app.get(
+  "/pet-owners/:pet_owner_user_id/categories/:category_name/reviews",
+  PetOwnerController.viewGivenReviews
+);
+
+app.get(
+  "/pet-owners/:pet_owner_user_id/pets/:pet_name/bid",
+  PetOwnerController.getBidsByPets
+);
+
+app.post("/pet-owners/bid/", PetOwnerController.createBid);
+// get all bids for a pet owner
+app.get("/pet-owners/:pet_owner_user_id/bid", PetOwnerController.getAllBids);
+
+// view all pets owned by a certain pet owner
+app.get("/pet-owners/:pet_owner_user_id/pets", PetOwnerController.getAllPets);
+
+// get all bids for a caretaker
+app.get("/caretakers/:care_taker_user_id/bid", CaretakerController.getAllBids);
+
+// confirm a bid for a part-time caretaker (specify price)
+app.post(
+  "/caretakers/part-time/bid/confirm",
+  CaretakerController.partTimeCareTakerBidConfirm
+);
+// specify categories that CT can take care
+app.post("/caretakers/categories/", CaretakerController.addCanTakeCareOf);
+
+// delete is available on for full time caretaker (taking leave)
+// constraints are enforced in DB trigger
+app.post(
+  "/caretakers/full-time/leave",
+  CaretakerController.fullTimeCareTakerTakeLeave
+);
 
 //Get current number of pets taken by caretaker with UID for date range
-app.get("/petOwner/currentPetCountForCaretaker/:cid/:start_date/:end_date", async (req, res) => {
-  try {
-    const { cid, start_date, end_date } = req.params;
-    const petCount = await pool.query(
-        "SELECT DISTINCT COUNT (*) FROM Bid WHERE is_success = TRUE AND start_date >= $2 AND end_date <= $3 " +
-        "AND care_taker_user_id = $1 ",
-        [cid, start_date, end_date]
-    );
-    if (petCount.rows.length == 1) {
-      res.status(200).json(petCount.rows[0]);
-    } else {
-      res.status(400).send("Invalid user id or date range");
-    }
-    console.log(petCount.rows[0]);
-  } catch (error) {
-    res.status(500);
-    console.error(error.message);
-  }
-});
+app.get(
+  "/caretakers/:care_taker_user_id/pet-care-count/:start_date/:end_date",
+  CaretakerController.getNumberTakenCarePets
+);
 
 // Average Satisfaction Per Pet Category
-app.get("/pcadmin/satisfaction/:month", async (req, res) => {
-  try {
-    const { month } = req.params;
-    const satisfaction = await pool.query(
-        "SELECT category_name, AVG(rating) AS Satisfaction FROM bid NATURAL JOIN ownedpets WHERE " +
-        "EXTRACT(MONTH FROM end_date) = $1 AND is_success = TRUE GROUP BY category_name ",
-        [month]
-    );
-    if (satisfaction.rows) {
-      res.status(200).json(satisfaction.rows);
-    } else {
-      res.status(400).send("Invalid month");
-    }
-    console.log(satisfaction.rows);
-  } catch (error) {
-    res.status(500);
-    console.error(error.message);
-  }
-});
+app.get(
+  "/caretakers/categories/satisfaction/:month",
+  CaretakerController.getAverageSatisfactionPerCategory
+);
 
 // Month with highest number of jobs -> highest number of petdays
-app.get("/pcadmin/highestPetDaysMonth", async (req, res) => {
-  try {
-    const highest = await pool.query(
-        "SELECT extract(MONTH FROM end_date) AS month, sum(end_date - start_date + 1) AS petdays FROM bid GROUP BY " +
-        "extract(MONTH FROM end_date) ORDER by petdays DESC LIMIT 1",
-    );
-    if (highest.rows.length == 1) {
-      res.status(200).json(highest.rows[0]);
-    } else {
-      res.status(400).send("Invalid request.");
-    }
-    console.log(highest.rows[0]);
-  } catch (error) {
-    res.status(500);
-    console.error(error.message);
-  }
-});
+app.get(
+  "/caretakers/highest-pet-care-month",
+  CaretakerController.getHighestPetDaysMonth
+);
 
 //Underperforming Fulltime Care Takers ( months) -> Number of Pet Days < 60 or average rating < 2.5
-app.get("/pcadmin/underPerformingCaretaker/:month", async (req, res) => {
-  try {
-    const { month } = req.params;
-    const underPerforming = await pool.query(
-        "SELECT care_taker_user_id AS underperfoming FROM bid WHERE EXTRACT(MONTH FROM end_date) = $1 " +
-        "AND is_success = TRUE GROUP BY care_taker_user_id HAVING (sum(end_date - start_date + 1) < 60 " +
-        "OR AVG(rating) < 2.5)",
-        [month]
-    );
-    if (underPerforming.rows) {
-      res.status(200).json(underPerforming.rows);
-    } else {
-      res.status(400).send("Invalid month");
-    }
-    console.log(underPerforming.rows);
-  } catch (error) {
-    res.status(500);
-    console.error(error.message);
-  }
-});
+app.get(
+  "/caretakers/under-performing/:month",
+  CaretakerController.getUnderPerformingCaretakers
+);
 
 // Total number of Pet taken care of in the month.
-app.get("/pcadmin/totalPetTakenCare", async (req, res) => {
-  try {
-    const totalPet = await pool.query(
-        "SELECT EXTRACT(MONTH FROM end_date) AS month, COUNT(*)\n" +
-        "FROM bid\n" +
-        "WHERE is_success = TRUE\n" +
-        "GROUP BY EXTRACT(MONTH FROM end_date)\n" +
-        "ORDER BY month",
-    );
-    if (totalPet.rows) {
-      res.status(200).json(totalPet.rows);
-    } else {
-      res.status(400).send("Invalid request");
-    }
-    console.log(totalPet.rows);
-  } catch (error) {
-    res.status(500);
-    console.error(error.message);
-  }
-});
+app.get(
+  "/caretakers/total-pet-care-by-month",
+  CaretakerController.getTotalPetByMonth
+);
 
 //Get average rating of a caretaker
-app.get("/caretaker/avgRating/:cid", async (req, res) => {
-  try {
-    const { cid } = req.params;
-    const avgRating = await pool.query(
-        "SELECT AVG(rating)\n" +
-        "FROM bid\n" +
-        "WHERE care_taker_user_id = $1",
-        [cid]
-    );
-    if (avgRating.rows.length == 1) {
-      res.status(200).json(avgRating.rows[0]);
-    } else {
-      res.status(400).send("Invalid caretaker id");
-    }
-    console.log(avgRating.rows[0]);
-  } catch (error) {
-    res.status(500);
-    console.error(error.message);
-  }
-});
+app.get(
+  "/caretakers/:care_taker_user_id/average-rating",
+  CaretakerController.getAverageRatingCaretaker
+);
 
-
-
+// caretaker input availability for part-time
+// takes leave for full-time
+app.post("/caretakers/availability", CaretakerController.specifyAvailability);
+app.get("/caretakers/earnings", CaretakerController.getEarnings);
 
 app.listen(5000, () => {
   console.log("server listening at 5000");

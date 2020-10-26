@@ -16,8 +16,33 @@
     - Inputs: `cid` caretaker's id, `start_date`, `end_date`
 
 ## caretakers
-- POST `/caretakers/availability { user_id, start_date, end_date }` - `<availabilityStatus>`
-- GET `/caretakers/earnings { start_date, end_date }` - `[<caretakerStats>]`
+### Insert part time availability from start date to end date of a specific caretaker
+POST `/caretakers/availability { user_id, start_date, end_date }` - `<availabilityStatus>`
+### Get earnings from start to end date of a specific caretaker
+GET `/caretakers/earnings { start_date, end_date }` - `[<caretakerStats>]`
+### Confirm an unconfirmed bid under a part time caretaker
+POST `/caretakers/part-time/bid/confirm { care_taker_user_id, start_date, end_date, pet_owner_user_id, pet_name }` - `<bid>`
+### Get all bids from a specific care taker
+GET `/caretakers/:care_taker_user_id/bid` - `[<bid>]`
+### Delete a specific date for a full time care taker
+POST `/caretakers/full-time/leave { care_taker_user_id, available_date } ` - `<availability>`
+### Creates a can take care of with a specified price (if its part time)
+POST `/caretakers/categories { care_taker_user_id, category_name, price } ` - `<categoryPrice>`
+### Get number of pets taken care by caretaker for a date range (FOR ADMIN)
+GET `/caretakers/:care_taker_user_id/pet-care-count/:start_date/:end_date` - `FILL THIS UP`
+### Get average caretaker rating per pet category for a given month
+GET `/caretakers/categories/satisfaction/:month` - `FILL THIS UP`
+### Get month with the highest pet day
+GET `/caretakers/highest-pet-care-month` - `FILL THIS UP`
+### Get underperforming care takers by month
+GET `/caretakers/under-performing/:month` - `FILL THIS UP`
+- Get all underperforming Fulltime Care Takers of a given month
+    > Number of Pet Days < 60 OR Average rating < 2.5
+### Get caretaker average rating
+GET `/caretaker/:care_taker_user_id/average-rating` - `FILL THIS UP`
+### Get total caretakers total number of pet taken care in month
+GET `/caretaker/total-pet-care-by-month` - `FILL THIS UP`
+### Appendix
 - DATE should be in `YYYY/MM/DD`
 - availabilityStatus : {
     "user_id": "3",
@@ -32,22 +57,63 @@
     "post_60_days_earnings": null,
     "is_full_time": true
 }
-- GET `/caretaker/avgRating/:cid`
-    - Get average rating of a caretaker
-    - Inputs: `cid` caretaker's id
+- bid : {
+    "care_taker_user_id": 2,
+    "pet_owner_user_id": 1,
+    "pet_name": "Sunshine",
+    "is_success": true,
+    "payment_type": "Visa",
+    "transfer_type": "Deliver",
+    "total_price": 1000,
+    "review": null,
+    "rating": null,
+    "start_date": "2020-10-11T16:00:00.000Z",
+    "end_date": "2020-10-12T16:00:00.000Z",
+    "datetime_created": "2020-10-23T05:36:48.921Z"
+}
+- availability : {
+    "care_taker_user_id": 2,
+    "available_date": "2021-01-02"
+}
+- categoryPrice: {
+        "care_taker_user_id": 27,
+        "category_name": "Cats",
+        "daily_price": 2000
+}
 
-## PC admins
-- GET `/pcadmin/totalPetTakenCare`
-    - Get the total number of pet taken care of per month
-    - Input: -
-- GET `/pcadmin/satisfaction/:month`
-    - Get the average satisfaction per pet category for a given month
-    - Input: `month`
-- GET `/pcadmin/highestPetDaysMonth`
-    - Get the month with the highest number of jobs -> the highest number of petdays
-    - Input: -
-- GET `/pcadmin/underPerformingCaretaker/:month`
-    - Get all underperforming Fulltime Care Takers of a given month
-        > Number of Pet Days < 60 OR Average rating < 2.5
-    - Input: `month`
+## pet owners
+### Create a new bid
+POST `/pet-owners/bid { care_taker_user_id, start_date, end_date, pet_owner_user_id, pet_name, payment_type, transfer_type }` - `<bid>`
+### View all bids from the specific pet owner
+GET `/pet-owners/:pet_owner_user_id/bid` - `[<bid>]`
+### View all bids from a specific pet from a specific pet owner
+GET `/pet-owners/:pet_owner_user_id/pets/:pet_name/bid` - `[<bid>]`
+### View all pets owned by pet owner
+GET `/pet-owners/:pet_owner_user_id/pets` - `[<petDetails>]`
+### View all reviews by owner in the specific category 
+GET `/pet-owners/:pet_owner_user_id/categories/:category_name/reviews` - `[<review>]`
 
+### Appendix
+- bid : {
+    "care_taker_user_id": 2,
+    "pet_owner_user_id": 1,
+    "pet_name": "Sunshine",
+    "is_success": true,
+    "payment_type": "Visa",
+    "transfer_type": "Deliver",
+    "total_price": 1000,
+    "review": null,
+    "rating": null,
+    "start_date": "2020-10-11T16:00:00.000Z",
+    "end_date": "2020-10-12T16:00:00.000Z",
+    "datetime_created": "2020-10-23T05:36:48.921Z"
+}
+- review : {
+        "review": "best"
+    }
+- petDetails: {
+        "owner": "yumingchen",
+        "pname": "Roger",
+        "bio": null,
+        "pic": null
+    }
