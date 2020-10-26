@@ -16,7 +16,7 @@ function getDates(startDate, stopDate) {
 }
 
 module.exports = {
-  async specifyAvailablity(req, res) {
+  async specifyAvailability(req, res) {
     try {
       //   const { id } = req.params;
       // TODO: do not allow leave if currently taking care of pets
@@ -112,11 +112,11 @@ module.exports = {
 
   async getNumberTakenCarePets(req, res) {
     try {
-      const { uid, start_date, end_date } = req.params;
+      const { care_taker_user_id, start_date, end_date } = req.params;
       const petCount = await pool.query(
         "SELECT DISTINCT COUNT (*) FROM Bid WHERE is_success = TRUE AND start_date >= $2 AND end_date <= $3 " +
           "AND care_taker_user_id = $1 ",
-        [uid, start_date, end_date]
+        [care_taker_user_id, start_date, end_date]
       );
       if (petCount.rows.length == 1) {
         res.status(200).json(petCount.rows[0]);
@@ -141,7 +141,7 @@ module.exports = {
       if (satisfaction.rows) {
         res.status(200).json(satisfaction.rows);
       } else {
-        res.status(400).send("Invalid user id or date range");
+        res.status(400).send("Invalid month");
       }
       console.log(satisfaction.rows);
     } catch (error) {
@@ -159,7 +159,7 @@ module.exports = {
       if (highest.rows.length == 1) {
         res.status(200).json(highest.rows[0]);
       } else {
-        res.status(400).send("Invalid user id or date range");
+        res.status(400).send("Invalid request.");
       }
       console.log(highest.rows[0]);
     } catch (error) {
@@ -168,19 +168,21 @@ module.exports = {
     }
   },
 
-  async getTotalPetMonth(req, res) {
+  async getTotalPetByMonth(req, res) {
     try {
-      const { month } = req.params;
       const totalPet = await pool.query(
-        "SELECT COUNT(*) FROM bid WHERE EXTRACT(MONTH FROM end_date) = $1 AND is_success = TRUE",
-        [month]
+        "SELECT EXTRACT(MONTH FROM end_date) AS month, COUNT(*)\n" +
+          "FROM bid\n" +
+          "WHERE is_success = TRUE\n" +
+          "GROUP BY EXTRACT(MONTH FROM end_date)\n" +
+          "ORDER BY month"
       );
-      if (totalPet.rows.length == 1) {
-        res.status(200).json(totalPet.rows[0]);
+      if (totalPet.rows) {
+        res.status(200).json(totalPet.rows);
       } else {
-        res.status(400).send("Invalid user id or date range");
+        res.status(400).send("Invalid request");
       }
-      console.log(totalPet.rows[0]);
+      console.log(totalPet.rows);
     } catch (error) {
       res.status(500);
       console.error(error.message);
@@ -280,6 +282,46 @@ module.exports = {
     } catch (error) {
       console.error("error", error.message);
       res.status(400).json(error.message);
+    }
+  },
+
+  async getUnderPerformingCaretakers(req, res) {
+    try {
+      const { month } = req.params;
+      const underPerforming = await pool.query(
+        "SELECT care_taker_user_id AS underperfoming FROM bid WHERE EXTRACT(MONTH FROM end_date) = $1 " +
+          "AND is_success = TRUE GROUP BY care_taker_user_id HAVING (sum(end_date - start_date + 1) < 60 " +
+          "OR AVG(rating) < 2.5)",
+        [month]
+      );
+      if (underPerforming.rows) {
+        res.status(200).json(underPerforming.rows);
+      } else {
+        res.status(400).send("Invalid month");
+      }
+      console.log(underPerforming.rows);
+    } catch (error) {
+      res.status(500);
+      console.error(error.message);
+    }
+  },
+
+  async getAverageRatingCaretaker(req, res) {
+    try {
+      const { care_taker_user_id } = req.params;
+      const avgRating = await pool.query(
+        "SELECT AVG(rating)\n" + "FROM bid\n" + "WHERE care_taker_user_id = $1",
+        [care_taker_user_id]
+      );
+      if (avgRating.rows.length == 1) {
+        res.status(200).json(avgRating.rows[0]);
+      } else {
+        res.status(400).send("Invalid caretaker id");
+      }
+      console.log(avgRating.rows[0]);
+    } catch (error) {
+      res.status(500);
+      console.error(error.message);
     }
   },
 };

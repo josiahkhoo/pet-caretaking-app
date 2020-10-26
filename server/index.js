@@ -112,9 +112,45 @@ app.post(
   CaretakerController.fullTimeCareTakerTakeLeave
 );
 
+//Get current number of pets taken by caretaker with UID for date range
+app.get(
+  "/caretakers/:care_taker_user_id/pet-care-count/:start_date/:end_date",
+  CaretakerController.getNumberTakenCarePets
+);
+
+// Average Satisfaction Per Pet Category
+app.get(
+  "/caretakers/categories/satisfaction/:month",
+  CaretakerController.getAverageSatisfactionPerCategory
+);
+
+// Month with highest number of jobs -> highest number of petdays
+app.get(
+  "/caretakers/highest-pet-care-month",
+  CaretakerController.getHighestPetDaysMonth
+);
+
+//Underperforming Fulltime Care Takers ( months) -> Number of Pet Days < 60 or average rating < 2.5
+app.get(
+  "/caretakers/under-performing/:month",
+  CaretakerController.getUnderPerformingCaretakers
+);
+
+// Total number of Pet taken care of in the month.
+app.get(
+  "/caretakers/total-pet-care-by-month",
+  CaretakerController.getTotalPetByMonth
+);
+
+//Get average rating of a caretaker
+app.get(
+  "/caretakers/:care_taker_user_id/average-rating",
+  CaretakerController.getAverageRatingCaretaker
+);
+
 // caretaker input availability for part-time
 // takes leave for full-time
-app.post("/caretakers/availability", CaretakerController.specifyAvailablity);
+app.post("/caretakers/availability", CaretakerController.specifyAvailability);
 app.get("/caretakers/earnings", CaretakerController.getEarnings);
 
 app.listen(5000, () => {
