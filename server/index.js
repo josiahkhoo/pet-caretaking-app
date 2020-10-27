@@ -87,7 +87,9 @@ app.get(
   PetOwnerController.getBidsByPets
 );
 
-app.post("/pet-owners/bid/", PetOwnerController.createBid);
+app.post("/pet-owners/pets", PetOwnerController.createPet);
+
+app.post("/pet-owners/bid", PetOwnerController.createBid);
 // get all bids for a pet owner
 app.get("/pet-owners/:pet_owner_user_id/bid", PetOwnerController.getAllBids);
 
@@ -152,6 +154,16 @@ app.get(
 // takes leave for full-time
 app.post("/caretakers/availability", CaretakerController.specifyAvailability);
 app.get("/caretakers/earnings", CaretakerController.getEarnings);
+
+app.get("/categories", async (req, res) => {
+  try {
+    const categories = await pool.query("SELECT * FROM categories");
+    res.status(200).json(categories.rows);
+  } catch (error) {
+    res.status(500);
+    console.error(error.message);
+  }
+});
 
 app.listen(5000, () => {
   console.log("server listening at 5000");

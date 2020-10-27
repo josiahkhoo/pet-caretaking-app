@@ -136,4 +136,37 @@ module.exports = {
       res.status(400).json(error.message);
     }
   },
+
+  async createPet(req, res) {
+    try {
+      const {
+        pet_owner_user_id,
+        pet_name,
+        category_name,
+        special_requirements,
+        image_url,
+      } = req.body;
+      await pool.query(
+        `INSERT INTO OwnedPets(pet_owner_user_id, pet_name, category_name, special_requirements, image_url) VALUES ($1, $2, $3, $4, $5)`,
+        [
+          pet_owner_user_id,
+          pet_name,
+          category_name,
+          special_requirements,
+          image_url,
+        ]
+      );
+      pet = await pool.query(
+        `SELECT * FROM OwnedPets WHERE pet_owner_user_id = $1 AND pet_name = $2`,
+        [pet_owner_user_id, pet_name]
+      );
+      if (pet.rowCount != 1) {
+        res.status(400).json("Invalid query");
+      }
+      res.status(200).json(pet.rows[0]);
+    } catch (error) {
+      console.log(error);
+      res.status(500).json(error.message);
+    }
+  },
 };

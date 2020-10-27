@@ -84,6 +84,9 @@ GET `/caretaker/total-pet-care-by-month` - `FILL THIS UP`
 ## pet owners
 ### Create a new bid
 POST `/pet-owners/bid { care_taker_user_id, start_date, end_date, pet_owner_user_id, pet_name, payment_type, transfer_type }` - `<bid>`
+
+### Create a pet
+POST `/pet-owners/pets { pet_owner_user_id, pet_name, category_name, special_requirements, image_url}` - `<pet>`
 ### View all bids from the specific pet owner
 GET `/pet-owners/:pet_owner_user_id/bid` - `[<bid>]`
 ### View all bids from a specific pet from a specific pet owner
@@ -117,3 +120,20 @@ GET `/pet-owners/:pet_owner_user_id/categories/:category_name/reviews` - `[<revi
         "bio": null,
         "pic": null
     }
+- pet: {
+    "pet_owner_user_id",
+    "pet_name",
+    "category_name",
+    "special_requirements",
+    "image_url"
+}
+
+## categories
+### Get all categories
+GET `/categories` - `[<category>]`
+
+### Appendix
+- category : {
+    "name",
+    "full_time_daily_price"
+}
