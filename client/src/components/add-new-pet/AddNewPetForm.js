@@ -122,9 +122,13 @@ export default class AddNewPetForm extends Component {
             </FormGroup>
             <FormGroup>
               {petName != "" && category != null ? (
-                <Button onClick={() => this.addPet()}>Add Pet</Button>
+                <Button onClick={() => this.addPet()}>
+                  <i className="material-icons">add</i>Add Pet
+                </Button>
               ) : (
-                <Button disabled>Add Pet</Button>
+                <Button disabled>
+                  <i className="material-icons">add</i>Add Pet
+                </Button>
               )}
             </FormGroup>
           </Form>

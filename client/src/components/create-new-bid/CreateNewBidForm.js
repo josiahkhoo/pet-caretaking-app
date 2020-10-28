@@ -92,9 +92,13 @@ export default class CreateNewBidForm extends Component {
             <FormGroup></FormGroup>
           </Form>
           {this.isValidBid(petName, careTakerUserId, startDate, endDate) ? (
-            <Button>Create Bid</Button>
+            <Button>
+              <i className="material-icons">add</i>Create Bid
+            </Button>
           ) : (
-            <Button disabled>Create Bid</Button>
+            <Button disabled>
+              <i className="material-icons">add</i>Create Bid
+            </Button>
           )}
         </CardBody>
       </Card>

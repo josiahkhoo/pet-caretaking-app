@@ -60,8 +60,9 @@ export default class PetDropdown extends Component {
     const { visible, pets } = this.state;
     return (
       <NavItem tag={Dropdown} large toggle={this.togglePet}>
-        <DropdownToggle tag={NavLink}>
+        <DropdownToggle caret>
           {petName != null ? `${petName}` : "Select pet"}
+          <i className="material-icons">arrow_drop_down</i>
         </DropdownToggle>
         <Collapse tag={DropdownMenu} open={visible}>
           {pets.map((pet) => (

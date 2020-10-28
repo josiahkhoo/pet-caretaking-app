@@ -52,7 +52,7 @@ export default class PetCategoryDropdown extends Component {
     const { selectedCategory } = this.props;
     return (
       <NavItem tag={Dropdown} large toggle={this.togglePetCategory}>
-        <DropdownToggle tag={NavLink}>
+        <DropdownToggle caret>
           {selectedCategory != null ? `${selectedCategory}` : "Select category"}
         </DropdownToggle>
         <Collapse tag={DropdownMenu} open={visible}>
