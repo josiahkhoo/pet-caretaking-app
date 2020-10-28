@@ -8,17 +8,19 @@ app.use(express.json());
 
 const AuthController = require("./controllers/AuthController");
 const CaretakerController = require("./controllers/CaretakerController");
+const { end } = require("./db");
+const {
+  addCanTakeCareOf,
+  fullTimeCareTakerTakeLeave,
+  getAllBids,
+} = require("./controllers/CaretakerController");
+const { viewReviews } = require("./controllers/PetOwnerController");
+const PetOwnerController = require("./controllers/PetOwnerController");
 // Routes
 
 // User
 app.post("/register", AuthController.register);
 app.post("/login", AuthController.login);
-
-// caretaker input availability for part-time
-// takes leave for full-time
-app.post("/caretakers/availability", CaretakerController.specifyAvailablity);
-app.get("/caretakers/earnings", CaretakerController.getEarnings);
-
 
 // Get all users
 app.get("/users", async (req, res) => {
@@ -240,7 +242,94 @@ app.delete("/user/:id", async (req, res) => {
     console.error("error", error.message);
   }
 });
+// View reviews from a PetOwner for a pet category
+app.get(
+  "/pet-owners/:pet_owner_user_id/categories/:category_name/reviews",
+  PetOwnerController.viewGivenReviews
+);
 
+app.get(
+  "/pet-owners/:pet_owner_user_id/pets/:pet_name/bid",
+  PetOwnerController.getBidsByPets
+);
+
+app.post("/pet-owners/pets", PetOwnerController.createPet);
+
+app.post("/pet-owners/bid", PetOwnerController.createBid);
+// get all bids for a pet owner
+app.get("/pet-owners/:pet_owner_user_id/bid", PetOwnerController.getAllBids);
+
+// view all pets owned by a certain pet owner
+app.get("/pet-owners/:pet_owner_user_id/pets", PetOwnerController.getAllPets);
+
+// get all bids for a caretaker
+app.get("/caretakers/:care_taker_user_id/bid", CaretakerController.getAllBids);
+
+// confirm a bid for a part-time caretaker (specify price)
+app.post(
+  "/caretakers/part-time/bid/confirm",
+  CaretakerController.partTimeCareTakerBidConfirm
+);
+// specify categories that CT can take care
+app.post("/caretakers/categories/", CaretakerController.addCanTakeCareOf);
+
+// delete is available on for full time caretaker (taking leave)
+// constraints are enforced in DB trigger
+app.post(
+  "/caretakers/full-time/leave",
+  CaretakerController.fullTimeCareTakerTakeLeave
+);
+
+//Get current number of pets taken by caretaker with UID for date range
+app.get(
+  "/caretakers/:care_taker_user_id/pet-care-count/:start_date/:end_date",
+  CaretakerController.getNumberTakenCarePets
+);
+
+// Average Satisfaction Per Pet Category
+app.get(
+  "/caretakers/categories/satisfaction/:month",
+  CaretakerController.getAverageSatisfactionPerCategory
+);
+
+// Month with highest number of jobs -> highest number of petdays
+app.get(
+  "/caretakers/highest-pet-care-month",
+  CaretakerController.getHighestPetDaysMonth
+);
+
+//Underperforming Fulltime Care Takers ( months) -> Number of Pet Days < 60 or average rating < 2.5
+app.get(
+  "/caretakers/under-performing/:month",
+  CaretakerController.getUnderPerformingCaretakers
+);
+
+// Total number of Pet taken care of in the month.
+app.get(
+  "/caretakers/total-pet-care-by-month",
+  CaretakerController.getTotalPetByMonth
+);
+
+//Get average rating of a caretaker
+app.get(
+  "/caretakers/:care_taker_user_id/average-rating",
+  CaretakerController.getAverageRatingCaretaker
+);
+
+// caretaker input availability for part-time
+// takes leave for full-time
+app.post("/caretakers/availability", CaretakerController.specifyAvailability);
+app.get("/caretakers/earnings", CaretakerController.getEarnings);
+
+app.get("/categories", async (req, res) => {
+  try {
+    const categories = await pool.query("SELECT * FROM categories");
+    res.status(200).json(categories.rows);
+  } catch (error) {
+    res.status(500);
+    console.error(error.message);
+  }
+});
 
 app.listen(5000, () => {
   console.log("server listening at 5000");
