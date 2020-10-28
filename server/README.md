@@ -11,9 +11,6 @@
     "is_pet_owner" : true,
     "is_care_taker": false 
 }
-- GET `/petOwner/currentPetCountForCaretaker/:cid/:start_date/:end_date`
-    - Get current number of pets taken care by caretaker with UID for date range
-    - Inputs: `cid` caretaker's id, `start_date`, `end_date`
 
 ## caretakers
 ### Insert part time availability from start date to end date of a specific caretaker
@@ -61,9 +58,9 @@ GET `/caretaker/total-pet-care-by-month` - `FILL THIS UP`
 
 ## Availablility
 - Can sort by any number of these params below
-- Endpoint: "/available/"
-- GET `localhost:5000/available/?name=&start=2020-10-01&end=2020-10-31&category=Do&price=100&rating=0`
-- Possible Params to sort by {name, start, end, category, price ,rating}` - availablilty under parameters given
+- Endpoint: `/caretakers/available/search`
+- GET `/caretakers/available/search?name=&start=2020-10-01&end=2020-10-31&category=Do&price=100&rating=0`
+- Possible Params to sort by {name, start, end, category, price ,rating}` - availability under parameters given
 - DATE should be in `YYYY/MM/DD`
 Example:
 - Query Params Inputs on postman: {
@@ -74,7 +71,7 @@ Example:
         "category": "Do"
         "rating": 3.6
   }
-- Availablity: [
+- Availability: [
     {
         "userid": 2,
         "named": "Josiah Khoo",
@@ -86,9 +83,9 @@ Example:
 ]
 
 ## Caretakers Salary:
-- Endpoint: "/caretakers/salary/"
+- Endpoint: `/caretakers/salary`
 - Optional Parameters Start/End (default is full range of dates)
-- GET `localhost:5000/caretakers/salary?start=2020-10-01&end=2020-10-31`
+- GET `/caretakers/salary?start=2020-10-01&end=2020-10-31`
 - Possible Params to set {start, end}` - availablilty under parameters given
 - Query Params Inputs on postman: {
         "start": "2020-10-01"
