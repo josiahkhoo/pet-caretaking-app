@@ -3,6 +3,7 @@ import { Container, Row, Col } from "shards-react";
 import AddNewPetForm from "../components/add-new-pet/AddNewPetForm";
 
 import PageTitle from "../components/common/PageTitle";
+import CreateNewBidForm from "../components/create-new-bid/CreateNewBidForm";
 import InputTodo from "../components/home/InputTodo";
 import List from "../components/home/UserList";
 
@@ -20,6 +21,7 @@ const Home = () => {
       </Row>
 
       {/* Editor */}
+      <CreateNewBidForm />
       <AddNewPetForm />
       <List />
       <InputTodo />

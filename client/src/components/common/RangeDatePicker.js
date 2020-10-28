@@ -4,7 +4,7 @@ import {
   InputGroup,
   DatePicker,
   InputGroupAddon,
-  InputGroupText
+  InputGroupText,
 } from "shards-react";
 
 import "../../assets/range-date-picker.css";
@@ -15,7 +15,7 @@ class RangeDatePicker extends React.Component {
 
     this.state = {
       startDate: undefined,
-      endDate: undefined
+      endDate: undefined,
     };
 
     this.handleStartDateChange = this.handleStartDateChange.bind(this);
@@ -25,15 +25,17 @@ class RangeDatePicker extends React.Component {
   handleStartDateChange(value) {
     this.setState({
       ...this.state,
-      ...{ startDate: new Date(value) }
+      ...{ startDate: new Date(value) },
     });
+    this.props.handleStartDateChange(new Date(value));
   }
 
   handleEndDateChange(value) {
     this.setState({
       ...this.state,
-      ...{ endDate: new Date(value) }
+      ...{ endDate: new Date(value) },
     });
+    this.props.handleEndDateChange(new Date(value));
   }
 
   render() {
