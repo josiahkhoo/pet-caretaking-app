@@ -30,15 +30,36 @@ app.get("/users", async (req, res) => {
     res.json(allUsers.rows);
   } catch (error) {
     console.error("fail");
+    res.status(500).json("Error");
     console.error(error.message);
   }
 });
+
+// get summary petdays of all caretakers
+app.get("/caretakers/workdays", CaretakerController.getAllCaretakersPetDays);
+
+//get expected salary within a certain date range(expecting a month range)
+app.get("/caretakers/salary", CaretakerController.getAllCaretakersSalary);
+
+// get combined available caretakers -> daterange, name, pet category
+app.get(
+  "/caretakers/availability/search",
+  CaretakerController.searchAvailability
+);
+
+// get all availability for a given pet catagory
+app.get(
+  "/caretakers/availability/:category_name",
+  CaretakerController.getAvailabilityByPetType
+);
 
 // get user by id
 app.get("/users/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const user = await pool.query(`SELECT * FROM users WHERE user_id = ${id}`);
+    const user = await pool.query("SELECT * FROM users WHERE user_id = $1", [
+      id,
+    ]);
     res.json(user.rows[0]);
   } catch (error) {
     console.error(error.message);
