@@ -28,26 +28,7 @@ app.get("/users", async (req, res) => {
     res.json(allUsers.rows);
   } catch (error) {
     console.error("fail");
-    console.error(error.message);
-  }
-});
-
-// get people with average ratings > k
-app.get("/bid/:rating", async (req, res) => {
-  try {
-    const { rating } = req.params;
-    const caretakerRating = await pool.query(`SELECT u.name as name,
-    u.contact_number as contact,
-    ROUND(AVG(b.rating), 2) as avg_rating
-    FROM Bid b INNER JOIN Users u
-    ON b.care_taker_user_id = u.user_id
-    GROUP BY (b.care_taker_user_id, u.name, u.contact_number)
-    HAVING AVG(b.rating) > ${rating}
-    ORDER BY AVG(b.rating) DESC`);
-    console.log(caretakerRating);
-    res.json(caretakerRating.rows);
-  } catch (error) {
-    console.error("fail");
+    res.status(500).json("Error");
     console.error(error.message);
   }
 });
@@ -70,42 +51,81 @@ app.get("/admin/:workdays", async (req, res) => {
     res.json(petDays.rows);
   } catch (error) {
     console.error("fail");
+    res.status(500).json("Error");
     console.error(error.message);
   }
 });
 
 //insert into ownedpets
-app.put("/pets/:newpet", async (req, res) => {
+app.put("/pets/:user_id:catname:petname", async (req, res) => {
   try{
-    const { pet_owner_user_id, category_name, pet_name } = req.params;
-    console.log(pet_owner_user_id, category_name, pet_name)
+    const { user_id, catname, petname } = req.params;
+    console.log(user_id, catname, petname)
     const insertPet = await pool.query(
-      `INSERT INTO OwnedPets (${pet_owner_user_id}, ${category_name}, ${pet_name})`
+      "INSERT INTO OwnedPets ($1, $2, $3)",[user_id, catname, petname]
     );
   } catch (error) {
+    res.status(500).json("Error");
     console.error(error.message);
   }
 });
 
 // get available dates of between a given interval
-app.get("/available/:daterange", async (req, res) => {
+app.get("/available/:start:end", async (req, res) => {
   try{
-    const { start_date, end_date } = req.params;
-    console.log(start_date, end_date)
-    const findAvailableInterval = await pool.query(`
-    SELECT u.user_id as userid, 
-            u.name as name, 
-            u.contact_number as contact,
-            c.daily_price as price
-    FROM isAvailableOn a 
-    INNER JOIN Users u ON a.care_taker_user_id = u.user_id 
-    INNER JOIN CanTakeCare c ON a.care_taker_user_id = c.care_taker_user_id
-    WHERE (a.available_date > ${start_date} AND a.available_date <= ${end_date})`
+    const { start, end } = req.params;
+    console.log(start, end)
+    const findAvailableInterval = await pool.query(
+    "SELECT u.user_id as userid," +
+    "u.name as name, " +
+    "u.contact_number as contact," +
+    "c.daily_price as price" +
+    "FROM isAvailableOn a " +
+    "INNER JOIN Users u ON a.care_taker_user_id = u.user_id " +
+    "INNER JOIN CanTakeCare c ON a.care_taker_user_id = c.care_taker_user_id" +
+    "WHERE (a.available_date > $1 AND a.available_date <= $2)",[start, end]
     );
     console.log(findAvailableInterval);
     res.json(findAvailableInterval.rows);
   } catch (error) {
+    res.status(500).json("Error");
     console.error(error.message);
+  }
+});
+// get combined available caretakers -> daterange, name, pet category
+app.get("/available/:name/:start/:end/:category/:rating", async (req, res) => {
+  try {
+    const { name ,start, end, category, rating } = req.params
+    console.log( name ,start, end, category, rating)
+    // not sure how to validate inputs
+    const findAvaliable = await pool.query(
+      "SELECT x.* , ROUND(AVG(y.avg_rating), 2) "+
+      "FROM (SELECT DISTINCT u.user_id as userid," +
+      "u.name as named," +
+      "u.contact_number as contact," +
+      "c.daily_price as price" +
+      "FROM isAvailableOn a " +
+      "JOIN Users u ON a.care_taker_user_id = u.user_id" +
+      "JOIN CanTakeCare c ON a.care_taker_user_id = c.care_taker_user_id " +
+      "WHERE c.category_name LIKE COALESCE(CAST($1 as VARCHAR), '')||'%' " +
+      "AND a.available_date > COALESCE(CAST($2 AS DATE), DATE('1970-01-01')) " +
+      "AND a.available_date <= COALESCE(CAST($3 AS DATE), '9999-12-31') " +
+      "AND u.name LIKE COALESCE(CAST($4 as VARCHAR), '')||'%') as x " +
+      "LEFT OUTER JOIN (SELECT u.user_id as userid, " +
+      "u.name as named, u.contact_number as contact," +
+      "ROUND(AVG(b.rating), 2) as avg_rating" +
+      "FROM Bid b INNER JOIN Users u ON b.care_taker_user_id = u.user_id" +
+      "GROUP BY (u.user_id, b.care_taker_user_id, u.name, u.contact_number)) as y ON" +
+      "x.userid = y.userid " +
+      "GROUP BY (x.userid, x.named, x.contact, x.price, y.userid, y.named, y.contact)" +
+      "HAVING AVG(y.avg_rating) >= COALESCE(CAST($5 AS NUMERIC), 0) OR AVG(y.avg_rating) IS NULL"
+      , [category, start, end, name, rating]
+      );
+      console.log(findAvailable);
+      res.json(findAvailable.rows);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json("Error");
   }
 });
 
@@ -114,47 +134,49 @@ app.get("/available/:name", async (req, res) => {
   try{
     const { caretakerName } = req.params;
     console.log(caretakerName)
-    const findAvailableName = await pool.query(`
-    SELECT u.user_id as userid,
-        u.name as name,
-        u.contact_number as contact,
-        c.daily_price as price
-    FROM isAvailableOn a 
-    INNER JOIN Users u ON a.care_taker_user_id = u.user_id 
-    INNER JOIN CanTakeCare c ON a.care_taker_user_id = c.care_taker_user_id
-    WHERE u.name = ${caretakerName}`)
+    const findAvailableName = await pool.query(
+    "SELECT u.user_id as userid," +
+    "u.name as name," +
+    "u.contact_number as contact," +
+    "c.daily_price as price" +
+    "FROM isAvailableOn a " +
+    "INNER JOIN Users u ON a.care_taker_user_id = u.user_id" +
+    "INNER JOIN CanTakeCare c ON a.care_taker_user_id = c.care_taker_user_id" +
+    "WHERE u.name LIKE '$1%'", [caretakerName])
     console.log(findAvailableName);
     res.json(findAvailableName.rows);
   } catch (error) {
     console.error(error.message);
+    res.status(500).json("Error");
   }
 });
 
 // get all availability for a given pet catagory
-app.get("/available/:petcategory", async (req, res) => {
-  try{
+app.get("/test/:petType", async (req, res) => {
+  try {
     const { petType } = req.params;
-    console.log(petType)
-    const findAvailablePetType = await pool.query(`
-    SELECT u.user_id as userid,
-        u.name as name,
-        u.contact_number as contact,
-        c.daily_price as price
-    FROM isAvailableOn a
-    INNER JOIN Users u ON a.care_taker_user_id = u.user_id
-    INNER JOIN CanTakeCare c ON a.care_taker_user_id = c.care_taker_user_id
-    WHERE c.category_name = ${petType}`)
-    console.log(findAvailablePetType);
-    res.json(findAvailablePetType.rows);
+    const avgRating = await pool.query(
+        "SELECT DISTINCT u.user_id as userid, u.name as name, u.contact_number as contact, c.daily_price as price FROM " +
+        "isAvailableOn a INNER JOIN Users u ON a.care_taker_user_id = u.user_id INNER JOIN CanTakeCare c " +
+        "ON a.care_taker_user_id = c.care_taker_user_id WHERE c.category_name = $1", [petType]
+    );
+    if (avgRating.rows.length) {
+      res.status(200).json(avgRating.rows);
+    } else {
+      res.status(400).send("Invalid caretaker id");
+    }
+    console.log(avgRating.rows);
   } catch (error) {
+    res.status(500);
     console.error(error.message);
   }
 });
+
 // get user by id
 app.get("/users/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const user = await pool.query(`SELECT * FROM users WHERE user_id = ${id}`);
+    const user = await pool.query("SELECT * FROM users WHERE user_id = $1", [id]);
     res.json(user.rows[0]);
   } catch (error) {
     console.error(error.message);
