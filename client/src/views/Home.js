@@ -7,6 +7,7 @@ import CreateNewBidForm from "../components/create-new-bid/CreateNewBidForm";
 import InputTodo from "../components/home/InputTodo";
 import List from "../components/home/UserList";
 
+
 const Home = () => {
   return (
     <Container fluid className="main-content-container px-4 pb-4">
