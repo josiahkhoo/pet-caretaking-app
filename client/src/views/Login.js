@@ -8,8 +8,9 @@ import {
   CardBody,
   Card,
   CardFooter,
-  Button,
+  Button
 } from "shards-react";
+
 import { Dispatcher, Constants, Store } from "../flux";
 
 const Login = withRouter(({ history }) => {
@@ -42,14 +43,13 @@ const Login = withRouter(({ history }) => {
     })
       .then((response) => {
         if (response.status >= 400) {
-          throw new Error("Invalid response");
+          alert("An error has occurred")
         }
         return response.json();
       })
       .then((data) => {
         // Login success
         sessionStorage.setItem("user", JSON.stringify(data));
-        console.log(sessionStorage.getItem)
         handleLogin();
         history.push("/home");
       });
@@ -61,7 +61,7 @@ const Login = withRouter(({ history }) => {
       <Row noGutters className="d-flex justify-content-center py-4">
         <h1>Login</h1>
       </Row>
-
+      
       <Row form>
         <Col lg="3" />
         <Col className="form-group">

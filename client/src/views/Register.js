@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { withRouter } from "react-router-dom";
 import {
   Container,
@@ -10,8 +10,6 @@ import {
   CardFooter,
   Button,
   FormFeedback,
-  FormCheckbox,
-  Form,
   FormRadio
 } from "shards-react";
 
@@ -22,22 +20,34 @@ const Register = withRouter(({ history }) => {
   const [name, setName] = useState("");
   const [contact_number, setContactNumber] = useState("");
   const [address, setAddress] = useState("");
-  // Full-time caretaker and petowner is selected by default
+  // Part-time caretaker and petowner is selected by default
   const [is_pet_owner, setPetOwner] = useState(true);
-  const [is_full_time_ct, setFullTime] = useState(true);
-  const [is_part_time_ct, setPartTime] = useState(false);
+  const [is_full_time_ct, setFullTime] = useState(false);
+  const [is_part_time_ct, setPartTime] = useState(true);
   const [isFirstLoad, setFirstLoad] = useState(true);
   const is_pcs_admin = false;
+
+  const [isLoading, setLoading] = useState(false);
 
   const emptyFormState = () => {
     return username.length == 0 || password.length === 0 || confirmPassword.length == 0
       || name.length == 0 || contact_number.length === 0 || address.length === 0;
   };
 
-  const onRegister = async (e) => {
+  const onRegister = () => setLoading(true);
+
+  useEffect(() => {
+    if (isLoading) {
+      register().then(() => {
+        setLoading(false);
+      });
+    }
+  }, [isLoading]);
+
+  const register = async () => {
     setFirstLoad(false)
-    console.log(emptyFormState())
-    // setValidated(true);
+    // console.log("registering account")
+    // console.log(is_pet_owner, "is_full_time_ct, part-time", is_full_time_ct, is_part_time_ct)
     if (emptyFormState()) {
       return
     }
@@ -58,8 +68,8 @@ const Register = withRouter(({ history }) => {
         if (responseStatus != 200) {
           alert(data)
         } else {
-          alert("Account successfully created!")
           history.push("/login");
+          alert("Account successfully created!")
         }
       });
     } catch (error) {
@@ -89,7 +99,6 @@ const Register = withRouter(({ history }) => {
                 <Col>
                   <FormInput required
                     type="username"
-                    placeholder="Username"
                     value={username}
                     required
                     invalid={!isFirstLoad && username == ""}
@@ -108,7 +117,6 @@ const Register = withRouter(({ history }) => {
                 <Col>
                   <FormInput 
                     type="password"
-                    placeholder="Password"
                     required
                     invalid={!isFirstLoad && password == ""}
                     onChange={(e) => setPassword(e.target.value)}
@@ -124,7 +132,6 @@ const Register = withRouter(({ history }) => {
                 <Col>
                   <FormInput 
                     type="password"
-                    placeholder="Password"
                     required
                     invalid={!isFirstLoad && confirmPassword != password}
                     onChange={(e) => setConfirmPassword(e.target.value)}
@@ -155,6 +162,7 @@ const Register = withRouter(({ history }) => {
                 </Col>
                 <Col>
                   <FormInput 
+                    type="number"
                     placeholder=""
                     required
                     invalid={!isFirstLoad && contact_number == ""}
@@ -204,12 +212,12 @@ const Register = withRouter(({ history }) => {
                 <Col>
                 <FormRadio name="isCareTaker"
                 defaultChecked
-                onChange={(e) => { setFullTime(true); setPartTime(false);}}>Part Time</FormRadio>
+                onChange={(e) => { setFullTime(false); setPartTime(true);}}>Part Time</FormRadio>
                 </Col>
                 <Col>
                 <FormRadio 
                 name="isCareTaker"
-                onChange={(e) => { setFullTime(false); setPartTime(true);}}
+                onChange={(e) => { setFullTime(true); setPartTime(false);}}
                 >Full Time</FormRadio>
                 </Col>
                 <Col>
@@ -223,10 +231,13 @@ const Register = withRouter(({ history }) => {
 
             </CardBody>
             <CardFooter className="d-flex justify-content-center">
-              <Button className="ml-2" onClick={onRegister}>
-                {" "}
-                Register{" "}
+            <Row>
+              <Button className="ml-2" 
+              onClick={!isLoading ? onRegister : null}>
+                {isLoading ? 'Loading…' : 'Create Account'}
               </Button>
+            </Row>
+              
             </CardFooter>
           </Card>
         </Col>

@@ -25,7 +25,7 @@ const Home = () => {
       <CreateNewBidForm />
       <AddNewPetForm />
       <List />
-      <InputTodo />
+      {/* <InputTodo /> */}
     </Container>
   );
 };

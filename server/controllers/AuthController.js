@@ -22,14 +22,18 @@ module.exports = {
       );
       console.log("User inserted into users table")
       // Insert user to caretakers table
-      const is_care_taker = is_full_time_ct || is_part_time_ct;
-      if (is_care_taker) {
-        const userId = newUser.rows[0].user_id;
+      const userId = newUser.rows[0].user_id;
 
+      if (is_part_time_ct) {
         const newCareTaker = await pool.query(
             "INSERT INTO caretakers(user_id, is_full_time, commission_rate) VALUES($1, $2, (SELECT MAX(part_time_commission_rate) FROM admin)) RETURNING *",
             [userId, is_full_time_ct] 
         );
+      } else if (is_full_time_ct) {
+        const newCareTaker = await pool.query(
+          "INSERT INTO caretakers(user_id, is_full_time, bonus_rate, base_salary, minimum_base_quota) VALUES($1, $2, (SELECT MAX(full_time_bonus_rate) FROM admin), (SELECT MAX(full_time_base_salary) FROM admin), (SELECT MAX(poor_review_pet_limit) FROM admin)) RETURNING *",
+          [userId, is_full_time_ct] 
+      );
       }
 
       if (newUser.rows.length == 1) {
