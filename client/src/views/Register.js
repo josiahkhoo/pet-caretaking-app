@@ -11,42 +11,62 @@ import {
   Button,
   FormFeedback,
   FormCheckbox,
-  Form
+  Form,
+  FormRadio
 } from "shards-react";
 
 const Register = withRouter(({ history }) => {
-  const [username, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [name, setName] = useState("");
-  const [contactNumber, setContactNumber] = useState("");
+  const [contact_number, setContactNumber] = useState("");
   const [address, setAddress] = useState("");
-  const [isCareTaker, setCareTaker] = useState(false);
-  const [isPetOwner, setPetOwner] = useState(true);
+  // Full-time caretaker and petowner is selected by default
+  const [is_pet_owner, setPetOwner] = useState(true);
+  const [is_full_time_ct, setFullTime] = useState(true);
+  const [is_part_time_ct, setPartTime] = useState(false);
+  const [isFirstLoad, setFirstLoad] = useState(true);
+  const is_pcs_admin = false;
 
-  const checkFormState = () => {
-    return username.length == 0 || password.length === 0 || confirmPassword === ""
-      || name.length == 0 || contactNumber.length === 0 || address.length === 0;
+  const emptyFormState = () => {
+    return username.length == 0 || password.length === 0 || confirmPassword.length == 0
+      || name.length == 0 || contact_number.length === 0 || address.length === 0;
   };
 
   const onRegister = async (e) => {
-    console.log(checkFormState())
+    setFirstLoad(false)
+    console.log(emptyFormState())
     // setValidated(true);
-    if (checkFormState()) {
-      alert("Bad inputs");
+    if (emptyFormState()) {
+      return
     }
-    // try {
-    //   const body = { username, password };
-    //   const response = await fetch("http://localhost:5000/register", {
-    //     method: "POST",
-    //     headers: { "Content-Type": "application/json" },
-    //     body: JSON.stringify(body),
-    //   });
+    const body = { username, password, name, contact_number, address,
+      is_pet_owner, is_full_time_ct, is_part_time_ct, is_pcs_admin };
+    var responseStatus;
+    try {
+      fetch("http://localhost:5000/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      })
+      .then((res) => {
+        responseStatus = res.status
+        return res.json();
+      })
+      .then((data) => {
+        if (responseStatus != 200) {
+          alert(data)
+        } else {
+          alert("Account successfully created!")
+          history.push("/login");
+        }
+      });
+    } catch (error) {
+      alert("An error has occured")
+      console.log(error)
+    }
 
-    //   console.log(response);
-    // } catch (error) {
-    //   console.log(error);
-    // }
   };
 
   return (
@@ -72,10 +92,10 @@ const Register = withRouter(({ history }) => {
                     placeholder="Username"
                     value={username}
                     required
-                    invalid={true}
-                    onChange={(e) => setEmail(e.target.value)}
+                    invalid={!isFirstLoad && username == ""}
+                    onChange={(e) => setUsername(e.target.value)}
                   />
-                  {/* <FormFeedback>The username is taken.</FormFeedback> */}
+                  {/* <FormFeedback>{existingUserMsg}</FormFeedback> */}
 
                 </Col>
               </Row>
@@ -90,6 +110,7 @@ const Register = withRouter(({ history }) => {
                     type="password"
                     placeholder="Password"
                     required
+                    invalid={!isFirstLoad && password == ""}
                     onChange={(e) => setPassword(e.target.value)}
                   />
                 </Col>
@@ -105,8 +126,10 @@ const Register = withRouter(({ history }) => {
                     type="password"
                     placeholder="Password"
                     required
+                    invalid={!isFirstLoad && confirmPassword != password}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                   />
+                  <FormFeedback>Passwords do not match</FormFeedback>
                 </Col>
               </Row>
 
@@ -119,8 +142,8 @@ const Register = withRouter(({ history }) => {
                   <FormInput 
                     placeholder=""
                     required
-                    invalid={false}
-                    onChange={(e) => setPassword(e.target.value)}
+                    invalid={!isFirstLoad && name == ""}
+                    onChange={(e) => setName(e.target.value)}
                   />
                 </Col>
               </Row>
@@ -134,7 +157,7 @@ const Register = withRouter(({ history }) => {
                   <FormInput 
                     placeholder=""
                     required
-                    invalid={false}
+                    invalid={!isFirstLoad && contact_number == ""}
                     onChange={(e) => setContactNumber(e.target.value)}
                   />
                 </Col>
@@ -149,24 +172,51 @@ const Register = withRouter(({ history }) => {
                   <FormInput 
                     placeholder=""
                     required
-                    invalid={false}
+                    invalid={!isFirstLoad && address == ""}
                     onChange={(e) => setAddress(e.target.value)}
                   />
                 </Col>
               </Row>
 
-              <Row className="mt-3">
+              <Row className="mt-4">
                 {/* User Type */}
-                <Col>
-                <FormCheckbox name="userType"
-                defaultChecked
-                onChange={(e) => setPetOwner(!isPetOwner)}>Pet Owner</FormCheckbox>
+                <Col lg="3">
+                  <label className="mt-1">Are you a pet owner?</label>
                 </Col>
                 <Col>
-                <FormCheckbox 
-                name="userType"
-                onChange={(e) => setCareTaker(!isCareTaker)}
-                >Care Taker</FormCheckbox>
+                <FormRadio name="isPetOwner"
+                defaultChecked
+                onChange={(e) => setPetOwner(true)}>Yes</FormRadio>
+                </Col>
+                <Col>
+                <FormRadio 
+                name="isPetOwner"
+                onChange={(e) => setPetOwner(false)}
+                >No</FormRadio>
+                </Col>
+              </Row>
+
+              <Row className="mt-4">
+                {/* CareTaker Type */}
+                <Col lg="3">
+                  <label className="mt-1">Are you a care taker?</label>
+                </Col>
+                <Col>
+                <FormRadio name="isCareTaker"
+                defaultChecked
+                onChange={(e) => { setFullTime(true); setPartTime(false);}}>Part Time</FormRadio>
+                </Col>
+                <Col>
+                <FormRadio 
+                name="isCareTaker"
+                onChange={(e) => { setFullTime(false); setPartTime(true);}}
+                >Full Time</FormRadio>
+                </Col>
+                <Col>
+                <FormRadio 
+                name="isCareTaker"
+                onChange={(e) => { setFullTime(false); setPartTime(false);}}
+                >No</FormRadio>
                 </Col>
               </Row>
 
