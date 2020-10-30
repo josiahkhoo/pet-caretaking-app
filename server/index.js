@@ -8,13 +8,6 @@ app.use(express.json());
 
 const AuthController = require("./controllers/AuthController");
 const CaretakerController = require("./controllers/CaretakerController");
-const { end } = require("./db");
-const {
-  addCanTakeCareOf,
-  fullTimeCareTakerTakeLeave,
-  getAllBids,
-} = require("./controllers/CaretakerController");
-const { viewReviews } = require("./controllers/PetOwnerController");
 const PetOwnerController = require("./controllers/PetOwnerController");
 // Routes
 
