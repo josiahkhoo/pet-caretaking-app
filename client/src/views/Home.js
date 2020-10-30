@@ -6,6 +6,8 @@ import PageTitle from "../components/common/PageTitle";
 import CreateNewBidForm from "../components/create-new-bid/CreateNewBidForm";
 import InputTodo from "../components/home/InputTodo";
 import List from "../components/home/UserList";
+import PetOwnerBidTable from "../components/petowner-bid-table/PetOwnerBidTable";
+import OwnedPetsViewTable from "../components/owned-pets-view/OwnedPetsViewTable";
 
 const Home = () => {
   return (
@@ -19,7 +21,8 @@ const Home = () => {
           className="text-sm-left"
         />
       </Row>
-
+      <OwnedPetsViewTable />
+      <PetOwnerBidTable />
       {/* Editor */}
       <CreateNewBidForm />
       <AddNewPetForm />
