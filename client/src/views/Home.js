@@ -21,7 +21,6 @@ const Home = () => {
           className="text-sm-left"
         />
       </Row>
-      <CreateReviewForm />
       <PetOwnerBidTable />
       {/* Editor */}
       <CreateNewBidForm />

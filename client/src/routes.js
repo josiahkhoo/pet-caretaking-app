@@ -14,57 +14,63 @@ import Tables from "./views/Tables";
 import BlogPosts from "./views/BlogPosts";
 import Home from "./views/Home";
 import Login from "./views/Login";
+import CreateReview from "./views/CreateReview";
 
 export default [
   {
     path: "/",
     exact: true,
     layout: DefaultLayout,
-    component: () => <Redirect to="/login" />
+    component: () => <Redirect to="/login" />,
   },
   {
     path: "/login",
     layout: DefaultLayout,
-    component: Login
+    component: Login,
   },
   {
     path: "/home",
     layout: DefaultLayout,
-    component: Home
+    component: Home,
   },
   {
     path: "/blog-overview",
     layout: DefaultLayout,
-    component: BlogOverview
+    component: BlogOverview,
   },
   {
     path: "/user-profile-lite",
     layout: DefaultLayout,
-    component: UserProfileLite
+    component: UserProfileLite,
   },
   {
     path: "/add-new-post",
     layout: DefaultLayout,
-    component: AddNewPost
+    component: AddNewPost,
   },
   {
     path: "/errors",
     layout: DefaultLayout,
-    component: Errors
+    component: Errors,
   },
   {
     path: "/components-overview",
     layout: DefaultLayout,
-    component: ComponentsOverview
+    component: ComponentsOverview,
   },
   {
     path: "/tables",
     layout: DefaultLayout,
-    component: Tables
+    component: Tables,
   },
   {
     path: "/blog-posts",
     layout: DefaultLayout,
-    component: BlogPosts
-  }
+    component: BlogPosts,
+  },
+  {
+    path: "/create-review",
+    layout: DefaultLayout,
+    component: CreateReview,
+  },
 ];

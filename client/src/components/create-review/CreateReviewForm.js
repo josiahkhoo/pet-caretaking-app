@@ -80,9 +80,9 @@ export default class CreateReviewForm extends Component {
     const { rating, review } = this.state;
     return (
       <Card>
-        <CardHeader>
+        {/* <CardHeader>
           <h4>Create Review</h4>
-        </CardHeader>
+        </CardHeader> */}
         <CardBody>
           <Form>
             <FormGroup>

@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import priceToString from "../../utils/priceToString";
+import { Link } from "react-router-dom";
 import { Button, Row } from "shards-react";
+import moment from "moment";
 
 export default class BidRow extends Component {
   canCreateReview() {
@@ -35,7 +37,17 @@ export default class BidRow extends Component {
         <td>{bid.end_date}</td>
         <td>
           {this.canCreateReview() ? (
-            <Button>Create Review</Button>
+            <Button
+              tag={Link}
+              to={{
+                pathname: "create-review",
+                state: {
+                  bid: bid,
+                },
+              }}
+            >
+              Create Review
+            </Button>
           ) : (
             <Button outline disabled theme="secondary">
               Create Review
