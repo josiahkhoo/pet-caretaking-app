@@ -4,6 +4,7 @@ import { Container, Row, Col, Card, CardHeader, CardBody } from "shards-react";
 import PageTitle from "../components/common/PageTitle";
 import TakenCarePets from "../components/dashboard-view/TakenCarePets";
 import RatingDropdown from "../components/create-review/RatingDropdown.js"
+import HighestPetDays from "../components/dashboard-view/HighestPetDays";
 
 const Admin = () => (
   <Container fluid className="main-content-container px-4">
@@ -13,6 +14,7 @@ const Admin = () => (
     </Row>
     
     <TakenCarePets />
+    <HighestPetDays />
 
     {/* Default Light Table */}
     <Row>

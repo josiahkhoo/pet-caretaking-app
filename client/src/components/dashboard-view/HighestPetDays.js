@@ -4,22 +4,22 @@ import {
   CardBody,
   CardHeader,
 } from "shards-react";
-import PetNumRow from "./PetNumRow";
+import monthName from "../../utils/monthName";
 
 
-export default class TakenCarePets extends Component {
+export default class HighestPetDays extends Component {
 
   constructor(props) {
     super(props);
     this.state = {
-      petNum: [],
+      highestMonth: [],
     };
   }
 
   async getPetNum() {
     try {
       const response = await fetch(
-        "http://localhost:5000/caretakers/total-pet-care-by-month",
+        "http://localhost:5000/caretakers/highest-pet-care-month",
       );
       return await response.json();
     } catch (error) {
@@ -31,16 +31,16 @@ export default class TakenCarePets extends Component {
   componentDidMount() {
     this.getPetNum().then((res) => {
       this.setState({
-        petNum: res,
+        highestMonth: res,
       });
     });
   }
 
   render() {
-    const { petNum } = this.state;
+    const { highestMonth } = this.state;
     return (
         <Card>
-        <CardHeader>Total number of Pets we took care of:</CardHeader>
+        <CardHeader>Current Month with the highest number of jobs</CardHeader>
         <CardBody>
           <table className="table mb-0">
             <thead className="bg-light">
@@ -49,18 +49,23 @@ export default class TakenCarePets extends Component {
                   Month
                 </th>
                 <th scope="col" className="border-0">
-                  No. of Pets
+                  No. of Jobs
                 </th>
               </tr>
             </thead>
             <tbody>
-              {petNum.map((row) => (
-                <PetNumRow row={row} />
-              ))}
+                <tr>
+                    <td>
+                        {monthName(highestMonth.month)}
+                    </td>
+                    <td>
+                        {highestMonth.petdays}
+                    </td>
+                </tr>
             </tbody>
           </table>
         </CardBody>
-      </Card>
+        </Card>
     );
   }
 }

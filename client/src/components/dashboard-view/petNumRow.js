@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import { Button, Row } from "shards-react";
 import monthName from "../../utils/monthName"
 
 export default class PetNumRow extends Component {
