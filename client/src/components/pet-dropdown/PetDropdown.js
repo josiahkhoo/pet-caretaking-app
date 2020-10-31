@@ -48,7 +48,10 @@ export default class PetDropdown extends Component {
     }
   }
 
-  componentDidMount() {
+  componentDidUpdate(prev) {
+    if (this.props.petOwnerUserId === prev.petOwnerUserId) {
+      return;
+    }
     this.getAllPets(this.props.petOwnerUserId).then((res) => {
       console.log(res);
       this.setState({ pets: res });

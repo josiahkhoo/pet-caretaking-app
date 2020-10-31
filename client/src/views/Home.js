@@ -21,10 +21,7 @@ const Home = () => {
           className="text-sm-left"
         />
       </Row>
-      <PetOwnerBidTable />
       {/* Editor */}
-      <CreateNewBidForm />
-      <AddNewPetForm />
       <List />
       <InputTodo />
     </Container>

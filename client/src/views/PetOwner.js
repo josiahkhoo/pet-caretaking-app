@@ -10,7 +10,9 @@ import {
   ListGroupItem,
   Form,
   Alert,
+  Button,
 } from "shards-react";
+import { Link } from "react-router-dom";
 
 import PageTitle from "../components/common/PageTitle";
 import Colors from "../components/components-overview/Colors";
@@ -32,6 +34,8 @@ import SeamlessInputGroups from "../components/components-overview/SeamlessInput
 import CustomFileUpload from "../components/components-overview/CustomFileUpload";
 import DropdownInputGroups from "../components/components-overview/DropdownInputGroups";
 import CustomSelect from "../components/components-overview/CustomSelect";
+import OwnedPetsViewTable from "../components/owned-pets-view/OwnedPetsViewTable";
+import UserDetails from "../components/user-profile-lite/UserDetails";
 import PetOwnerBidTable from "../components/pet-owner-bid-table/PetOwnerBidTable";
 
 export default class PetOwner extends Component {
@@ -59,86 +63,19 @@ export default class PetOwner extends Component {
             />
           </Row>
 
-          <Colors />
-
           <Row>
             <Col lg="8" className="mb-4">
-              <PetOwnerBidTable />
-              <Card small>
-                <CardHeader className="border-bottom">
-                  <h6 className="m-0">Form Example</h6>
-                </CardHeader>
-                <CompleteFormExample />
-              </Card>
+              <OwnedPetsViewTable petOwnerUserId={1} />
             </Col>
 
             <Col lg="4" className="mb-4">
-              {/* Sliders & Progress Bars */}
-              <Card small className="mb-4">
-                <CardHeader className="border-bottom">
-                  <h6 className="m-0">Sliders & Progress Bars</h6>
-                </CardHeader>
-                <ListGroup flush>
-                  <ProgressBars />
-                  <Sliders />
-                </ListGroup>
-              </Card>
+              <UserDetails userId={1} />
 
               {/* Groups */}
-              <Card small className="mb-4">
-                <CardHeader className="border-bottom">
-                  <h6 className="m-0">Groups</h6>
-                </CardHeader>
-
-                <ListGroup flush>
-                  <ListGroupItem className="px-3">
-                    <Form>
-                      <strong className="text-muted d-block mb-3">
-                        Button Groups
-                      </strong>
-                      <ButtonGroups />
-
-                      <strong className="text-muted d-block mb-2">
-                        Input Groups
-                      </strong>
-                      <InputGroups />
-
-                      <strong className="text-muted d-block mb-2">
-                        Seamless Input Groups
-                      </strong>
-                      <SeamlessInputGroups />
-                    </Form>
-                  </ListGroupItem>
-                </ListGroup>
-              </Card>
-
-              <Card small>
-                {/* Files & Dropdowns */}
-                <CardHeader className="border-bottom">
-                  <h6 className="m-0">Files & Dropdowns</h6>
-                </CardHeader>
-
-                <ListGroup flush>
-                  <ListGroupItem className="px-3">
-                    <strong className="text-muted d-block mb-2">
-                      Custom File Upload
-                    </strong>
-                    <CustomFileUpload />
-
-                    <strong className="text-muted d-block mb-2">
-                      Dropdown Input Groups
-                    </strong>
-                    <DropdownInputGroups />
-
-                    <strong className="text-muted d-block mb-2">
-                      Custom Select
-                    </strong>
-                    <CustomSelect />
-                  </ListGroupItem>
-                </ListGroup>
-              </Card>
             </Col>
           </Row>
+
+          <PetOwnerBidTable petOwnerUserId={1} />
         </Container>
       </div>
     );

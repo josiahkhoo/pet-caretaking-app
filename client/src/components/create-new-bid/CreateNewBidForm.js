@@ -30,9 +30,6 @@ export default class CreateNewBidForm extends Component {
     };
   }
 
-  //TODO: Place holder value
-  userId = 1;
-
   onSelectPet(pet) {
     console.log(pet.pet_name);
     console.log(pet.category_name);
@@ -100,7 +97,6 @@ export default class CreateNewBidForm extends Component {
       transferType,
       paymentType,
     } = this.state;
-    // TODO: Retrieve USER ID
     const body = {
       pet_name: petName,
       care_taker_user_id: careTakerUserId,
@@ -108,7 +104,7 @@ export default class CreateNewBidForm extends Component {
       end_date: endDate,
       transfer_type: transferType,
       payment_type: paymentType,
-      pet_owner_user_id: this.userId,
+      pet_owner_user_id: this.props.petOwnerUserId,
     };
     try {
       const response = await fetch("http://localhost:5000/pet-owners/bid", {
@@ -146,6 +142,7 @@ export default class CreateNewBidForm extends Component {
       paymentType,
       petCategory,
     } = this.state;
+    const { petOwnerUserId } = this.props;
     return (
       <Card>
         <CardHeader>
@@ -156,7 +153,7 @@ export default class CreateNewBidForm extends Component {
             <FormGroup>
               <h6>Pet</h6>
               <PetDropdown
-                petOwnerUserId={this.userId}
+                petOwnerUserId={petOwnerUserId}
                 onSelectPetName={(pet) => this.onSelectPet(pet)}
                 petName={petName}
               />

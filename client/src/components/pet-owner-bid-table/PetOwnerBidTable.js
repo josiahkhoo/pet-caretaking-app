@@ -24,7 +24,7 @@ export default class PetOwnerBidTable extends Component {
 
   componentDidMount() {
     // TODO: Retrieve pet owner UID from storage
-    this.getAllBids(1).then((res) => {
+    this.getAllBids(this.props.petOwnerUserId).then((res) => {
       this.setState({
         bids: res,
       });
@@ -36,17 +36,14 @@ export default class PetOwnerBidTable extends Component {
     return (
       <Card>
         <CardHeader className="border-bottom">
-          <h6>All bids from pet owner</h6>
+          <h6>All Bids</h6>
         </CardHeader>
         <CardBody>
           <table className="table mb-0">
             <thead className="bg-light">
               <tr>
                 <th scope="col" className="border-0">
-                  Caretaker UID
-                </th>
-                <th scope="col" className="border-0">
-                  PetOwner UID
+                  Caretaker Name
                 </th>
                 <th scope="col" className="border-0">
                   Pet Name

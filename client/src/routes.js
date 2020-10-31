@@ -16,6 +16,8 @@ import Home from "./views/Home";
 import Login from "./views/Login";
 import CreateReview from "./views/CreateReview";
 import PetOwner from "./views/PetOwner";
+import AddNewPet from "./views/AddNewPet";
+import CreateBid from "./views/CreateBid";
 
 export default [
   {
@@ -78,5 +80,15 @@ export default [
     path: "/pet-owners",
     layout: DefaultLayout,
     component: PetOwner,
+  },
+  {
+    path: "/add-new-pet",
+    layout: DefaultLayout,
+    component: AddNewPet,
+  },
+  {
+    path: "/create-bid",
+    layout: DefaultLayout,
+    component: CreateBid,
   },
 ];
