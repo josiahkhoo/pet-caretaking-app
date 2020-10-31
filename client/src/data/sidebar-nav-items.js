@@ -5,7 +5,13 @@ export default function() {
       to: "/home",
       htmlBefore: '<i class="material-icons">home</i>',
       htmlAfter: ""
-    },{
+    },
+    {
+      title: "Admin Dashboard",
+      htmlBefore: '<i class="material-icons">admin_panel_settings</i>',
+      to: "/admin",
+    },
+    {
       title: "Blog Dashboard",
       to: "/blog-overview",
       htmlBefore: '<i class="material-icons">edit</i>',

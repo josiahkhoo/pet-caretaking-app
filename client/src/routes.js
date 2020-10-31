@@ -15,6 +15,7 @@ import BlogPosts from "./views/BlogPosts";
 import Home from "./views/Home";
 import Login from "./views/Login";
 import Register from "./views/Register";
+import Admin from "./views/Admin";
 
 export default [
   {
@@ -72,5 +73,10 @@ export default [
     path: "/blog-posts",
     layout: DefaultLayout,
     component: BlogPosts
+  },
+  {
+    path: "/admin",
+    layout: DefaultLayout,
+    component: Admin
   }
 ];
