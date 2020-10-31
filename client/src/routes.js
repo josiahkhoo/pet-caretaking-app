@@ -15,6 +15,7 @@ import BlogPosts from "./views/BlogPosts";
 import Home from "./views/Home";
 import Login from "./views/Login";
 import CreateReview from "./views/CreateReview";
+import PetOwner from "./views/PetOwner";
 
 export default [
   {
@@ -72,5 +73,10 @@ export default [
     path: "/create-review",
     layout: DefaultLayout,
     component: CreateReview,
+  },
+  {
+    path: "/pet-owners",
+    layout: DefaultLayout,
+    component: PetOwner,
   },
 ];

@@ -35,7 +35,9 @@ export default class PetOwnerBidTable extends Component {
     const { bids } = this.state;
     return (
       <Card>
-        <CardHeader>All bids from pet owner</CardHeader>
+        <CardHeader className="border-bottom">
+          <h6>All bids from pet owner</h6>
+        </CardHeader>
         <CardBody>
           <table className="table mb-0">
             <thead className="bg-light">
