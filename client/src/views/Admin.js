@@ -5,6 +5,7 @@ import PageTitle from "../components/common/PageTitle";
 import TakenCarePets from "../components/dashboard-view/TakenCarePets";
 import RatingDropdown from "../components/create-review/RatingDropdown.js"
 import HighestPetDays from "../components/dashboard-view/HighestPetDays";
+import Underperforming from "../components/dashboard-view/Underperforming";
 
 const Admin = () => (
   <Container fluid className="main-content-container px-4">
@@ -15,6 +16,7 @@ const Admin = () => (
     
     <TakenCarePets />
     <HighestPetDays />
+    <Underperforming />
 
     {/* Default Light Table */}
     <Row>
