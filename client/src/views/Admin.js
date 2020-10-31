@@ -1,5 +1,6 @@
 import React from "react";
 import { Container, Row, Col, Card, CardHeader, CardBody } from "shards-react";
+import { Redirect } from "react-router-dom";
 
 import PageTitle from "../components/common/PageTitle";
 import TakenCarePets from "../components/dashboard-view/TakenCarePets";
@@ -8,7 +9,16 @@ import Underperforming from "../components/dashboard-view/Underperforming";
 import AverageSatisfaction from "../components/dashboard-view/AverageSatisfaction";
 import TotalSalary from "../components/dashboard-view/TotalSalary";
 
-const Admin = () => (
+import Store from "../flux/store";
+
+const Admin = () => {
+  const user = Store.getUser();
+  console.log(user)
+
+  if (user == null)
+    return <Redirect to="/login" />
+
+  return(
   <Container fluid className="main-content-container px-4">
     {/* Page Header */}
     <Row noGutters className="page-header py-4">
@@ -46,6 +56,7 @@ const Admin = () => (
     </Row>
 
   </Container>
-);
+  );
+};
 
 export default Admin;
