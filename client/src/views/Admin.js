@@ -6,6 +6,7 @@ import TakenCarePets from "../components/dashboard-view/TakenCarePets";
 import RatingDropdown from "../components/create-review/RatingDropdown.js"
 import HighestPetDays from "../components/dashboard-view/HighestPetDays";
 import Underperforming from "../components/dashboard-view/Underperforming";
+import AverageSatisfaction from "../components/dashboard-view/AverageSatisfaction";
 
 const Admin = () => (
   <Container fluid className="main-content-container px-4">
@@ -14,151 +15,30 @@ const Admin = () => (
       <PageTitle sm="4" title="Admin Dashboard" subtitle="View Information on" className="text-sm-left" />
     </Row>
     
-    <TakenCarePets />
-    <HighestPetDays />
-    <Underperforming />
-
-    {/* Default Light Table */}
-    <Row>
+    <Row className="mb-4">
       <Col>
-        <Card small className="mb-4">
-          <CardHeader className="border-bottom">
-            <h6 className="m-0">Active Users</h6>
-          </CardHeader>
-          <CardBody className="p-0 pb-3">
-            <table className="table mb-0">
-              <thead className="bg-light">
-                <tr>
-                  <th scope="col" className="border-0">
-                    #
-                  </th>
-                  <th scope="col" className="border-0">
-                    First Name
-                  </th>
-                  <th scope="col" className="border-0">
-                    Last Name
-                  </th>
-                  <th scope="col" className="border-0">
-                    Country
-                  </th>
-                  <th scope="col" className="border-0">
-                    City
-                  </th>
-                  <th scope="col" className="border-0">
-                    Phone
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>1</td>
-                  <td>Ali</td>
-                  <td>Kerry</td>
-                  <td>Russian Federation</td>
-                  <td>Gdańsk</td>
-                  <td>107-0339</td>
-                </tr>
-                <tr>
-                  <td>2</td>
-                  <td>Clark</td>
-                  <td>Angela</td>
-                  <td>Estonia</td>
-                  <td>Borghetto di Vara</td>
-                  <td>1-660-850-1647</td>
-                </tr>
-                <tr>
-                  <td>3</td>
-                  <td>Jerry</td>
-                  <td>Nathan</td>
-                  <td>Cyprus</td>
-                  <td>Braunau am Inn</td>
-                  <td>214-4225</td>
-                </tr>
-                <tr>
-                  <td>4</td>
-                  <td>Colt</td>
-                  <td>Angela</td>
-                  <td>Liberia</td>
-                  <td>Bad Hersfeld</td>
-                  <td>1-848-473-7416</td>
-                </tr>
-              </tbody>
-            </table>
-          </CardBody>
-        </Card>
+        <TakenCarePets />
+      </Col>
+    </Row>
+    
+    <Row className="mb-4">
+      <Col>
+        <HighestPetDays />
       </Col>
     </Row>
 
-    {/* Default Dark Table */}
-    <Row>
+    <Row className="mb-4">
       <Col>
-        <Card small className="mb-4 overflow-hidden">
-          <CardHeader className="bg-dark">
-            <h6 className="m-0 text-white">Active Users</h6>
-          </CardHeader>
-          <CardBody className="bg-dark p-0 pb-3">
-            <table className="table table-dark mb-0">
-              <thead className="thead-dark">
-                <tr>
-                  <th scope="col" className="border-0">
-                    #
-                  </th>
-                  <th scope="col" className="border-0">
-                    First Name
-                  </th>
-                  <th scope="col" className="border-0">
-                    Last Name
-                  </th>
-                  <th scope="col" className="border-0">
-                    Country
-                  </th>
-                  <th scope="col" className="border-0">
-                    City
-                  </th>
-                  <th scope="col" className="border-0">
-                    Phone
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>1</td>
-                  <td>Ali</td>
-                  <td>Kerry</td>
-                  <td>Russian Federation</td>
-                  <td>Gdańsk</td>
-                  <td>107-0339</td>
-                </tr>
-                <tr>
-                  <td>2</td>
-                  <td>Clark</td>
-                  <td>Angela</td>
-                  <td>Estonia</td>
-                  <td>Borghetto di Vara</td>
-                  <td>1-660-850-1647</td>
-                </tr>
-                <tr>
-                  <td>3</td>
-                  <td>Jerry</td>
-                  <td>Nathan</td>
-                  <td>Cyprus</td>
-                  <td>Braunau am Inn</td>
-                  <td>214-4225</td>
-                </tr>
-                <tr>
-                  <td>4</td>
-                  <td>Colt</td>
-                  <td>Angela</td>
-                  <td>Liberia</td>
-                  <td>Bad Hersfeld</td>
-                  <td>1-848-473-7416</td>
-                </tr>
-              </tbody>
-            </table>
-          </CardBody>
-        </Card>
+        <Underperforming />
       </Col>
     </Row>
+
+    <Row className="mb-4">
+      <Col>
+      <AverageSatisfaction />
+      </Col>
+    </Row>
+
   </Container>
 );
 

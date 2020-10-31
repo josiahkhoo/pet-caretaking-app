@@ -40,7 +40,7 @@ export default class HighestPetDays extends Component {
     const { highestMonth } = this.state;
     return (
         <Card>
-        <CardHeader>Current Month with the highest number of jobs</CardHeader>
+        <CardHeader><h5>Current Month with the highest number of jobs</h5></CardHeader>
         <CardBody>
           <table className="table mb-0">
             <thead className="bg-light">

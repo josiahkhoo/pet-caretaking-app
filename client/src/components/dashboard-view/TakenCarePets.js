@@ -40,7 +40,7 @@ export default class TakenCarePets extends Component {
     const { petNum } = this.state;
     return (
         <Card>
-        <CardHeader>Total number of Pets we took care of:</CardHeader>
+        <CardHeader><h5>Total number of Pets we took care of:</h5></CardHeader>
         <CardBody>
           <table className="table mb-0">
             <thead className="bg-light">

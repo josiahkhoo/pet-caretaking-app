@@ -11,7 +11,7 @@ import MonthDropdown from "./MonthDropdown";
 import monthName from "../../utils/monthName";
 
 
-export default class Underperforming extends Component {
+export default class AverageSatisfaction extends Component {
     static propTypes = {
         month: PropTypes.number,
     };
@@ -20,23 +20,23 @@ export default class Underperforming extends Component {
         super(props);
         this.state = {
             month: null,
-            underperformers: [],
+            satisfaction: [],
         };
     }
     
     onChangeMonth(month) {
-        this.getUnderperformers(month).then((res) => {
+        this.getSatisfaction(month).then((res) => {
             this.setState({
                 month: month,
-                underperformers: res,
+                satisfaction: res,
             });
         });
     }
 
-    async getUnderperformers(month) {
+    async getSatisfaction(month) {
         try {
         const response = await fetch(
-            `http://localhost:5000/caretakers/under-performing/${month}`,
+            `http://localhost:5000/caretakers/categories/satisfaction/${month}`,
         );
             return await response.json();
         } catch (error) {
@@ -46,10 +46,10 @@ export default class Underperforming extends Component {
   }
 
   render() {
-    const { month, underperformers } = this.state;
+    const { month, satisfaction } = this.state;
     return (
         <Card>
-        <CardHeader><h5>Underperforming Full-Time Caretakers in {monthName(month)}</h5></CardHeader>
+        <CardHeader><h5>Average satisfaction rate for all pet categories in {monthName(month)}</h5></CardHeader>
         <CardBody>
         <Form>
             <FormGroup>
@@ -64,15 +64,21 @@ export default class Underperforming extends Component {
             <thead className="bg-light">
               <tr>
                 <th scope="col" className="border-0">
-                  Underperforming Caretaker ID
+                  Pet Category
+                </th>
+                <th scope="col" className="border-0">
+                  Average Satisfaction
                 </th>
               </tr>
             </thead>
             <tbody>
-                {underperformers.map((id) =>(
+                {satisfaction.map((id) =>(
                 <tr key = {id}>
                     <td>
-                        {id.underperforming}
+                        {id.category_name}
+                    </td>
+                    <td>
+                        {Number(id.satisfaction).toFixed(2)}
                     </td>
                 </tr>
                 ))}
