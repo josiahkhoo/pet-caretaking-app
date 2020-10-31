@@ -83,7 +83,7 @@ export default class Underperforming extends Component {
                 {underperformers.map((id) =>(
                 <tr key = {id}>
                     <td>
-                        {id.underperfoming}
+                        {id.underperforming}
                     </td>
                 </tr>
                 ))}
