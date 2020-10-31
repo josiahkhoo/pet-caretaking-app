@@ -36,7 +36,7 @@ export default class PetDropdown extends Component {
   async getAllPets(petOwnerUserId) {
     try {
       const response = await fetch(
-        `http://localhost:5000/pet-owners/${petOwnerUserId}/pets`,
+        `http://localhost:5000/pet-owners/${petOwnerUserId}/pets-without-userinfo`,
         {
           method: "GET",
         }
@@ -62,16 +62,18 @@ export default class PetDropdown extends Component {
       <NavItem tag={Dropdown} large toggle={this.togglePet}>
         <DropdownToggle caret>
           {petName != null ? `${petName}` : "Select pet"}
-          <i className="material-icons">arrow_drop_down</i>
         </DropdownToggle>
         <Collapse tag={DropdownMenu} open={visible}>
           {pets.map((pet) => (
             <DropdownItem
-              onClick={(item) =>
-                this.props.onSelectPetName(item.currentTarget.innerText)
+              onClick={() =>
+                this.props.onSelectPetName({
+                  pet_name: pet.pet_name,
+                  category_name: pet.category_name,
+                })
               }
             >
-              {pet["pname"]}
+              {pet.pet_name}
             </DropdownItem>
           ))}
         </Collapse>

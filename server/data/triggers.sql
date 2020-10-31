@@ -98,7 +98,8 @@ WHERE NEW.care_taker_user_id = a.care_taker_user_id
     AND a.available_date >= NEW.start_date
     AND a.available_date <= NEW.end_date
     AND a.pet_care_count <= c.pet_limit;
-IF available_days <> total_days THEN RAISE EXCEPTION '% cannot take care of the pet between % and %',
+IF available_days <> total_days
+AND OLD.is_success <> NEW.is_success THEN RAISE EXCEPTION '% cannot take care of the pet between % and %',
 (
     SELECT username
     FROM Users
@@ -124,7 +125,8 @@ WHERE ownedpets.pet_owner_user_id = NEW.pet_owner_user_id
     AND ownedpets.pet_name = NEW.pet_name
     AND taken_care_date >= NEW.start_date
     AND taken_care_date <= NEW.end_date;
-IF days_taken_care_during_bid_period > 0 THEN RAISE EXCEPTION '% is already being taken care of between % and %',
+IF days_taken_care_during_bid_period > 0
+AND OLD.is_success <> NEW.is_success THEN RAISE EXCEPTION '% is already being taken care of between % and %',
 NEW.pet_name,
 NEW.start_date,
 NEW.end_date;

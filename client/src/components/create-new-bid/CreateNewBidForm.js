@@ -11,21 +11,34 @@ import {
 } from "shards-react";
 import PetDropdown from "../pet-dropdown/PetDropdown";
 import RangeDatePicker from "../common/RangeDatePicker";
+import TransferTypeDropdown from "./TransferTypeDropdown";
+import PaymentTypeDropdown from "./PaymentTypeDropdown";
+import CaretakerDropdown from "./CaretakerDropdown";
 
 export default class CreateNewBidForm extends Component {
   constructor(props) {
     super(props);
     this.state = {
       petName: null,
+      petCategory: null,
       careTakerUserId: null,
       startDate: null,
       endDate: null,
+      transferType: null,
+      careTakerName: null,
+      paymentType: null,
     };
   }
 
-  onSelectPetName(petName) {
+  //TODO: Place holder value
+  userId = 1;
+
+  onSelectPet(pet) {
+    console.log(pet.pet_name);
+    console.log(pet.category_name);
     this.setState({
-      petName: petName,
+      petName: pet.pet_name,
+      petCategory: pet.category_name,
     });
   }
 
@@ -41,23 +54,98 @@ export default class CreateNewBidForm extends Component {
     });
   }
 
-  onCareTakerChange(id) {
+  onCareTakerChange(careTaker) {
     this.setState({
-      careTakerUserId: id,
+      careTakerUserId: careTaker.user_id,
+      careTakerName: careTaker.name,
     });
   }
 
-  isValidBid(petName, careTakerUserId, startDate, endDate) {
+  onTransferTypeChange(transferType) {
+    this.setState({
+      transferType: transferType,
+    });
+  }
+
+  onPaymentTypeChange(paymentType) {
+    this.setState({
+      paymentType: paymentType,
+    });
+  }
+
+  isValidBid(
+    petName,
+    careTakerUserId,
+    startDate,
+    endDate,
+    transferType,
+    paymentType
+  ) {
     return (
       petName != null &&
       careTakerUserId != null &&
       startDate != null &&
-      endDate != null
+      endDate != null &&
+      transferType != null &&
+      paymentType != null
     );
   }
 
+  async createBid() {
+    const {
+      petName,
+      careTakerUserId,
+      startDate,
+      endDate,
+      transferType,
+      paymentType,
+    } = this.state;
+    // TODO: Retrieve USER ID
+    const body = {
+      pet_name: petName,
+      care_taker_user_id: careTakerUserId,
+      start_date: startDate,
+      end_date: endDate,
+      transfer_type: transferType,
+      payment_type: paymentType,
+      pet_owner_user_id: this.userId,
+    };
+    try {
+      const response = await fetch("http://localhost:5000/pet-owners/bid", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      if (response.status === 200) {
+        this.resetState();
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  resetState() {
+    this.setState({
+      petName: null,
+      careTakerUserId: null,
+      startDate: null,
+      endDate: null,
+      transferType: null,
+      paymentType: null,
+    });
+  }
+
   render() {
-    const { petName, careTakerUserId, startDate, endDate } = this.state;
+    const {
+      petName,
+      careTakerUserId,
+      careTakerName,
+      startDate,
+      endDate,
+      transferType,
+      paymentType,
+      petCategory,
+    } = this.state;
     return (
       <Card>
         <CardHeader>
@@ -68,16 +156,9 @@ export default class CreateNewBidForm extends Component {
             <FormGroup>
               <h6>Pet</h6>
               <PetDropdown
-                petOwnerUserId={1}
-                onSelectPetName={(name) => this.onSelectPetName(name)}
+                petOwnerUserId={this.userId}
+                onSelectPetName={(pet) => this.onSelectPet(pet)}
                 petName={petName}
-              />
-            </FormGroup>
-            <FormGroup>
-              <h6>Caretaker</h6>
-              {/* TODO (INSERT SEARCH HERE) */}
-              <FormInput
-                onChange={(e) => this.onCareTakerChange(e.target.value)}
               />
             </FormGroup>
             <FormGroup>
@@ -89,10 +170,46 @@ export default class CreateNewBidForm extends Component {
                 handleEndDateChange={(date) => this.onEndDateChange(date)}
               />
             </FormGroup>
+            <FormGroup>
+              <h6>Caretaker</h6>
+              {/* TODO (INSERT SEARCH HERE) */}
+              <CaretakerDropdown
+                category={petCategory}
+                selectedCareTaker={careTakerName}
+                startDate={startDate}
+                endDate={endDate}
+                onSelectCareTaker={(c) => this.onCareTakerChange(c)}
+              />
+            </FormGroup>
+            <FormGroup>
+              <h6>Transfer Type</h6>
+              <TransferTypeDropdown
+                transferType={transferType}
+                onChangeTransferType={(transferType) =>
+                  this.onTransferTypeChange(transferType)
+                }
+              />
+            </FormGroup>
+            <FormGroup>
+              <h6>Payment Type</h6>
+              <PaymentTypeDropdown
+                paymentType={paymentType}
+                onChangePaymentType={(paymentType) =>
+                  this.onPaymentTypeChange(paymentType)
+                }
+              />
+            </FormGroup>
             <FormGroup></FormGroup>
           </Form>
-          {this.isValidBid(petName, careTakerUserId, startDate, endDate) ? (
-            <Button>
+          {this.isValidBid(
+            petName,
+            careTakerUserId,
+            startDate,
+            endDate,
+            transferType,
+            paymentType
+          ) ? (
+            <Button onClick={() => this.createBid()}>
               <i className="material-icons">add</i>Create Bid
             </Button>
           ) : (

@@ -57,7 +57,30 @@ module.exports = {
     try {
       const { pet_owner_user_id } = req.params;
       const pets = await pool.query(
-        "SELECT p.owner, p.pname, p.bio, p.pic FROM petownerpets p WHERE p.id = $1;",
+        "SELECT p.owner, p.pname, p.bio, p.pic, p.category_name FROM petownerpets p WHERE p.id = $1;",
+        [pet_owner_user_id]
+      );
+      if (pets.rows) {
+        if (pets.rowCount == 0) {
+          res.json("No pets or invalid id");
+        } else {
+          res.status(200).json(pets.rows);
+        }
+      } else {
+        res.status(400).send("Invalid user id");
+      }
+      console.log(pets.rows);
+    } catch (error) {
+      res.status(500);
+      console.error(error.message);
+    }
+  },
+
+  async getAllPetsWithoutUserInfo(req, res) {
+    try {
+      const { pet_owner_user_id } = req.params;
+      const pets = await pool.query(
+        "SELECT * FROM OwnedPets p WHERE p.pet_owner_user_id = $1;",
         [pet_owner_user_id]
       );
       if (pets.rows) {
