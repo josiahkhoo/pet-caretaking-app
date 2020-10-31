@@ -8,6 +8,13 @@ app.use(express.json());
 
 const AuthController = require("./controllers/AuthController");
 const CaretakerController = require("./controllers/CaretakerController");
+const { end, query } = require("./db");
+const {
+  addCanTakeCareOf,
+  fullTimeCareTakerTakeLeave,
+  getAllBids,
+} = require("./controllers/CaretakerController");
+const { viewReviews } = require("./controllers/PetOwnerController");
 const PetOwnerController = require("./controllers/PetOwnerController");
 // Routes
 
@@ -100,6 +107,54 @@ app.get(
   "/pet-owners/:pet_owner_user_id/pets/:pet_name/bid",
   PetOwnerController.getBidsByPets
 );
+
+app.post("/pet-owners/bid/review", async (req, res) => {
+  try {
+    const {
+      pet_owner_user_id,
+      pet_name,
+      start_date,
+      end_date,
+      care_taker_user_id,
+      rating,
+      review,
+    } = req.body;
+    await pool.query(
+      `UPDATE bid
+    SET rating = $1, review = $2 
+    WHERE care_taker_user_id = $3 
+    AND start_date = $4
+    AND end_date = $5
+    AND pet_owner_user_id = $6
+    AND pet_name = $7`,
+      [
+        rating,
+        review,
+        care_taker_user_id,
+        start_date,
+        end_date,
+        pet_owner_user_id,
+        pet_name,
+      ]
+    );
+    const bid = await pool.query(
+      `SELECT * FROM bid WHERE care_taker_user_id = $1
+      AND start_date = $2
+      AND end_date = $3
+      AND pet_owner_user_id = $4
+      AND pet_name = $5`,
+      [care_taker_user_id, start_date, end_date, pet_owner_user_id, pet_name]
+    );
+    console.log(bid.rows);
+    if (bid.rowCount != 1) {
+      res.status(400).json("Invalid query");
+    }
+    res.status(200).json(bid.rows[0]);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json(error.message);
+  }
+});
 
 app.post("/pet-owners/pets", PetOwnerController.createPet);
 
