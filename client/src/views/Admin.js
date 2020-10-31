@@ -3,10 +3,10 @@ import { Container, Row, Col, Card, CardHeader, CardBody } from "shards-react";
 
 import PageTitle from "../components/common/PageTitle";
 import TakenCarePets from "../components/dashboard-view/TakenCarePets";
-import RatingDropdown from "../components/create-review/RatingDropdown.js"
 import HighestPetDays from "../components/dashboard-view/HighestPetDays";
 import Underperforming from "../components/dashboard-view/Underperforming";
 import AverageSatisfaction from "../components/dashboard-view/AverageSatisfaction";
+import TotalSalary from "../components/dashboard-view/TotalSalary";
 
 const Admin = () => (
   <Container fluid className="main-content-container px-4">
@@ -35,7 +35,13 @@ const Admin = () => (
 
     <Row className="mb-4">
       <Col>
-      <AverageSatisfaction />
+        <AverageSatisfaction />
+      </Col>
+    </Row>
+
+    <Row className="mb-4">
+      <Col>
+        <TotalSalary />
       </Col>
     </Row>
 
