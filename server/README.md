@@ -58,7 +58,7 @@ GET `/caretaker/total-pet-care-by-month` - `FILL THIS UP`
 
 ## Availablility
 - Can sort by any number of these params below
-- Endpoint: `/caretakers/available/search`
+- Endpoint: `/caretakers/availability/search`
 - GET `/caretakers/available/search?name=&start=2020-10-01&end=2020-10-31&category=Do&price=100&rating=0`
 - Possible Params to sort by {name, start, end, category, price ,rating}` - availability under parameters given
 - DATE should be in `YYYY/MM/DD`

@@ -13,16 +13,19 @@ import PetDropdown from "../pet-dropdown/PetDropdown";
 import RangeDatePicker from "../common/RangeDatePicker";
 import TransferTypeDropdown from "./TransferTypeDropdown";
 import PaymentTypeDropdown from "./PaymentTypeDropdown";
+import CaretakerDropdown from "./CaretakerDropdown";
 
 export default class CreateNewBidForm extends Component {
   constructor(props) {
     super(props);
     this.state = {
       petName: null,
+      petCategory: null,
       careTakerUserId: null,
       startDate: null,
       endDate: null,
       transferType: null,
+      careTakerName: null,
       paymentType: null,
     };
   }
@@ -30,9 +33,12 @@ export default class CreateNewBidForm extends Component {
   //TODO: Place holder value
   userId = 1;
 
-  onSelectPetName(petName) {
+  onSelectPet(pet) {
+    console.log(pet.pet_name);
+    console.log(pet.category_name);
     this.setState({
-      petName: petName,
+      petName: pet.pet_name,
+      petCategory: pet.category_name,
     });
   }
 
@@ -48,9 +54,10 @@ export default class CreateNewBidForm extends Component {
     });
   }
 
-  onCareTakerChange(id) {
+  onCareTakerChange(careTaker) {
     this.setState({
-      careTakerUserId: id,
+      careTakerUserId: careTaker.user_id,
+      careTakerName: careTaker.name,
     });
   }
 
@@ -132,10 +139,12 @@ export default class CreateNewBidForm extends Component {
     const {
       petName,
       careTakerUserId,
+      careTakerName,
       startDate,
       endDate,
       transferType,
       paymentType,
+      petCategory,
     } = this.state;
     return (
       <Card>
@@ -148,15 +157,8 @@ export default class CreateNewBidForm extends Component {
               <h6>Pet</h6>
               <PetDropdown
                 petOwnerUserId={this.userId}
-                onSelectPetName={(name) => this.onSelectPetName(name)}
+                onSelectPetName={(pet) => this.onSelectPet(pet)}
                 petName={petName}
-              />
-            </FormGroup>
-            <FormGroup>
-              <h6>Caretaker</h6>
-              {/* TODO (INSERT SEARCH HERE) */}
-              <FormInput
-                onChange={(e) => this.onCareTakerChange(e.target.value)}
               />
             </FormGroup>
             <FormGroup>
@@ -166,6 +168,17 @@ export default class CreateNewBidForm extends Component {
                 endDate={endDate}
                 handleStartDateChange={(date) => this.onStartDateChange(date)}
                 handleEndDateChange={(date) => this.onEndDateChange(date)}
+              />
+            </FormGroup>
+            <FormGroup>
+              <h6>Caretaker</h6>
+              {/* TODO (INSERT SEARCH HERE) */}
+              <CaretakerDropdown
+                category={petCategory}
+                selectedCareTaker={careTakerName}
+                startDate={startDate}
+                endDate={endDate}
+                onSelectCareTaker={(c) => this.onCareTakerChange(c)}
               />
             </FormGroup>
             <FormGroup>
