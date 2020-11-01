@@ -6,18 +6,18 @@ import AddNewPetForm from "../components/add-new-pet/AddNewPetForm";
 
 import PageTitle from "../components/common/PageTitle";
 import CreateNewBidForm from "../components/create-new-bid/CreateNewBidForm";
+import CreateReviewForm from "../components/create-review/CreateReviewForm";
 import InputTodo from "../components/home/InputTodo";
 import List from "../components/home/UserList";
-import PetOwnerBidTable from "../components/petowner-bid-table/PetOwnerBidTable";
 import OwnedPetsViewTable from "../components/owned-pets-view/OwnedPetsViewTable";
 import Store from "../flux/store";
+import PetOwnerBidTable from "../components/pet-owner-bid-table/PetOwnerBidTable";
 
 const Home = () => {
   const user = Store.getUser();
-  console.log(user)
+  console.log(user);
 
-  if (user == null)
-    return <Redirect to="/login" />
+  if (user == null) return <Redirect to="/login" />;
 
   return (
     <Container fluid className="main-content-container px-4 pb-4">
@@ -30,11 +30,7 @@ const Home = () => {
           className="text-sm-left"
         />
       </Row>
-      <OwnedPetsViewTable />
-      <PetOwnerBidTable />
       {/* Editor */}
-      <CreateNewBidForm />
-      <AddNewPetForm />
       <List />
       {/* <InputTodo /> */}
     </Container>

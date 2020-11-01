@@ -58,7 +58,7 @@ GET `/caretaker/total-pet-care-by-month` - `FILL THIS UP`
 
 ## Availablility
 - Can sort by any number of these params below
-- Endpoint: `/caretakers/available/search`
+- Endpoint: `/caretakers/availability/search`
 - GET `/caretakers/available/search?name=&start=2020-10-01&end=2020-10-31&category=Do&price=100&rating=0`
 - Possible Params to sort by {name, start, end, category, price ,rating}` - availability under parameters given
 - DATE should be in `YYYY/MM/DD`
@@ -148,6 +148,9 @@ GET `/pet-owners/:pet_owner_user_id/pets/:pet_name/bid` - `[<bid>]`
 GET `/pet-owners/:pet_owner_user_id/pets` - `[<petDetails>]`
 ### View all reviews by owner in the specific category 
 GET `/pet-owners/:pet_owner_user_id/categories/:category_name/reviews` - `[<review>]`
+
+### Create a review
+POST `/pet-owners/bid/review { care_taker_user_id, start_date, end_date, pet_owner_user_id, pet_name, rating, review } `
 
 ### Appendix
 - bid : {

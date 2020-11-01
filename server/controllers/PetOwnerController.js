@@ -76,6 +76,29 @@ module.exports = {
     }
   },
 
+  async getAllPetsWithoutUserInfo(req, res) {
+    try {
+      const { pet_owner_user_id } = req.params;
+      const pets = await pool.query(
+        "SELECT * FROM OwnedPets p WHERE p.pet_owner_user_id = $1;",
+        [pet_owner_user_id]
+      );
+      if (pets.rows) {
+        if (pets.rowCount == 0) {
+          res.json("No pets or invalid id");
+        } else {
+          res.status(200).json(pets.rows);
+        }
+      } else {
+        res.status(400).send("Invalid user id");
+      }
+      console.log(pets.rows);
+    } catch (error) {
+      res.status(500).json([]);
+      console.error(error.message);
+    }
+  },
+
   async createBid(req, res) {
     try {
       const {
@@ -127,7 +150,18 @@ module.exports = {
     try {
       const { pet_owner_user_id } = req.params;
       const bids = await pool.query(
-        `SELECT * FROM Bid WHERE pet_owner_user_id = $1`,
+        `SELECT Bid.care_taker_user_id AS care_taker_user_id, 
+        Users.name AS care_taker_name, 
+        Bid.pet_name AS pet_name, 
+        Bid.is_success AS is_success, 
+        Bid.payment_type AS payment_type,
+        Bid.transfer_type AS transfer_type,
+        Bid.total_price AS total_price,
+        Bid.review AS review,
+        Bid.rating AS rating,
+        Bid.start_date AS start_date,
+        Bid.end_date AS end_date
+         FROM Bid LEFT JOIN Users ON Bid.care_taker_user_id = Users.user_id WHERE Bid.pet_owner_user_id = $1`,
         [pet_owner_user_id]
       );
       res.status(200).json(bids.rows);
