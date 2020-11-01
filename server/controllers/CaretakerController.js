@@ -378,7 +378,7 @@ module.exports = {
       AND t.care_taker_user_id = t2.care_taker_user_id
       ) as post_60_days_earnings, caretakers.is_full_time,
       (CASE WHEN caretakers.base_salary IS NULL AND caretakers.is_full_time = false
-          THEN sum(t.daily_price) * caretakers.commission_rate -- parttimers
+          THEN sum(t.daily_price) * caretakers.commission_rate
            WHEN count(*) > 60 THEN (SELECT sum(daily_price)
       FROM (SELECT *,
         rank() OVER (
