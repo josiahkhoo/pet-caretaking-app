@@ -19,6 +19,7 @@ import CreateReview from "./views/CreateReview";
 import PetOwner from "./views/PetOwner";
 import AddNewPet from "./views/AddNewPet";
 import CreateBid from "./views/CreateBid";
+import Admin from "./views/Admin";
 
 export default [
   {
@@ -96,5 +97,10 @@ export default [
     path: "/create-bid",
     layout: DefaultLayout,
     component: CreateBid,
+  },
+  {
+    path: "/admin",
+    layout: DefaultLayout,
+    component: Admin,
   },
 ];
