@@ -33,7 +33,7 @@ module.exports = {
         const newCareTaker = await pool.query(
           "INSERT INTO caretakers(user_id, is_full_time, bonus_rate, base_salary, minimum_base_quota) VALUES($1, $2, (SELECT MAX(full_time_bonus_rate) FROM admin), (SELECT MAX(full_time_base_salary) FROM admin), (SELECT MAX(poor_review_pet_limit) FROM admin)) RETURNING *",
           [userId, is_full_time_ct] 
-      );
+        );
       }
 
       if (newUser.rows.length == 1) {
@@ -52,7 +52,7 @@ module.exports = {
     try {
       const { username, password } = req.body;
       const user = await pool.query(
-        "SELECT * FROM Users WHERE username=$1 AND password=$2",
+        "SELECT * FROM users NATURAL JOIN caretakers WHERE username=$1 AND password=$2",
         [username, password]
       );
       if (user.rows.length == 1) {

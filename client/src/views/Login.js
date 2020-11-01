@@ -32,27 +32,32 @@ const Login = withRouter(({ history }) => {
   };
 
   const onLogin = async (e) => {
-    if (!checkFormState) {
-      console.log("Empty fields");
-    }
-    const body = { username, password };
-    const response = await fetch("http://localhost:5000/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    })
-      .then((response) => {
-        if (response.status >= 400) {
-          alert("An error has occurred")
-        }
-        return response.json();
+    try {
+      if (!checkFormState) {
+        console.log("Empty fields");
+      }
+      const body = { username, password };
+      const response = await fetch("http://localhost:5000/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
       })
-      .then((data) => {
-        // Login success
-        sessionStorage.setItem("user", JSON.stringify(data));
-        handleLogin();
-        history.push("/home");
-      });
+        .then((response) => {
+          if (response.status >= 400) {
+            alert("Wrong password!")
+          }
+          return response.json();
+        })
+        .then((data) => {
+          // Login success
+          localStorage.setItem("user", JSON.stringify(data));
+          handleLogin();
+          history.push("/home");
+        });
+    } catch (error) {
+      // history.push("/errors")
+    }
+    
   };
 
   return (

@@ -12,20 +12,19 @@ export default function() {
       to: "/admin",
     },
     {
-      title: "Blog Dashboard",
-      to: "/blog-overview",
-      htmlBefore: '<i class="material-icons">edit</i>',
-      htmlAfter: "",
+      title: "Pet Owner",
+      htmlBefore: '<i class="material-icons">person</i>',
+      to: "/pet-owner",
     },
     {
-      title: "Blog Posts",
-      htmlBefore: '<i class="material-icons">vertical_split</i>',
-      to: "/blog-posts",
+      title: "Care Taker",
+      htmlBefore: '<i class="material-icons">person</i>',
+      to: "/care-taker",
     },
     {
-      title: "Add New Post",
-      htmlBefore: '<i class="material-icons">note_add</i>',
-      to: "/add-new-post",
+      title: "User Profile",
+      htmlBefore: '<i class="material-icons">person</i>',
+      to: "/user-profile-lite",
     },
     {
       title: "Forms & Components",
@@ -38,19 +37,10 @@ export default function() {
       to: "/tables",
     },
     {
-      title: "User Profile",
-      htmlBefore: '<i class="material-icons">person</i>',
-      to: "/user-profile-lite",
-    },
-    {
       title: "Errors",
       htmlBefore: '<i class="material-icons">error</i>',
       to: "/errors",
     },
-    {
-      title: "Pet Owners",
-      htmlBefore: '<i class="material-icons">person</i>',
-      to: "/pet-owners",
-    },
+    
   ];
 }

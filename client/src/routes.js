@@ -2,7 +2,7 @@ import React from "react";
 import { Redirect } from "react-router-dom";
 
 // Layout Types
-import { DefaultLayout } from "./layouts";
+import { DefaultLayout, NoNavLayout } from "./layouts";
 
 // Route Views
 import BlogOverview from "./views/BlogOverview";
@@ -20,6 +20,7 @@ import PetOwner from "./views/PetOwner";
 import AddNewPet from "./views/AddNewPet";
 import CreateBid from "./views/CreateBid";
 import Admin from "./views/Admin";
+import CareTaker from "./views/CareTaker";
 
 export default [
   {
@@ -31,11 +32,12 @@ export default [
   {
     path: "/login",
     layout: DefaultLayout,
+    layout: NoNavLayout,
     component: Login,
   },
   {
     path: "/register",
-    layout: DefaultLayout,
+    layout: NoNavLayout,
     component: Register,
   },
   {
@@ -84,7 +86,7 @@ export default [
     component: CreateReview,
   },
   {
-    path: "/pet-owners",
+    path: "/pet-owner",
     layout: DefaultLayout,
     component: PetOwner,
   },
@@ -102,5 +104,10 @@ export default [
     path: "/admin",
     layout: DefaultLayout,
     component: Admin,
+  },
+  {
+    path: "/care-taker",
+    layout: DefaultLayout,
+    component: CareTaker,
   },
 ];

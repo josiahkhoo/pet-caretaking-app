@@ -14,9 +14,8 @@ import Store from "../flux/store";
 const Admin = () => {
   const user = Store.getUser();
   console.log(user)
-
-  if (user == null)
-    return <Redirect to="/login" />
+  if (user == null) return <Redirect to="/login" />;
+  if (!user.is_pcs_admin) return <Redirect to="/errors" />;
 
   return(
   <Container fluid className="main-content-container px-4">

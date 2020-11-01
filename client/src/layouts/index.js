@@ -1,3 +1,4 @@
 import DefaultLayout from "./Default";
+import NoNavLayout from "./NoNavLayout";
 
-export { DefaultLayout };
+export { DefaultLayout, NoNavLayout };
