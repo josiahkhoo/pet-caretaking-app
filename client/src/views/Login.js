@@ -8,9 +8,10 @@ import {
   CardBody,
   Card,
   CardFooter,
-  Button,
+  Button
 } from "shards-react";
-import { Dispatcher, Constants } from "../flux";
+
+import { Dispatcher, Constants, Store } from "../flux";
 
 const Login = withRouter(({ history }) => {
   const [username, setEmail] = useState("");
@@ -20,22 +21,8 @@ const Login = withRouter(({ history }) => {
     return username == "" || password == "";
   };
 
-  const onRegister = async (e) => {
-    if (!checkFormState) {
-      console.log("Empty fields");
-    }
-    try {
-      const body = { username, password };
-      const response = await fetch("http://localhost:5000/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
-
-      console.log(response);
-    } catch (error) {
-      console.log(error);
-    }
+  const onRegister = () => {
+    history.push("/register");
   };
 
   const handleLogin = () => {
@@ -56,7 +43,7 @@ const Login = withRouter(({ history }) => {
     })
       .then((response) => {
         if (response.status >= 400) {
-          throw new Error("Invalid response");
+          alert("An error has occurred")
         }
         return response.json();
       })
@@ -74,7 +61,7 @@ const Login = withRouter(({ history }) => {
       <Row noGutters className="d-flex justify-content-center py-4">
         <h1>Login</h1>
       </Row>
-
+      
       <Row form>
         <Col lg="3" />
         <Col className="form-group">
