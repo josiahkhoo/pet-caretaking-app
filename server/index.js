@@ -165,6 +165,12 @@ app.get("/pet-owners/:pet_owner_user_id/bid", PetOwnerController.getAllBids);
 // view all pets owned by a certain pet owner
 app.get("/pet-owners/:pet_owner_user_id/pets", PetOwnerController.getAllPets);
 
+// view all pets owned by a certain pet owner
+app.get(
+  "/pet-owners/:pet_owner_user_id/pets-without-userinfo",
+  PetOwnerController.getAllPetsWithoutUserInfo
+);
+
 // get all bids for a caretaker
 app.get("/caretakers/:care_taker_user_id/bid", CaretakerController.getAllBids);
 

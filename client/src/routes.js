@@ -15,6 +15,10 @@ import BlogPosts from "./views/BlogPosts";
 import Home from "./views/Home";
 import Login from "./views/Login";
 import Register from "./views/Register";
+import CreateReview from "./views/CreateReview";
+import PetOwner from "./views/PetOwner";
+import AddNewPet from "./views/AddNewPet";
+import CreateBid from "./views/CreateBid";
 import Admin from "./views/Admin";
 
 export default [
@@ -22,61 +26,81 @@ export default [
     path: "/",
     exact: true,
     layout: DefaultLayout,
-    component: Home
+    component: Home,
   },
   {
     path: "/login",
     layout: DefaultLayout,
-    component: Login
+    component: Login,
   },
   {
     path: "/register",
     layout: DefaultLayout,
-    component: Register
+    component: Register,
   },
   {
     path: "/home",
     layout: DefaultLayout,
-    component: Home
+    component: Home,
   },
   {
     path: "/blog-overview",
     layout: DefaultLayout,
-    component: BlogOverview
+    component: BlogOverview,
   },
   {
     path: "/user-profile-lite",
     layout: DefaultLayout,
-    component: UserProfileLite
+    component: UserProfileLite,
   },
   {
     path: "/add-new-post",
     layout: DefaultLayout,
-    component: AddNewPost
+    component: AddNewPost,
   },
   {
     path: "/errors",
     layout: DefaultLayout,
-    component: Errors
+    component: Errors,
   },
   {
     path: "/components-overview",
     layout: DefaultLayout,
-    component: ComponentsOverview
+    component: ComponentsOverview,
   },
   {
     path: "/tables",
     layout: DefaultLayout,
-    component: Tables
+    component: Tables,
   },
   {
     path: "/blog-posts",
     layout: DefaultLayout,
-    component: BlogPosts
+    component: BlogPosts,
+  },
+  {
+    path: "/create-review",
+    layout: DefaultLayout,
+    component: CreateReview,
+  },
+  {
+    path: "/pet-owners",
+    layout: DefaultLayout,
+    component: PetOwner,
+  },
+  {
+    path: "/add-new-pet",
+    layout: DefaultLayout,
+    component: AddNewPet,
+  },
+  {
+    path: "/create-bid",
+    layout: DefaultLayout,
+    component: CreateBid,
   },
   {
     path: "/admin",
     layout: DefaultLayout,
-    component: Admin
-  }
+    component: Admin,
+  },
 ];

@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import priceToString from "../../utils/priceToString";
+import { Link } from "react-router-dom";
 import { Button, Row } from "shards-react";
+import moment from "moment";
 
 export default class BidRow extends Component {
   canCreateReview() {
@@ -22,8 +24,7 @@ export default class BidRow extends Component {
     const { bid } = this.props;
     return (
       <tr key={bid}>
-        <td>{bid.care_taker_user_id}</td>
-        <td>{bid.pet_owner_user_id}</td>
+        <td>{bid.care_taker_name}</td>
         <td>{bid.pet_name}</td>
         <td>{bid.is_success.toString()}</td>
         <td>{bid.payment_type}</td>
@@ -31,11 +32,21 @@ export default class BidRow extends Component {
         <td>{priceToString(bid.total_price)}</td>
         <td>{bid.review}</td>
         <td>{bid.rating}</td>
-        <td>{bid.start_date}</td>
-        <td>{bid.end_date}</td>
+        <td>{moment(bid.start_date).format("YYYY-MM-DD")}</td>
+        <td>{moment(bid.end_date).format("YYYY-MM-DD")}</td>
         <td>
           {this.canCreateReview() ? (
-            <Button>Create Review</Button>
+            <Button
+              tag={Link}
+              to={{
+                pathname: "create-review",
+                state: {
+                  bid: bid,
+                },
+              }}
+            >
+              Create Review
+            </Button>
           ) : (
             <Button outline disabled theme="secondary">
               Create Review

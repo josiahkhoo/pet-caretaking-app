@@ -4,7 +4,7 @@ export default function() {
       title: "Home",
       to: "/home",
       htmlBefore: '<i class="material-icons">home</i>',
-      htmlAfter: ""
+      htmlAfter: "",
     },
     {
       title: "Admin Dashboard",
@@ -15,7 +15,7 @@ export default function() {
       title: "Blog Dashboard",
       to: "/blog-overview",
       htmlBefore: '<i class="material-icons">edit</i>',
-      htmlAfter: ""
+      htmlAfter: "",
     },
     {
       title: "Blog Posts",
@@ -46,7 +46,11 @@ export default function() {
       title: "Errors",
       htmlBefore: '<i class="material-icons">error</i>',
       to: "/errors",
-    }
-    
+    },
+    {
+      title: "Pet Owners",
+      htmlBefore: '<i class="material-icons">person</i>',
+      to: "/pet-owners",
+    },
   ];
 }

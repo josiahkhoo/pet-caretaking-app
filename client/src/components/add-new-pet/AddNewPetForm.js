@@ -50,7 +50,7 @@ export default class AddNewPetForm extends Component {
     // TODO: RETRIEVE USER ID AND INJECT HERE
     const { petName, category, specialRequirements, imageUrl } = this.state;
     const body = {
-      pet_owner_user_id: 1,
+      pet_owner_user_id: this.props.petOwnerUserId,
       pet_name: petName,
       category_name: category,
       special_requirements: specialRequirements,

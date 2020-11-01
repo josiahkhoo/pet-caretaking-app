@@ -11,6 +11,7 @@ import {
   Button,
 } from "shards-react";
 import RatingDropdown from "./RatingDropdown";
+import moment from "moment";
 
 export default class CreateReviewForm extends Component {
   static propTypes = {
@@ -48,8 +49,8 @@ export default class CreateReviewForm extends Component {
     const body = {
       pet_owner_user_id: bid.pet_owner_user_id,
       pet_name: bid.pet_name,
-      start_date: bid.start_date,
-      end_date: bid.end_date,
+      start_date: moment(bid.start_date).format("YYYY-MM-DD"),
+      end_date: moment(bid.end_date).format("YYYY-MM-DD"),
       care_taker_user_id: bid.care_taker_user_id,
       rating: rating,
       review: review,
@@ -79,9 +80,9 @@ export default class CreateReviewForm extends Component {
     const { rating, review } = this.state;
     return (
       <Card>
-        <CardHeader>
+        {/* <CardHeader>
           <h4>Create Review</h4>
-        </CardHeader>
+        </CardHeader> */}
         <CardBody>
           <Form>
             <FormGroup>
