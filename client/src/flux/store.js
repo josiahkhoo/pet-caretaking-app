@@ -38,14 +38,14 @@ class Store extends EventEmitter {
   }
 
   addUser() {
-    _store.user = JSON.parse(sessionStorage.getItem("user"));
+    _store.user = JSON.parse(localStorage.getItem("user"));
     this.emit(Constants.CHANGE);
   }
 
   removeUser() {
     _store.user = null;
     this.emit(Constants.CHANGE);
-    sessionStorage.clear()
+    localStorage.clear()
   }
 
   getMenuState() {
@@ -57,6 +57,7 @@ class Store extends EventEmitter {
 
     if (user == null)
       return [];
+
     console.log(user)
     const isCaretaker = user.is_full_time != undefined;
     const isAdmin = user.is_pcs_admin;

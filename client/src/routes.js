@@ -2,7 +2,7 @@ import React from "react";
 import { Redirect } from "react-router-dom";
 
 // Layout Types
-import { DefaultLayout } from "./layouts";
+import { DefaultLayout, NoNavLayout } from "./layouts";
 
 // Route Views
 import BlogOverview from "./views/BlogOverview";
@@ -32,11 +32,12 @@ export default [
   {
     path: "/login",
     layout: DefaultLayout,
+    layout: NoNavLayout,
     component: Login,
   },
   {
     path: "/register",
-    layout: DefaultLayout,
+    layout: NoNavLayout,
     component: Register,
   },
   {

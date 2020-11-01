@@ -44,18 +44,18 @@ const Login = withRouter(({ history }) => {
       })
         .then((response) => {
           if (response.status >= 400) {
-            alert("An error has occurred")
+            alert("Wrong password!")
           }
           return response.json();
         })
         .then((data) => {
           // Login success
-          sessionStorage.setItem("user", JSON.stringify(data));
+          localStorage.setItem("user", JSON.stringify(data));
           handleLogin();
           history.push("/home");
         });
     } catch (error) {
-      history.push("/errors")
+      // history.push("/errors")
     }
     
   };
