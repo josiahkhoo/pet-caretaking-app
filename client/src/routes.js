@@ -20,6 +20,7 @@ import PetOwner from "./views/PetOwner";
 import AddNewPet from "./views/AddNewPet";
 import CreateBid from "./views/CreateBid";
 import Admin from "./views/Admin";
+import CareTaker from "./views/CareTaker";
 
 export default [
   {
@@ -84,7 +85,7 @@ export default [
     component: CreateReview,
   },
   {
-    path: "/pet-owners",
+    path: "/pet-owner",
     layout: DefaultLayout,
     component: PetOwner,
   },
@@ -102,5 +103,10 @@ export default [
     path: "/admin",
     layout: DefaultLayout,
     component: Admin,
+  },
+  {
+    path: "/care-taker",
+    layout: DefaultLayout,
+    component: CareTaker,
   },
 ];

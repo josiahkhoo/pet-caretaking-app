@@ -53,7 +53,20 @@ class Store extends EventEmitter {
   }
 
   getSidebarItems() {
-    return _store.navItems;
+    const user = _store.user;
+
+    if (user == null)
+      return [];
+    console.log(user)
+    const isCaretaker = user.is_full_time != undefined;
+    const isAdmin = user.is_pcs_admin;
+    const isPetowner = user.is_pet_owner;
+
+    if (isAdmin) return _store.navItems.filter(x => x.to != "/care-taker" || x.to != "/pet-owner" )
+    if (isCaretaker && isPetowner) return _store.navItems.filter(x => x.to != "/admin")
+    if (isCaretaker) return _store.navItems.filter(x => x.to != "/admin" || x.to != "/pet-owner")
+    if (isPetowner) return _store.navItems.filter(x => x.to != "/admin" || x.to != "/care-taker")
+    // return _store.navItems;
   }
 
   getUser() {

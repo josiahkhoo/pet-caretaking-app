@@ -12,11 +12,6 @@ import TotalSalary from "../components/dashboard-view/TotalSalary";
 import Store from "../flux/store";
 
 const Admin = () => {
-  const user = Store.getUser();
-  console.log(user)
-
-  if (user == null)
-    return <Redirect to="/login" />
 
   return(
   <Container fluid className="main-content-container px-4">
