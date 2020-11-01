@@ -416,31 +416,39 @@ module.exports = {
       category = category ? category : null;
       price = price ? price : null;
       rating = rating ? rating : null;
-      console.log(name, start, end, category, rating);
+      console.log(name, start, end, category, price ,rating);
+
       const findAvailable = await pool.query(
-        `SELECT DISTINCT x.* , ROUND(AVG(y.avg_rating), 2)
-      FROM (SELECT DISTINCT u.user_id as userid,
-      u.name as named,
-      u.contact_number as contact,
-      c.daily_price as price,
-      c.category_name as category
-      FROM isAvailableOn a
-      JOIN Users u ON a.care_taker_user_id = u.user_id
-      JOIN CanTakeCare c ON a.care_taker_user_id = c.care_taker_user_id
-      WHERE c.category_name LIKE COALESCE(CAST($1 as VARCHAR), '')||'%'
-      AND a.available_date > COALESCE(CAST($2 AS DATE), DATE('1970-01-01'))
-      AND a.available_date <= COALESCE(CAST($3 AS DATE), '9999-12-31')
-      AND u.name LIKE COALESCE(CAST($4 as VARCHAR), '')||'%' 
-      AND c.daily_price <= COALESCE(CAST($5 as INT), 20000)
-         ) as x
-      LEFT OUTER JOIN (SELECT u.user_id as userid,
-      u.name as named, u.contact_number as contact,
-      ROUND(AVG(b.rating), 2) as avg_rating
-      FROM Bid b INNER JOIN Users u ON b.care_taker_user_id = u.user_id
-      GROUP BY (u.user_id, b.care_taker_user_id, u.name, u.contact_number)) as y ON
-      x.userid = y.userid 
-      GROUP BY (x.userid, x.named, x.contact, x.price, y.userid, y.named, y.contact, x.category)
-      HAVING AVG(y.avg_rating) >= COALESCE(CAST($6 AS NUMERIC), 0) OR AVG(y.avg_rating) IS NULL`,
+        `SELECT DISTINCT x.named,
+        x.contact,
+        x.price,
+        x.category,
+        ROUND(AVG(y.avg_rating), 2) as rating
+            FROM (SELECT DISTINCT u.user_id as userid,
+            u.name as named,
+            u.contact_number as contact,
+            c.daily_price as price,
+            c.category_name as category,
+          a.available_date as dated
+            FROM isAvailableOn a
+            JOIN Users u ON a.care_taker_user_id = u.user_id
+            JOIN CanTakeCare c ON a.care_taker_user_id = c.care_taker_user_id
+            WHERE c.category_name LIKE COALESCE(CAST($1 as VARCHAR), '')||'%'
+            AND a.available_date >= COALESCE(CAST($2 AS DATE), DATE('1970-01-01'))
+            AND a.available_date <= COALESCE(CAST($3 AS DATE), '9999-12-31')
+            AND u.name LIKE COALESCE(CAST($4 as VARCHAR), '')||'%' 
+            AND c.daily_price <= COALESCE(CAST($5 as INT), 20000)
+               ) as x
+            LEFT OUTER JOIN (SELECT u.user_id as userid,
+            u.name as named, u.contact_number as contact,
+            ROUND(AVG(b.rating), 2) as avg_rating
+            FROM Bid b INNER JOIN Users u ON b.care_taker_user_id = u.user_id
+            GROUP BY (u.user_id, b.care_taker_user_id, u.name, u.contact_number)) as y ON
+            x.userid = y.userid 
+            GROUP BY (x.userid, x.named, x.contact, x.price, y.userid, y.named, y.contact, x.category)
+            HAVING AVG(y.avg_rating) >= COALESCE(CAST($6 AS NUMERIC), 0) OR AVG(y.avg_rating) IS NULL
+          AND ((CAST($2 AS DATE) IS NULL OR CAST($3 AS DATE) IS NULL)
+          OR COUNT(DISTINCT x.dated) = CAST($3 AS DATE)- CAST($2 AS DATE) + 1)`,
         [category, start, end, name, price, rating]
       );
       // console.log(findAvailable);

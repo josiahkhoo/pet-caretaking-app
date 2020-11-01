@@ -13,12 +13,10 @@ const UserList = () => {
     const [users, setUsers] = useState([])
 
     const getList = async () => {
-
         try {
             const response = await fetch("http://localhost:5000/users");
             const jsonData = await response.json()
 
-            console.log(jsonData);
             setUsers(jsonData);
             // refresh page to show changes
         } catch (error) {
@@ -28,8 +26,6 @@ const UserList = () => {
     useEffect(() => {
         getList();
     }, [])
-
-    console.log(users);
 
     return (
         <Card className="mb-4">
@@ -66,9 +62,9 @@ const UserList = () => {
                 {users.map(user => (
                     <tr>
                         <td>{user.user_id}</td>
-                        <td>{user.email}</td>
+                        <td>{user.username}</td>
                         <td>{user.password}</td>
-                        <td>{user.display_name}</td>
+                        <td>{user.name}</td>
                     </tr>
                 ))}
               </tbody>
