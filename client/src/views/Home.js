@@ -6,9 +6,11 @@ import AddNewPetForm from "../components/add-new-pet/AddNewPetForm";
 
 import PageTitle from "../components/common/PageTitle";
 import CreateNewBidForm from "../components/create-new-bid/CreateNewBidForm";
+import CreateReviewForm from "../components/create-review/CreateReviewForm";
 import InputTodo from "../components/home/InputTodo";
 import List from "../components/home/UserList";
 import Store from "../flux/store";
+import PetOwnerBidTable from "../components/pet-owner-bid-table/PetOwnerBidTable";
 
 const Home = () => {
   const user = Store.getUser();
@@ -28,7 +30,8 @@ const Home = () => {
           className="text-sm-left"
         />
       </Row>
-
+      <CreateReviewForm />
+      <PetOwnerBidTable />
       {/* Editor */}
       <CreateNewBidForm />
       <AddNewPetForm />
