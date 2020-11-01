@@ -149,6 +149,9 @@ GET `/pet-owners/:pet_owner_user_id/pets` - `[<petDetails>]`
 ### View all reviews by owner in the specific category 
 GET `/pet-owners/:pet_owner_user_id/categories/:category_name/reviews` - `[<review>]`
 
+### Create a review
+POST `/pet-owners/bid/review { care_taker_user_id, start_date, end_date, pet_owner_user_id, pet_name, rating, review } `
+
 ### Appendix
 - bid : {
     "care_taker_user_id": 2,

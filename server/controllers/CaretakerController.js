@@ -289,7 +289,7 @@ module.exports = {
     try {
       const { month } = req.params;
       const underPerforming = await pool.query(
-        "SELECT care_taker_user_id AS underperfoming FROM bid WHERE EXTRACT(MONTH FROM end_date) = $1 " +
+        "SELECT care_taker_user_id AS underperforming FROM bid WHERE EXTRACT(MONTH FROM end_date) = $1 " +
           "AND is_success = TRUE GROUP BY care_taker_user_id HAVING (sum(end_date - start_date + 1) < 60 " +
           "OR AVG(rating) < 2.5)",
         [month]

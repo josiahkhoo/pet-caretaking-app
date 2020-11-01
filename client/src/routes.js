@@ -14,18 +14,25 @@ import Tables from "./views/Tables";
 import BlogPosts from "./views/BlogPosts";
 import Home from "./views/Home";
 import Login from "./views/Login";
+import Register from "./views/Register";
+import Admin from "./views/Admin";
 
 export default [
   {
     path: "/",
     exact: true,
     layout: DefaultLayout,
-    component: () => <Redirect to="/login" />
+    component: Home
   },
   {
     path: "/login",
     layout: DefaultLayout,
     component: Login
+  },
+  {
+    path: "/register",
+    layout: DefaultLayout,
+    component: Register
   },
   {
     path: "/home",
@@ -66,5 +73,10 @@ export default [
     path: "/blog-posts",
     layout: DefaultLayout,
     component: BlogPosts
+  },
+  {
+    path: "/admin",
+    layout: DefaultLayout,
+    component: Admin
   }
 ];

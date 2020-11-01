@@ -42,6 +42,12 @@ class Store extends EventEmitter {
     this.emit(Constants.CHANGE);
   }
 
+  removeUser() {
+    _store.user = null;
+    this.emit(Constants.CHANGE);
+    sessionStorage.clear()
+  }
+
   getMenuState() {
     return _store.menuVisible;
   }
