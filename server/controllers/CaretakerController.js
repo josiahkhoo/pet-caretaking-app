@@ -18,7 +18,6 @@ function getDates(startDate, stopDate) {
 module.exports = {
   async specifyAvailability(req, res) {
     try {
-      //   const { id } = req.params;
       // TODO: do not allow leave if currently taking care of pets
       const { user_id, start_date, end_date } = req.body;
       const result = await pool.query(

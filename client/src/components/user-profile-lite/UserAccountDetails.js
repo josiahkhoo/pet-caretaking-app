@@ -1,5 +1,4 @@
-import React from "react";
-import PropTypes from "prop-types";
+import React, { useState }  from "react";
 import {
   Card,
   CardHeader,
@@ -10,54 +9,79 @@ import {
   Form,
   FormGroup,
   FormInput,
-  FormSelect,
-  FormTextarea,
   Button
 } from "shards-react";
 
-const UserAccountDetails = ({ title }) => (
+const UserAccountDetails = ({ user }) => {
+  
+  const [contact_number, setNumber] = useState(user.contact_number);
+  const [name, setName] = useState(user.name);
+  const [address, setAddress] = useState(user.address);
+  const [password, setPassword] = useState(user.password);
+
+  const updateAccount = async () => {
+    try {
+      const user_id = user.user_id;
+      const body = { name, password, contact_number, address };
+      const url = process.env.BACKEND_URL || "http://localhost:5000";
+      await fetch(url.concat(`/users/${user_id}`), {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      })
+        .then((response) => {
+          return response.json();
+        })
+        .then((data) => {
+          alert("Update success")
+        });
+    } catch (error) {
+      console.log(error)
+      alert("An error has occurred")
+    }
+  }
+
+  const deleteAccount = async () => {
+    try {
+      const user_id = user.user_id;
+      const url = process.env.BACKEND_URL || "http://localhost:5000";
+      await fetch(url.concat(`/users/${user_id}`), {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+      })
+        .then((response) => {
+          return response.json();
+        })
+        .then((data) => {
+          alert("Update success")
+        });
+    } catch (error) {
+      console.log(error)
+      alert("An error has occurred")
+    }
+  }
+
+  return (
   <Card small className="mb-4">
     <CardHeader className="border-bottom">
-      <h6 className="m-0">{title}</h6>
+      <h6 className="m-0">Account Details</h6>
     </CardHeader>
     <ListGroup flush>
       <ListGroupItem className="p-3">
         <Row>
           <Col>
             <Form>
-              <Row form>
-                {/* First Name */}
-                <Col md="6" className="form-group">
-                  <label htmlFor="feFirstName">First Name</label>
-                  <FormInput
-                    id="feFirstName"
-                    placeholder="First Name"
-                    value="Sierra"
-                    onChange={() => {}}
-                  />
-                </Col>
-                {/* Last Name */}
-                <Col md="6" className="form-group">
-                  <label htmlFor="feLastName">Last Name</label>
-                  <FormInput
-                    id="feLastName"
-                    placeholder="Last Name"
-                    value="Brooks"
-                    onChange={() => {}}
-                  />
-                </Col>
-              </Row>
+              
               <Row form>
                 {/* Email */}
                 <Col md="6" className="form-group">
-                  <label htmlFor="feEmail">Email</label>
+                  <label htmlFor="feEmail">Username</label>
                   <FormInput
-                    type="email"
-                    id="feEmail"
-                    placeholder="Email Address"
-                    value="sierra@example.com"
-                    onChange={() => {}}
-                    autoComplete="email"
+                    type="text"
+                    id="feUsername"
+                    placeholder="Username"
+                    value={user.username}
+                    disabled
                   />
                 </Col>
                 {/* Password */}
@@ -67,74 +91,83 @@ const UserAccountDetails = ({ title }) => (
                     type="password"
                     id="fePassword"
                     placeholder="Password"
-                    value="EX@MPL#P@$$w0RD"
-                    onChange={() => {}}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                     autoComplete="current-password"
                   />
                 </Col>
               </Row>
+
+              <Row form>
+                {/* Name */}
+                <Col md="6" className="form-group">
+                  <label htmlFor="feFirstName">Full Name</label>
+                  <FormInput
+                    id="feFirstName"
+                    
+                    placeholder="Full Name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                  />
+                </Col>
+                {/* Contact Num */}
+                <Col md="6" className="form-group">
+                  <label htmlFor="feLastName">Contact Number</label>
+                  <FormInput
+                    id="feLastName"
+                    type="number"
+                    value={contact_number}
+                    onChange={(e) => setNumber(e.target.value)}
+                  />
+                </Col>
+              </Row>
+
               <FormGroup>
                 <label htmlFor="feAddress">Address</label>
                 <FormInput
                   id="feAddress"
-                  placeholder="Address"
-                  value="1234 Main St."
-                  onChange={() => {}}
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
                 />
               </FormGroup>
               <Row form>
                 {/* City */}
-                <Col md="6" className="form-group">
-                  <label htmlFor="feCity">City</label>
+                <Col md="4" className="form-group">
+                  <label>Pet Owner</label>
                   <FormInput
-                    id="feCity"
-                    placeholder="City"
+                    value={user.is_pet_owner ? "Yes" : "No"}
+                    disabled
                     onChange={() => {}}
                   />
                 </Col>
-                {/* State */}
+                {/* CT */}
                 <Col md="4" className="form-group">
-                  <label htmlFor="feInputState">State</label>
-                  <FormSelect id="feInputState">
-                    <option>Choose...</option>
-                    <option>...</option>
-                  </FormSelect>
+                  <label htmlFor="feInputState">Care Taker</label>
+                  <FormInput
+                    value={user.is_full_time != undefined ? "Yes" : "No"}
+                    disabled
+                  />
                 </Col>
-                {/* Zip Code */}
-                <Col md="2" className="form-group">
-                  <label htmlFor="feZipCode">Zip</label>
+                {/* Admin */}
+                <Col md="4" className="form-group">
+                  <label htmlFor="feZipCode">Admin</label>
                   <FormInput
                     id="feZipCode"
-                    placeholder="Zip"
-                    onChange={() => {}}
+                    value={user.is_pcs_admin ? "Yes" : "No"}
+                    disabled
                   />
                 </Col>
               </Row>
-              <Row form>
-                {/* Description */}
-                <Col md="12" className="form-group">
-                  <label htmlFor="feDescription">Description</label>
-                  <FormTextarea id="feDescription" rows="5" />
-                </Col>
-              </Row>
-              <Button theme="accent">Update Account</Button>
+                <Button className="mb-2 mr-1" theme="accent" onClick={updateAccount}>Update Account</Button>
+
+                {/* <Button className="mb-2 mr-1" theme="danger" onClick={deleteAccount}>Delete Account</Button> */}
+
             </Form>
           </Col>
         </Row>
       </ListGroupItem>
     </ListGroup>
   </Card>
-);
-
-UserAccountDetails.propTypes = {
-  /**
-   * The component's title.
-   */
-  title: PropTypes.string
-};
-
-UserAccountDetails.defaultProps = {
-  title: "Account Details"
-};
+)};
 
 export default UserAccountDetails;

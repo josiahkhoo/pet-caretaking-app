@@ -7,7 +7,6 @@ import { DefaultLayout, NoNavLayout } from "./layouts";
 // Route Views
 import BlogOverview from "./views/BlogOverview";
 import UserProfileLite from "./views/UserProfileLite";
-import AddNewPost from "./views/AddNewPost";
 import Errors from "./views/Errors";
 import ComponentsOverview from "./views/ComponentsOverview";
 import Tables from "./views/Tables";
@@ -56,11 +55,6 @@ export default [
     component: UserProfileLite,
   },
   {
-    path: "/add-new-post",
-    layout: DefaultLayout,
-    component: AddNewPost,
-  },
-  {
     path: "/errors",
     layout: DefaultLayout,
     component: Errors,
@@ -74,11 +68,6 @@ export default [
     path: "/tables",
     layout: DefaultLayout,
     component: Tables,
-  },
-  {
-    path: "/blog-posts",
-    layout: DefaultLayout,
-    component: BlogPosts,
   },
   {
     path: "/create-review",
