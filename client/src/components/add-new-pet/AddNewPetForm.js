@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import PropTypes from "prop-types";
 import {
   Col,
   Card,
@@ -12,6 +13,9 @@ import {
 import PetCategoryDropdown from "../pet-category-dropdown/PetCategoryDropdown";
 
 export default class AddNewPetForm extends Component {
+  static propTypes = {
+    petOwnerUserId: PropTypes.number,
+  };
   constructor(props) {
     super(props);
     this.state = {
@@ -66,6 +70,7 @@ export default class AddNewPetForm extends Component {
         this.resetState();
       }
     } catch (error) {
+      alert("An error has occured");
       console.log(error);
     }
   }

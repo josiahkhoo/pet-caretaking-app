@@ -25,9 +25,11 @@ export default class PetOwnerBidTable extends Component {
   componentDidMount() {
     // TODO: Retrieve pet owner UID from storage
     this.getAllBids(this.props.petOwnerUserId).then((res) => {
-      this.setState({
-        bids: res,
-      });
+      if (Array.isArray(res)) {
+        this.setState({
+          bids: res,
+        });
+      }
     });
   }
 

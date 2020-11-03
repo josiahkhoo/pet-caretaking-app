@@ -76,6 +76,29 @@ module.exports = {
     }
   },
 
+  async getPet(req, res) {
+    try {
+      const { pet_owner_user_id, pet_name } = req.params;
+      const pets = await pool.query(
+        "SELECT * FROM ownedpets p WHERE p.pet_owner_user_id = $1 AND p.pet_name = $2;",
+        [pet_owner_user_id, pet_name]
+      );
+      if (pets.rows) {
+        if (pets.rowCount !== 1) {
+          res.json("No pets or invalid id");
+        } else {
+          res.status(200).json(pets.rows[0]);
+        }
+      } else {
+        res.status(400).send("Invalid user id");
+      }
+      console.log(pets.rows);
+    } catch (error) {
+      res.status(500);
+      console.error(error.message);
+    }
+  },
+
   async getAllPetsWithoutUserInfo(req, res) {
     try {
       const { pet_owner_user_id } = req.params;
@@ -152,6 +175,7 @@ module.exports = {
       const bids = await pool.query(
         `SELECT Bid.care_taker_user_id AS care_taker_user_id, 
         Users.name AS care_taker_name, 
+        Bid.pet_owner_user_id AS pet_owner_user_id,
         Bid.pet_name AS pet_name, 
         Bid.is_success AS is_success, 
         Bid.payment_type AS payment_type,

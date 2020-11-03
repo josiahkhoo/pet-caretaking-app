@@ -20,6 +20,7 @@ import AddNewPet from "./views/AddNewPet";
 import CreateBid from "./views/CreateBid";
 import Admin from "./views/Admin";
 import CareTaker from "./views/CareTaker";
+import PetProfile from "./views/PetProfile";
 
 export default [
   {
@@ -98,5 +99,10 @@ export default [
     path: "/care-taker",
     layout: DefaultLayout,
     component: CareTaker,
+  },
+  {
+    path: "/pet-profile",
+    layout: DefaultLayout,
+    component: PetProfile,
   },
 ];

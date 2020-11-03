@@ -35,7 +35,19 @@ export default class OwnedPetsViewTable extends Component {
     return (
       <tr>
         {/* <td>{pet.owner}</td> */}
-        <td>{pet.pet_name}</td>
+        <td>
+          <Link
+            to={{
+              pathname: "pet-profile",
+              state: {
+                pet: pet,
+              },
+            }}
+          >
+            {" "}
+            {pet.pet_name}
+          </Link>
+        </td>
         <td>{pet.category_name}</td>
         <td>{pet.special_requirements}</td>
         {/* <td>{pet.pic}</td> */}
@@ -46,9 +58,11 @@ export default class OwnedPetsViewTable extends Component {
   componentDidMount() {
     this.getAllPets(this.props.petOwnerUserId).then((res) => {
       console.log(res);
-      this.setState({
-        pets: res,
-      });
+      if (Array.isArray(res)) {
+        this.setState({
+          pets: res,
+        });
+      }
     });
   }
 
