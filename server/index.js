@@ -24,7 +24,6 @@ app.post("/login", AuthController.login);
 app.put("/users/:user_id", AuthController.update);
 app.delete("/users/:user_id", AuthController.delete);
 
-
 // Get all users
 app.get("/users", async (req, res) => {
   try {
@@ -68,7 +67,6 @@ app.get("/users/:id", async (req, res) => {
     console.error(error.message);
   }
 });
-
 
 // View reviews from a PetOwner for a pet category
 app.get(
@@ -142,6 +140,12 @@ app.get("/pet-owners/:pet_owner_user_id/pets", PetOwnerController.getAllPets);
 app.get(
   "/pet-owners/:pet_owner_user_id/pets-without-userinfo",
   PetOwnerController.getAllPetsWithoutUserInfo
+);
+
+// view all pets owned by a certain pet owner
+app.get(
+  "/pet-owners/:pet_owner_user_id/pets/:pet_name",
+  PetOwnerController.getPet
 );
 
 // get all bids for a caretaker

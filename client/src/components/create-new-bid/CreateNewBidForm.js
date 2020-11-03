@@ -37,6 +37,7 @@ export default class CreateNewBidForm extends Component {
       petName: pet.pet_name,
       petCategory: pet.category_name,
     });
+    this.resetCareTaker();
   }
 
   onStartDateChange(date) {
@@ -56,6 +57,7 @@ export default class CreateNewBidForm extends Component {
       careTakerUserId: careTaker.user_id,
       careTakerName: careTaker.name,
     });
+    this.props.handleCareTakerChange(careTaker);
   }
 
   onTransferTypeChange(transferType) {
@@ -79,12 +81,12 @@ export default class CreateNewBidForm extends Component {
     paymentType
   ) {
     return (
-      petName != null &&
-      careTakerUserId != null &&
-      startDate != null &&
-      endDate != null &&
-      transferType != null &&
-      paymentType != null
+      petName !== null &&
+      careTakerUserId !== null &&
+      startDate !== null &&
+      endDate !== null &&
+      transferType !== null &&
+      paymentType !== null
     );
   }
 
@@ -97,6 +99,7 @@ export default class CreateNewBidForm extends Component {
       transferType,
       paymentType,
     } = this.state;
+    const { petOwnerUserId } = this.props;
     const body = {
       pet_name: petName,
       care_taker_user_id: careTakerUserId,
@@ -104,7 +107,7 @@ export default class CreateNewBidForm extends Component {
       end_date: endDate,
       transfer_type: transferType,
       payment_type: paymentType,
-      pet_owner_user_id: this.props.petOwnerUserId,
+      pet_owner_user_id: petOwnerUserId,
     };
     try {
       const response = await fetch("http://localhost:5000/pet-owners/bid", {
@@ -114,12 +117,22 @@ export default class CreateNewBidForm extends Component {
       });
       if (response.status === 200) {
         this.resetState();
+        alert("Sucess!");
+      } else {
+        alert("An error has occured");
       }
     } catch (error) {
+      alert("An error has occured");
       console.log(error);
     }
   }
 
+  resetCareTaker() {
+    this.setState({
+      careTakerUserId: null,
+      careTakerName: null,
+    });
+  }
   resetState() {
     this.setState({
       petName: null,

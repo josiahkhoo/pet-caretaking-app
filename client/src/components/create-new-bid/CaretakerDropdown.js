@@ -94,7 +94,7 @@ export default class CareTakerDropdown extends Component {
         <DropdownToggle caret>
           {selectedCareTaker != null
             ? `${selectedCareTaker}`
-            : "Select careTaker"}
+            : "Select caretaker"}
         </DropdownToggle>
         <Collapse tag={DropdownMenu} open={visible}>
           {availableCareTakers !== [] ? (

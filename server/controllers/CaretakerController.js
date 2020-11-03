@@ -311,9 +311,9 @@ module.exports = {
     try {
       const { month, year } = req.params;
       const underPerforming = await pool.query(
-        "SELECT u.user_id, u.name FROM (SELECT care_taker_user_id FROM bid " + 
+        "SELECT u.user_id, u.name FROM (SELECT care_taker_user_id FROM bid " +
           "WHERE EXTRACT(MONTH FROM end_date) = $1 AND EXTRACT(YEAR FROM end_date) = $2 " +
-          "AND is_success = TRUE GROUP BY care_taker_user_id HAVING (sum(end_date - start_date + 1) < 60 " + 
+          "AND is_success = TRUE GROUP BY care_taker_user_id HAVING (sum(end_date - start_date + 1) < 60 " +
           "OR AVG(rating) < 2.5)) as a " +
           "INNER JOIN users u ON u.user_id = care_taker_user_id",
         [month, year]
@@ -440,13 +440,14 @@ module.exports = {
       category = category ? category : null;
       price = price ? price : null;
       rating = rating ? rating : null;
-      console.log(name, start, end, category, price ,rating);
+      console.log(name, start, end, category, price, rating);
 
       const findAvailable = await pool.query(
         `SELECT DISTINCT x.named,
         x.contact,
         x.price,
-        x.category,
+        x.category, 
+        x.userid,
         ROUND(AVG(y.avg_rating), 2) as rating
             FROM (SELECT DISTINCT u.user_id as userid,
             u.name as named,

@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import monthName from "../../utils/monthName"
+import monthName from "../../utils/monthName";
 
 export default class PetNumRow extends Component {
   render() {
