@@ -186,6 +186,12 @@ app.get(
   CaretakerController.getUnderPerformingCaretakers
 );
 
+//Underperforming Fulltime Care Takers ( months, year) -> Number of Pet Days < 60 or average rating < 2.5
+app.get(
+  "/caretakers/under-performing/:month/:year",
+  CaretakerController.getUnderPerformingCaretakersYear
+);
+
 // Total number of Pet taken care of in the month.
 app.get(
   "/caretakers/total-pet-care-by-month",

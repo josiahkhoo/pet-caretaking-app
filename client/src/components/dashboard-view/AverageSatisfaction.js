@@ -78,7 +78,7 @@ export default class AverageSatisfaction extends Component {
                         {id.category_name}
                     </td>
                     <td>
-                        {Number(id.satisfaction).toFixed(2)}
+                        {(id.satisfaction) == null ? "N.A." : Number(id.satisfaction).toFixed(2)}
                     </td>
                 </tr>
                 ))}
