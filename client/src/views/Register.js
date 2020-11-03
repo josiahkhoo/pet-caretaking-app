@@ -10,7 +10,7 @@ import {
   CardFooter,
   Button,
   FormFeedback,
-  FormRadio
+  FormRadio,
 } from "shards-react";
 
 const Register = withRouter(({ history }) => {
@@ -30,8 +30,14 @@ const Register = withRouter(({ history }) => {
   const [isLoading, setLoading] = useState(false);
 
   const emptyFormState = () => {
-    return username.length == 0 || password.length === 0 || confirmPassword.length == 0
-      || name.length == 0 || contact_number.length === 0 || address.length === 0;
+    return (
+      username.length == 0 ||
+      password.length === 0 ||
+      confirmPassword.length == 0 ||
+      name.length == 0 ||
+      contact_number.length === 0 ||
+      address.length === 0
+    );
   };
 
   const onRegister = () => setLoading(true);
@@ -45,14 +51,23 @@ const Register = withRouter(({ history }) => {
   }, [isLoading]);
 
   const register = async () => {
-    setFirstLoad(false)
+    setFirstLoad(false);
     // console.log("registering account")
     // console.log(is_pet_owner, "is_full_time_ct, part-time", is_full_time_ct, is_part_time_ct)
     if (emptyFormState()) {
-      return
+      return;
     }
-    const body = { username, password, name, contact_number, address,
-      is_pet_owner, is_full_time_ct, is_part_time_ct, is_pcs_admin };
+    const body = {
+      username,
+      password,
+      name,
+      contact_number,
+      address,
+      is_pet_owner,
+      is_full_time_ct,
+      is_part_time_ct,
+      is_pcs_admin,
+    };
     var responseStatus;
     try {
       const url = process.env.BACKEND_URL || "http://localhost:5000";
@@ -61,23 +76,22 @@ const Register = withRouter(({ history }) => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       })
-      .then((res) => {
-        responseStatus = res.status
-        return res.json();
-      })
-      .then((data) => {
-        if (responseStatus != 200) {
-          alert(data)
-        } else {
-          history.push("/login");
-          alert("Account successfully created!")
-        }
-      });
+        .then((res) => {
+          responseStatus = res.status;
+          return res.json();
+        })
+        .then((data) => {
+          if (responseStatus != 200) {
+            alert(data);
+          } else {
+            history.push("/login");
+            alert("Account successfully created!");
+          }
+        });
     } catch (error) {
-      alert("An error has occured")
-      console.log(error)
+      alert("An error has occured");
+      console.log(error);
     }
-
   };
 
   return (
@@ -98,7 +112,8 @@ const Register = withRouter(({ history }) => {
                   <label className="mt-2">Username</label>
                 </Col>
                 <Col>
-                  <FormInput required
+                  <FormInput
+                    required
                     type="username"
                     value={username}
                     required
@@ -106,7 +121,6 @@ const Register = withRouter(({ history }) => {
                     onChange={(e) => setUsername(e.target.value)}
                   />
                   {/* <FormFeedback>{existingUserMsg}</FormFeedback> */}
-
                 </Col>
               </Row>
 
@@ -116,7 +130,7 @@ const Register = withRouter(({ history }) => {
                   <label className="mt-2">Password</label>
                 </Col>
                 <Col>
-                  <FormInput 
+                  <FormInput
                     type="password"
                     required
                     invalid={!isFirstLoad && password == ""}
@@ -131,7 +145,7 @@ const Register = withRouter(({ history }) => {
                   <label className="mt-2">Confirm Password</label>
                 </Col>
                 <Col>
-                  <FormInput 
+                  <FormInput
                     type="password"
                     required
                     invalid={!isFirstLoad && confirmPassword != password}
@@ -147,7 +161,7 @@ const Register = withRouter(({ history }) => {
                   <label className="mt-2">Full Name</label>
                 </Col>
                 <Col>
-                  <FormInput 
+                  <FormInput
                     placeholder=""
                     required
                     invalid={!isFirstLoad && name == ""}
@@ -162,7 +176,7 @@ const Register = withRouter(({ history }) => {
                   <label className="mt-2">Contact Number</label>
                 </Col>
                 <Col>
-                  <FormInput 
+                  <FormInput
                     type="number"
                     placeholder=""
                     required
@@ -178,7 +192,7 @@ const Register = withRouter(({ history }) => {
                   <label className="mt-2">Address</label>
                 </Col>
                 <Col>
-                  <FormInput 
+                  <FormInput
                     placeholder=""
                     required
                     invalid={!isFirstLoad && address == ""}
@@ -193,15 +207,21 @@ const Register = withRouter(({ history }) => {
                   <label className="mt-1">Are you a pet owner?</label>
                 </Col>
                 <Col>
-                <FormRadio name="isPetOwner"
-                defaultChecked
-                onChange={(e) => setPetOwner(true)}>Yes</FormRadio>
+                  <FormRadio
+                    name="isPetOwner"
+                    defaultChecked
+                    onChange={(e) => setPetOwner(true)}
+                  >
+                    Yes
+                  </FormRadio>
                 </Col>
                 <Col>
-                <FormRadio 
-                name="isPetOwner"
-                onChange={(e) => setPetOwner(false)}
-                >No</FormRadio>
+                  <FormRadio
+                    name="isPetOwner"
+                    onChange={(e) => setPetOwner(false)}
+                  >
+                    No
+                  </FormRadio>
                 </Col>
               </Row>
 
@@ -211,34 +231,50 @@ const Register = withRouter(({ history }) => {
                   <label className="mt-1">Are you a care taker?</label>
                 </Col>
                 <Col>
-                <FormRadio name="isCareTaker"
-                defaultChecked
-                onChange={(e) => { setFullTime(false); setPartTime(true);}}>Part Time</FormRadio>
+                  <FormRadio
+                    name="isCareTaker"
+                    defaultChecked
+                    onChange={(e) => {
+                      setFullTime(false);
+                      setPartTime(true);
+                    }}
+                  >
+                    Part Time
+                  </FormRadio>
                 </Col>
                 <Col>
-                <FormRadio 
-                name="isCareTaker"
-                onChange={(e) => { setFullTime(true); setPartTime(false);}}
-                >Full Time</FormRadio>
+                  <FormRadio
+                    name="isCareTaker"
+                    onChange={(e) => {
+                      setFullTime(true);
+                      setPartTime(false);
+                    }}
+                  >
+                    Full Time
+                  </FormRadio>
                 </Col>
                 <Col>
-                <FormRadio 
-                name="isCareTaker"
-                onChange={(e) => { setFullTime(false); setPartTime(false);}}
-                >No</FormRadio>
+                  <FormRadio
+                    name="isCareTaker"
+                    onChange={(e) => {
+                      setFullTime(false);
+                      setPartTime(false);
+                    }}
+                  >
+                    No
+                  </FormRadio>
                 </Col>
               </Row>
-
-
             </CardBody>
             <CardFooter className="d-flex justify-content-center">
-            <Row>
-              <Button className="ml-2" 
-              onClick={!isLoading ? onRegister : null}>
-                {isLoading ? 'Loading…' : 'Create Account'}
-              </Button>
-            </Row>
-              
+              <Row>
+                <Button
+                  className="ml-2"
+                  onClick={!isLoading ? onRegister : null}
+                >
+                  {isLoading ? "Loading…" : "Create Account"}
+                </Button>
+              </Row>
             </CardFooter>
           </Card>
         </Col>

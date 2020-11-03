@@ -25,7 +25,20 @@ export default class BidRow extends Component {
     return (
       <tr key={bid}>
         <td>{bid.care_taker_name}</td>
-        <td>{bid.pet_name}</td>
+        <td>
+          <Link
+            to={{
+              pathname: "pet-profile",
+              state: {
+                pet: null,
+                petOwnerUserId: bid.pet_owner_user_id,
+                petName: bid.pet_name,
+              },
+            }}
+          >
+            {bid.pet_name}
+          </Link>
+        </td>
         <td>{bid.is_success.toString()}</td>
         <td>{bid.payment_type}</td>
         <td>{bid.transfer_type}</td>

@@ -37,6 +37,7 @@ import CustomSelect from "../components/components-overview/CustomSelect";
 import OwnedPetsViewTable from "../components/owned-pets-view/OwnedPetsViewTable";
 import UserDetails from "../components/user-profile-lite/UserDetails";
 import PetOwnerBidTable from "../components/pet-owner-bid-table/PetOwnerBidTable";
+import Store from "../flux/store";
 
 export default class PetOwner extends Component {
   static propTypes = {
@@ -65,17 +66,17 @@ export default class PetOwner extends Component {
 
           <Row>
             <Col lg="8" className="mb-4">
-              <OwnedPetsViewTable petOwnerUserId={1} />
+              <OwnedPetsViewTable petOwnerUserId={Store.getUser().user_id} />
             </Col>
 
             <Col lg="4" className="mb-4">
-              <UserDetails userId={1} />
+              <UserDetails user={Store.getUser()} />
 
               {/* Groups */}
             </Col>
           </Row>
 
-          <PetOwnerBidTable petOwnerUserId={1} />
+          <PetOwnerBidTable petOwnerUserId={Store.getUser().user_id} />
         </Container>
       </div>
     );
