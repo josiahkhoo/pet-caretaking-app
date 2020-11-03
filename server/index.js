@@ -21,6 +21,9 @@ const PetOwnerController = require("./controllers/PetOwnerController");
 // User
 app.post("/register", AuthController.register);
 app.post("/login", AuthController.login);
+app.put("/users/:user_id", AuthController.update);
+app.delete("/users/:user_id", AuthController.delete);
+
 
 // Get all users
 app.get("/users", async (req, res) => {
@@ -66,37 +69,7 @@ app.get("/users/:id", async (req, res) => {
   }
 });
 
-// update password
-app.put("/users/:id", async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { password } = req.body;
-    console.log(id, description);
 
-    const updatedUser = await pool.query(
-      `UPDATE users SET password = $1 WHERE user_id = $2`,
-      [password, id]
-    );
-
-    res.json("User updated");
-  } catch (error) {
-    console.error("error", error.message);
-  }
-});
-
-// delete
-app.delete("/user/:id", async (req, res) => {
-  try {
-    const { id } = req.params;
-    const deletedUser = await pool.query(
-      `DELETE FROM users WHERE user_id = $1`,
-      [id]
-    );
-    res.json("User deleted");
-  } catch (error) {
-    console.error("error", error.message);
-  }
-});
 // View reviews from a PetOwner for a pet category
 app.get(
   "/pet-owners/:pet_owner_user_id/categories/:category_name/reviews",

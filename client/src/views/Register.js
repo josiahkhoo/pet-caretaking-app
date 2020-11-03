@@ -55,7 +55,8 @@ const Register = withRouter(({ history }) => {
       is_pet_owner, is_full_time_ct, is_part_time_ct, is_pcs_admin };
     var responseStatus;
     try {
-      fetch("http://localhost:5000/register", {
+      const url = process.env.BACKEND_URL || "http://localhost:5000";
+      await fetch(url.concat("/register"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),

@@ -2,6 +2,7 @@ import React from "react";
 import { Redirect } from "react-router-dom";
 
 import { Container, Row, Col } from "shards-react";
+import AvailabilityForm from "../components/care-taker/AvailabilityForm";
 import PageTitle from "../components/common/PageTitle";
 import Store from "../flux/store";
 
@@ -16,6 +17,7 @@ const CareTaker = () => {
       <Row noGutters className="page-header py-4">
         <PageTitle sm="4" title="Care Taker Home Page" className="text-sm-left" />
       </Row>
+      <AvailabilityForm user={user}/>
     </Container>
   )
 };

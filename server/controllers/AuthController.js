@@ -65,6 +65,41 @@ module.exports = {
       res.status(500);
       console.error(error.message);
     }
+  },
+
+  async update(req, res) {
+    try {
+      const { user_id } = req.params;
+      const { name, password, contact_number, address } = req.body;
+      const user = await pool.query(
+        "UPDATE users SET name = $2, password = $3, contact_number= $4, address = $5 WHERE user_id = $1 RETURNING *;",
+        [user_id, name, password, contact_number, address]
+      );
+      console.log([user_id, name, password, contact_number, address])
+      if (user.rows.length == 1) {
+        res.status(200).json(user.rows[0]);
+      } else {
+        res.status(400).send("Invalid user details");
+      }
+      console.log(user.rows[0]);
+    } catch (error) {
+      res.status(500);
+      console.error(error.message);
+    }
+  },
+
+  async delete(req, res) {
+    try {
+      const { user_id } = req.params;
+      const deletedUser = await pool.query(
+        `DELETE FROM users WHERE user_id = $1`,
+        [user_id]
+      );
+      res.json("User deleted");
+    } catch (error) {
+      console.error("error", error.message);
+    }
   }
+  
 }
   

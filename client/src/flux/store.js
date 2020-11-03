@@ -3,6 +3,7 @@ import { EventEmitter } from "events";
 import Dispatcher from "./dispatcher";
 import Constants from "./constants";
 import getSidebarNavItems from "../data/sidebar-nav-items";
+import { Redirect } from "react-router-dom";
 
 let _store = {
   menuVisible: false,
@@ -55,8 +56,8 @@ class Store extends EventEmitter {
   getSidebarItems() {
     const user = _store.user;
 
-    if (user == null)
-      return [];
+    if (user == null) 
+      return []
 
     console.log(user)
     const isCaretaker = user.is_full_time != undefined;
