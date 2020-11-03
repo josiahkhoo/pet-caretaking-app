@@ -4,11 +4,14 @@ import {
   Card,
   CardBody,
   CardHeader,
+  Col,
   Form,
   FormGroup,
+  Row,
 } from "shards-react";
 import MonthDropdown from "./MonthDropdown";
 import monthName from "../../utils/monthName";
+import YearDropdown from "./YearDropdown";
 
 
 export default class Underperforming extends Component {
@@ -20,23 +23,45 @@ export default class Underperforming extends Component {
         super(props);
         this.state = {
             month: null,
+            year: null,
             underperformers: [],
         };
     }
     
     onChangeMonth(month) {
-        this.getUnderperformers(month).then((res) => {
+      if (this.state.year != null) {
+        this.getUnderperformers(month, this.state.year).then((res) => {
             this.setState({
                 month: month,
                 underperformers: res,
             });
         });
+      } else {
+        this.setState({
+          month: month
+        });
+      }
     }
 
-    async getUnderperformers(month) {
+    onChangeYear(year) {
+      if (this.state.month != null) {
+        this.getUnderperformers(this.state.month, year).then((res) => {
+          this.setState({
+              year: year,
+              underperformers: res,
+          });
+        });
+      } else {
+        this.setState({
+          year: year
+        });
+      }
+    }
+
+    async getUnderperformers(month, year) {
         try {
         const response = await fetch(
-            `http://localhost:5000/caretakers/under-performing/${month}`,
+            `http://localhost:5000/caretakers/under-performing/${month}/${year}`,
         );
             return await response.json();
         } catch (error) {
@@ -46,25 +71,40 @@ export default class Underperforming extends Component {
   }
 
   render() {
-    const { month, underperformers } = this.state;
+    const { month, year, underperformers } = this.state;
     return (
         <Card>
-        <CardHeader><h5>Underperforming Full-Time Caretakers in {monthName(month)}</h5></CardHeader>
+        <CardHeader><h5>Underperforming Full-Time Caretakers in {monthName(month)} {year}</h5></CardHeader>
         <CardBody>
         <Form>
             <FormGroup>
-              <h6>Month</h6>
-              <MonthDropdown
-                month={month}
-                onChangeMonth={(rating) => this.onChangeMonth(rating)}
-              />
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "flex-start",
+                  flexFlow: "row",
+                }}
+              >
+                <MonthDropdown
+                  month={month}
+                  onChangeMonth={(month) => this.onChangeMonth(month)}
+                />
+              <div style={{ marginRight: "1em" }} />
+                <YearDropdown 
+                  year={year}
+                  onChangeYear={(year) => this.onChangeYear(year)}
+                />
+              </div>
             </FormGroup>
         </Form>
           <table className="table mb-0">
             <thead className="bg-light">
               <tr>
                 <th scope="col" className="border-0">
-                  Underperforming Caretaker ID
+                  Caretaker ID
+                </th>
+                <th scope="col" className="border-0">
+                  Caretaker Name
                 </th>
               </tr>
             </thead>
@@ -72,7 +112,10 @@ export default class Underperforming extends Component {
                 {underperformers.map((id) =>(
                 <tr key = {id}>
                     <td>
-                        {id.underperforming}
+                        {id.user_id}
+                    </td>
+                    <td>
+                        {id.name}
                     </td>
                 </tr>
                 ))}

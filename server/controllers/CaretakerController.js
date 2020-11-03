@@ -170,11 +170,13 @@ module.exports = {
   async getTotalPetByMonth(req, res) {
     try {
       const totalPet = await pool.query(
-        "SELECT EXTRACT(MONTH FROM end_date) AS month, COUNT(*)\n" +
+        "SELECT EXTRACT(MONTH FROM end_date) AS month, " +
+          "EXTRACT(YEAR from end_date) AS year, COUNT(*)\n " +
           "FROM bid\n" +
           "WHERE is_success = TRUE\n" +
-          "GROUP BY EXTRACT(MONTH FROM end_date)\n" +
-          "ORDER BY month"
+          "GROUP BY EXTRACT(MONTH FROM end_date),\n " +
+          "EXTRACT(YEAR FROM end_date) " +
+          "ORDER BY YEAR, MONTH"
       );
       if (totalPet.rows) {
         res.status(200).json(totalPet.rows);
@@ -297,6 +299,29 @@ module.exports = {
         res.status(200).json(underPerforming.rows);
       } else {
         res.status(400).send("Invalid month");
+      }
+      console.log(underPerforming.rows);
+    } catch (error) {
+      res.status(500);
+      console.error(error.message);
+    }
+  },
+
+  async getUnderPerformingCaretakersYear(req, res) {
+    try {
+      const { month, year } = req.params;
+      const underPerforming = await pool.query(
+        "SELECT u.user_id, u.name FROM (SELECT care_taker_user_id FROM bid " + 
+          "WHERE EXTRACT(MONTH FROM end_date) = $1 AND EXTRACT(YEAR FROM end_date) = $2 " +
+          "AND is_success = TRUE GROUP BY care_taker_user_id HAVING (sum(end_date - start_date + 1) < 60 " + 
+          "OR AVG(rating) < 2.5)) as a " +
+          "INNER JOIN users u ON u.user_id = care_taker_user_id",
+        [month, year]
+      );
+      if (underPerforming.rows) {
+        res.status(200).json(underPerforming.rows);
+      } else {
+        res.status(400).send("Invalid month / year");
       }
       console.log(underPerforming.rows);
     } catch (error) {

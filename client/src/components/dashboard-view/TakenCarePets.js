@@ -49,6 +49,9 @@ export default class TakenCarePets extends Component {
                   Month
                 </th>
                 <th scope="col" className="border-0">
+                  Year
+                </th>
+                <th scope="col" className="border-0">
                   No. of Pets
                 </th>
               </tr>

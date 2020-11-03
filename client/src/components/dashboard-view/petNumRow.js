@@ -7,6 +7,7 @@ export default class PetNumRow extends Component {
     return (
       <tr key={row}>
         <td>{monthName(row.month)}</td>
+        <td>{row.year}</td>
         <td>{row.count}</td>
       </tr>
     );
