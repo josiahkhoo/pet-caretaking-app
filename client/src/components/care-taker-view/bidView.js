@@ -30,6 +30,14 @@ export default class BidView extends Component {
     });
   }
 
+  update() {
+    this.getBids(this.props.user.user_id).then((res) => {
+      this.setState({
+        bids: res,
+      });
+    });
+  }
+
   render() {
     const { bids } = this.state;
     return (
@@ -64,7 +72,7 @@ export default class BidView extends Component {
             </thead>
             <tbody>
               {bids.map((row) => (
-                <BidRow row={row} />
+                <BidRow row={row} update={() => this.update()} />
               ))}
               {/* <tr>
                 <td>Dog</td>

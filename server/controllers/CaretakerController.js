@@ -502,7 +502,7 @@ module.exports = {
         care_taker_user_id,
         bid.pet_owner_user_id
       FROM (bid
-        JOIN users ON users.user_id = bid.care_taker_user_id)
+        JOIN users ON users.user_id = bid.pet_owner_user_id)
       JOIN ownedpets ON (ownedpets.pet_owner_user_id = bid.pet_owner_user_id
           AND ownedpets.pet_name = bid.pet_name)
       WHERE
