@@ -19,11 +19,13 @@ export default class Underperforming extends Component {
         month: PropTypes.number,
     };
     
+    currDate = new Date();
+
     constructor(props) {
         super(props);
         this.state = {
-            month: null,
-            year: null,
+            month: this.currDate.getMonth(),
+            year: this.currDate.getFullYear(),
             underperformers: [],
         };
     }
@@ -69,6 +71,14 @@ export default class Underperforming extends Component {
             return [];
     }
   }
+
+    componentDidMount() {
+      this.getUnderperformers(this.state.month, this.state.year).then((res) => {
+        this.setState({
+          underperformers : res,
+        })
+      });
+    }
 
   render() {
     const { month, year, underperformers } = this.state;

@@ -173,6 +173,12 @@ app.get(
   CaretakerController.getAverageSatisfactionPerCategory
 );
 
+// Average Satisfaction Per Pet Category and by Year
+app.get(
+  "/caretakers/categories/satisfaction/:month/:year",
+  CaretakerController.getAverageSatisfactionPerCategoryYear
+);
+
 // Month with highest number of jobs -> highest number of petdays
 app.get(
   "/caretakers/highest-pet-care-month",
