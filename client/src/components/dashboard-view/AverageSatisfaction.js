@@ -81,7 +81,7 @@ export default class AverageSatisfaction extends Component {
     const { month, year, satisfaction } = this.state;
     return (
         <Card>
-        <CardHeader><h5>Average satisfaction rate for all pet categories in {monthName(month)}</h5></CardHeader>
+        <CardHeader><h5>Average satisfaction rate for all pet categories in {monthName(month)} {year}</h5></CardHeader>
         <CardBody>
         <Form>
             <FormGroup>
