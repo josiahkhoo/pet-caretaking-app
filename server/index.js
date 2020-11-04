@@ -56,17 +56,7 @@ app.get(
 );
 
 // get user by id
-app.get("/users/:id", async (req, res) => {
-  try {
-    const { id } = req.params;
-    const user = await pool.query("SELECT * FROM users WHERE user_id = $1", [
-      id,
-    ]);
-    res.json(user.rows[0]);
-  } catch (error) {
-    console.error(error.message);
-  }
-});
+app.get("/users/:id", AuthController.getUser);
 
 // View reviews from a PetOwner for a pet category
 app.get(
@@ -128,6 +118,11 @@ app.post("/pet-owners/bid/review", async (req, res) => {
 });
 
 app.post("/pet-owners/pets", PetOwnerController.createPet);
+
+app.post(
+  "/pet-owners/:pet_owner_user_id/pets/:pet_name",
+  PetOwnerController.updatePet
+);
 
 app.post("/pet-owners/bid", PetOwnerController.createBid);
 // get all bids for a pet owner
