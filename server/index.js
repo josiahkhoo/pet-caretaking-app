@@ -203,10 +203,16 @@ app.get(
   CaretakerController.getTotalPetByMonth
 );
 
-//Get average rating of a caretaker
+// Get average rating of a caretaker
 app.get(
   "/caretakers/:care_taker_user_id/average-rating",
   CaretakerController.getAverageRatingCaretaker
+);
+
+// Get all categories a caretaker can take care of
+app.get(
+  "/caretakers/:care_taker_user_id/categories",
+  CaretakerController.getCanTakeCarePetCategories
 );
 
 // caretaker input availability for part-time
