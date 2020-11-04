@@ -117,7 +117,7 @@ export default class CreateNewBidForm extends Component {
       });
       if (response.status === 200) {
         this.resetState();
-        alert("Sucess!");
+        alert("Success!");
       } else {
         alert("An error has occured");
       }

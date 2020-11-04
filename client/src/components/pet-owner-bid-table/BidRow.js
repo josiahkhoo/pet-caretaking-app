@@ -24,7 +24,19 @@ export default class BidRow extends Component {
     const { bid } = this.props;
     return (
       <tr key={bid}>
-        <td>{bid.care_taker_name}</td>
+        <td>
+          <Link
+            to={{
+              pathname: "user-profile-external",
+              state: {
+                user: null,
+                userId: bid.care_taker_user_id,
+              },
+            }}
+          >
+            {bid.care_taker_name}
+          </Link>
+        </td>
         <td>
           <Link
             to={{

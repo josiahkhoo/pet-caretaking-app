@@ -68,7 +68,9 @@ export default class AddNewPetForm extends Component {
       });
       if (response.status === 200) {
         this.resetState();
+        alert("Pet has been added");
       }
+      alert("An error has occured");
     } catch (error) {
       alert("An error has occured");
       console.log(error);

@@ -1,6 +1,5 @@
 const pool = require("../db");
 const moment = require("moment");
-const { end } = require("../db");
 
 // Helper function
 // Returns the dates in between @startDate and @stopDate (inclusive)
@@ -213,6 +212,28 @@ module.exports = {
           special_requirements,
           image_url,
         ]
+      );
+      pet = await pool.query(
+        `SELECT * FROM OwnedPets WHERE pet_owner_user_id = $1 AND pet_name = $2`,
+        [pet_owner_user_id, pet_name]
+      );
+      if (pet.rowCount != 1) {
+        res.status(400).json("Invalid query");
+      }
+      res.status(200).json(pet.rows[0]);
+    } catch (error) {
+      console.log(error);
+      res.status(500).json(error.message);
+    }
+  },
+
+  async updatePet(req, res) {
+    try {
+      const { pet_owner_user_id, pet_name } = req.params;
+      const { special_requirements, image_url } = req.body;
+      await pool.query(
+        `UPDATE OwnedPets SET special_requirements = $1, image_url = $2 WHERE pet_owner_user_id = $3 AND pet_name = $4`,
+        [special_requirements, image_url, pet_owner_user_id, pet_name]
       );
       pet = await pool.query(
         `SELECT * FROM OwnedPets WHERE pet_owner_user_id = $1 AND pet_name = $2`,

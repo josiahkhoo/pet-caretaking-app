@@ -21,6 +21,9 @@ import CreateBid from "./views/CreateBid";
 import Admin from "./views/Admin";
 import CareTaker from "./views/CareTaker";
 import PetProfile from "./views/PetProfile";
+import UserDetails from "./components/petowner-profile/UserDetails";
+import UserProfileExternal from "./views/UserProfileExternal";
+import EditPet from "./views/EditPet";
 
 export default [
   {
@@ -104,5 +107,15 @@ export default [
     path: "/pet-profile",
     layout: DefaultLayout,
     component: PetProfile,
+  },
+  {
+    path: "/user-profile-external",
+    layout: DefaultLayout,
+    component: UserProfileExternal,
+  },
+  {
+    path: "/edit-pet",
+    layout: DefaultLayout,
+    component: EditPet,
   },
 ];

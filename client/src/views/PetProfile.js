@@ -1,10 +1,20 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { Card, CardBody, CardHeader, Row, Container, Col } from "shards-react";
+import {
+  Card,
+  CardBody,
+  CardHeader,
+  Row,
+  Container,
+  Col,
+  Button,
+} from "shards-react";
 import SidebarActions from "../components/add-new-post/SidebarActions";
 import SidebarCategories from "../components/add-new-post/SidebarCategories";
 import PageTitle from "../components/common/PageTitle";
 import PetDetails from "../components/pet-profile/PetDetails";
+import Store from "../flux/store";
+import { Link } from "react-router-dom";
 
 export default class PetProfile extends Component {
   static propTypes = {
@@ -13,6 +23,7 @@ export default class PetProfile extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      user: null,
       pet: null,
     };
   }
@@ -41,11 +52,22 @@ export default class PetProfile extends Component {
         });
       });
     }
+    this.setState({
+      user: Store.getUser(),
+    });
+  }
+
+  isOwner(pet, user) {
+    if (user === null || pet === null) {
+      return false;
+    }
+    return user.user_id === pet.pet_owner_user_id;
   }
 
   render() {
-    const { pet } = this.state;
+    const { pet, user } = this.state;
     console.log(pet);
+    console.log(user);
     return (
       <Container fluid className="main-content-container px-4 pb-4">
         {/* Page Header */}
@@ -54,10 +76,30 @@ export default class PetProfile extends Component {
         </Row>
 
         <Row>
-          <Col lg="3" md="12">
+          <Col lg="4" md="12">
             {pet !== null ? <PetDetails pet={pet} /> : null}
           </Col>
         </Row>
+
+        {this.isOwner(pet, user) ? (
+          <Row>
+            <Col lg="4" md="12">
+              <div class="float-right">
+                <Button
+                  tag={Link}
+                  to={{
+                    pathname: "edit-pet",
+                    state: {
+                      pet: pet,
+                    },
+                  }}
+                >
+                  Edit Pet
+                </Button>
+              </div>
+            </Col>
+          </Row>
+        ) : null}
       </Container>
     );
   }
