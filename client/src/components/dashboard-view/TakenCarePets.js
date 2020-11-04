@@ -1,14 +1,8 @@
 import React, { Component } from "react";
-import {
-  Card,
-  CardBody,
-  CardHeader,
-} from "shards-react";
-import PetNumRow from "./PetNumRow";
-
+import { Card, CardBody, CardHeader } from "shards-react";
+import PetNumRow from "./petNumRow";
 
 export default class TakenCarePets extends Component {
-
   constructor(props) {
     super(props);
     this.state = {
@@ -19,7 +13,7 @@ export default class TakenCarePets extends Component {
   async getPetNum() {
     try {
       const response = await fetch(
-        "http://localhost:5000/caretakers/total-pet-care-by-month",
+        "http://localhost:5000/caretakers/total-pet-care-by-month"
       );
       return await response.json();
     } catch (error) {
@@ -39,8 +33,10 @@ export default class TakenCarePets extends Component {
   render() {
     const { petNum } = this.state;
     return (
-        <Card>
-        <CardHeader><h5>Total number of Pets we took care of:</h5></CardHeader>
+      <Card>
+        <CardHeader>
+          <h5>Total number of Pets we took care of:</h5>
+        </CardHeader>
         <CardBody>
           <table className="table mb-0">
             <thead className="bg-light">
