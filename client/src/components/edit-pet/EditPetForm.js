@@ -7,6 +7,7 @@ import {
   FormInput,
   FormGroup,
   CardBody,
+  CardHeader,
 } from "shards-react";
 
 export default class EditPetForm extends Component {
@@ -74,6 +75,9 @@ export default class EditPetForm extends Component {
     const { specialRequirements, imageUrl } = this.state;
     return (
       <Card>
+        <CardHeader>
+          <h4>{pet.pet_name}</h4>
+        </CardHeader>
         <CardBody>
           <Form className="edit-pet-form">
             <FormGroup>
