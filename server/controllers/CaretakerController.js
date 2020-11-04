@@ -215,11 +215,11 @@ module.exports = {
       const bids = await pool.query(
         `UPDATE bid 
         SET is_success = TRUE
-        WHERE care_taker_user_id = $2 
-        AND start_date = $3
-        AND end_date = $4
-        AND pet_owner_user_id = $5
-        AND pet_name = $6`,
+        WHERE care_taker_user_id = $1
+        AND start_date = $2
+        AND end_date = $3
+        AND pet_owner_user_id = $4
+        AND pet_name = $5`,
         [care_taker_user_id, start_date, end_date, pet_owner_user_id, pet_name]
       );
       res.status(200).json({
@@ -416,7 +416,7 @@ module.exports = {
       category = category ? category : null;
       price = price ? price : null;
       rating = rating ? rating : null;
-      console.log(name, start, end, category, price ,rating);
+      console.log(name, start, end, category, price, rating);
 
       const findAvailable = await pool.query(
         `SELECT DISTINCT x.named,
@@ -474,6 +474,40 @@ module.exports = {
         res.status(400).send("Invalid caretaker id");
       }
       console.log(avgRating.rows);
+    } catch (error) {
+      res.status(500);
+      console.error(error.message);
+    }
+  },
+
+  async getBidByCaretakerId(req, res) {
+    try {
+      const { care_taker_user_id } = req.params;
+      const bids = await pool.query(
+        `SELECT
+        category_name,
+        bid.pet_name,
+        name,
+        start_date,
+        end_date,
+        total_price,
+        care_taker_user_id,
+        bid.pet_owner_user_id
+      FROM (bid
+        JOIN users ON users.user_id = bid.care_taker_user_id)
+      JOIN ownedpets ON (ownedpets.pet_owner_user_id = bid.pet_owner_user_id
+          AND ownedpets.pet_name = bid.pet_name)
+      WHERE
+        care_taker_user_id = $1
+        AND is_success = FALSE`,
+        [care_taker_user_id]
+      );
+      if (bids.rows.length) {
+        res.status(200).json(bids.rows);
+      } else {
+        res.status(400).send("Invalid caretaker id");
+      }
+      console.log(bids.rows);
     } catch (error) {
       res.status(500);
       console.error(error.message);

@@ -225,6 +225,11 @@ app.get(
   CaretakerController.getAverageRatingCaretaker
 );
 
+app.get(
+  "/caretakers/getBidById/:care_taker_user_id",
+  CaretakerController.getBidByCaretakerId
+);
+
 // caretaker input availability for part-time
 // takes leave for full-time
 app.post("/caretakers/availability", CaretakerController.specifyAvailability);
