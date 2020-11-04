@@ -212,7 +212,8 @@ module.exports = {
         pet_owner_user_id,
         pet_name,
       } = req.body;
-      const bids = await pool.query(
+      console.log(req.body);
+      await pool.query(
         `UPDATE bid 
         SET is_success = TRUE
         WHERE care_taker_user_id = $1
@@ -222,13 +223,20 @@ module.exports = {
         AND pet_name = $5`,
         [care_taker_user_id, start_date, end_date, pet_owner_user_id, pet_name]
       );
-      res.status(200).json({
-        care_taker_user_id: care_taker_user_id,
-        pet_owner_user_id: pet_owner_user_id,
-        pet_name: pet_name,
-        start_date: start_date,
-        end_date: end_date,
-      });
+      const bid = await pool.query(
+        `SELECT * FROM bid WHERE care_taker_user_id = $1
+        AND start_date = $2
+        AND end_date = $3
+        AND pet_owner_user_id = $4
+        AND pet_name = $5`,
+        [care_taker_user_id, start_date, end_date, pet_owner_user_id, pet_name]
+      );
+      if (bid.rows.length == 1) {
+        res.status(200).json(bid.rows[0]);
+      } else {
+        console.log(bid.rows);
+        res.status(400).send("Invalid request.");
+      }
     } catch (error) {
       res.status(500);
       console.error(error.message);

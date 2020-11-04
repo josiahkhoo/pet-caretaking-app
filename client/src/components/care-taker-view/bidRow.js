@@ -21,8 +21,8 @@ export default class BidRow extends Component {
       const response = await fetch(
         `http://localhost:5000/caretakers/part-time/bid/confirm`,
         {
-          mothod: "POST",
-          header: { "Content-Type": "application/json" },
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(body),
         }
       );
