@@ -61,7 +61,7 @@ export default class AddNewPetForm extends Component {
       image_url: imageUrl,
     };
     try {
-      const response = await fetch("http://localhost:5000/pet-owners/pets", {
+      const response = await fetch("/pet-owners/pets", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),

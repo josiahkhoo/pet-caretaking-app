@@ -52,8 +52,6 @@ const Register = withRouter(({ history }) => {
 
   const register = async () => {
     setFirstLoad(false);
-    // console.log("registering account")
-    // console.log(is_pet_owner, "is_full_time_ct, part-time", is_full_time_ct, is_part_time_ct)
     if (emptyFormState()) {
       return;
     }
@@ -70,8 +68,7 @@ const Register = withRouter(({ history }) => {
     };
     var responseStatus;
     try {
-      const url = process.env.BACKEND_URL || "http://localhost:5000";
-      await fetch(url.concat("/register"), {
+      await fetch("/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
