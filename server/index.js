@@ -230,6 +230,11 @@ app.get(
   CaretakerController.getBidByCaretakerId
 );
 
+app.get(
+  "/caretakers/getConfirmedBidById/:care_taker_user_id",
+  CaretakerController.getConfirmedBidByCaretakerId
+);
+
 // caretaker input availability for part-time
 // takes leave for full-time
 app.post("/caretakers/availability", CaretakerController.specifyAvailability);

@@ -521,4 +521,38 @@ module.exports = {
       console.error(error.message);
     }
   },
+
+  async getConfirmedBidByCaretakerId(req, res) {
+    try {
+      const { care_taker_user_id } = req.params;
+      const bids = await pool.query(
+        `SELECT
+        category_name,
+        bid.pet_name,
+        name,
+        start_date,
+        end_date,
+        total_price,
+        care_taker_user_id,
+        bid.pet_owner_user_id
+      FROM (bid
+        JOIN users ON users.user_id = bid.pet_owner_user_id)
+      JOIN ownedpets ON (ownedpets.pet_owner_user_id = bid.pet_owner_user_id
+          AND ownedpets.pet_name = bid.pet_name)
+      WHERE
+        care_taker_user_id = $1
+        AND is_success = TRUE`,
+        [care_taker_user_id]
+      );
+      if (bids.rows.length) {
+        res.status(200).json(bids.rows);
+      } else {
+        res.status(400).send("Invalid caretaker id");
+      }
+      console.log(bids.rows);
+    } catch (error) {
+      res.status(500);
+      console.error(error.message);
+    }
+  },
 };
