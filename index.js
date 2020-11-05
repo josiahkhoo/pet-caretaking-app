@@ -207,6 +207,12 @@ app.get(
   CaretakerController.getTotalPetByMonth
 );
 
+// Total number of Pet taken care of in the month, sorted by year.
+app.get(
+  "/caretakers/total-pet-care-by-month/:year",
+  CaretakerController.getTotalPetByMonthYear
+);
+
 // Get average rating of a caretaker
 app.get(
   "/caretakers/:care_taker_user_id/average-rating",

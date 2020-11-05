@@ -18,7 +18,7 @@ export default class TakenCarePets extends Component {
   async getPetNum() {
     try {
       const response = await fetch(
-        "http://localhost:5000/caretakers/total-pet-care-by-month",
+        "/caretakers/total-pet-care-by-month",
       );
       return await response.json();
     } catch (error) {

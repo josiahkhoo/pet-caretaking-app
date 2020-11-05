@@ -63,7 +63,7 @@ export default class Underperforming extends Component {
     async getUnderperformers(month, year) {
         try {
         const response = await fetch(
-            `http://localhost:5000/caretakers/under-performing/${month}/${year}`,
+            `/caretakers/under-performing/${month}/${year}`,
         );
             return await response.json();
         } catch (error) {

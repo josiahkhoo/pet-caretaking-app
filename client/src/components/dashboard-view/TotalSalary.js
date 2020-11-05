@@ -19,7 +19,7 @@ export default class TotalSalary extends Component {
   async getSalaries() {
     try {
       const response = await fetch(
-        "http://localhost:5000/caretakers/salary",
+        "/caretakers/salary",
       );
       return await response.json();
     } catch (error) {
