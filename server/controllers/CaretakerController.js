@@ -525,4 +525,23 @@ module.exports = {
       console.error(error.message);
     }
   },
+
+  async getCanTakeCarePetCategories(req, res) {
+    try {
+      const { care_taker_user_id } = req.params;
+      const categories = await pool.query(
+        "SELECT c.category_name FROM cantakecare c WHERE c.care_taker_user_id = $1",
+        [care_taker_user_id]
+      );
+      if (categories.rows) {
+        res.status(200).json(categories.rows);
+      } else {
+        res.status(400).send("Invalid user ID");
+      }
+      console.log(categories.rows);
+    } catch (error) {
+      res.status(500);
+      console.error(error.message);
+    }
+  },
 };
