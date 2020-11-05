@@ -42,7 +42,9 @@ export default class PetCategoryDropdown extends Component {
   componentDidMount() {
     this.getPetCategory().then((res) => {
       console.log(res);
-      this.setState({ categories: res });
+      if (Array.isArray(res)) {
+        this.setState({ categories: res });
+      }
     });
     console.log(this.state.categories);
   }
