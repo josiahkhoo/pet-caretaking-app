@@ -8,6 +8,7 @@ import HighestPetDays from "../components/dashboard-view/HighestPetDays";
 import Underperforming from "../components/dashboard-view/Underperforming";
 import AverageSatisfaction from "../components/dashboard-view/AverageSatisfaction";
 import TotalSalary from "../components/dashboard-view/TotalSalary";
+import TakenCarePetsChart from "../components/dashboard-view/TakenCarePetsChart";
 
 import Store from "../flux/store";
 
@@ -27,6 +28,12 @@ const Admin = () => {
     <Row className="mb-4">
       <Col>
         <TakenCarePets />
+      </Col>
+    </Row>
+
+    <Row className="mb-4">
+      <Col>
+        <TakenCarePetsChart />
       </Col>
     </Row>
     
