@@ -60,7 +60,7 @@ export default class AverageSatisfaction extends Component {
     async getSatisfaction(month, year) {
       try {
       const response = await fetch(
-          `http://localhost:5000/caretakers/categories/satisfaction/${month}/${year}`,
+          `/caretakers/categories/satisfaction/${month}/${year}`,
       );
           return await response.json();
       } catch (error) {

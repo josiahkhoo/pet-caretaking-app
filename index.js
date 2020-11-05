@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 const pool = require("./db");
-
+const PORT = process.env.PORT || 5000
 app.use(cors());
 app.use(express.json());
 
@@ -16,6 +16,10 @@ const {
 } = require("./controllers/CaretakerController");
 const { viewReviews } = require("./controllers/PetOwnerController");
 const PetOwnerController = require("./controllers/PetOwnerController");
+
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static("./client/build"))
+}
 // Routes
 
 // User
@@ -230,6 +234,6 @@ app.get("/categories", async (req, res) => {
   }
 });
 
-app.listen(5000, () => {
-  console.log("server listening at 5000");
+app.listen(PORT, () => {
+  console.log("server listening at ", PORT);
 });
