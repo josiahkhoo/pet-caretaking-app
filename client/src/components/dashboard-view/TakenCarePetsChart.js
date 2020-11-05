@@ -8,11 +8,32 @@ import Chart from "../../utils/chart";
 class TakenCarePetsChart extends React.Component {
   constructor(props) {
     super(props);
-
+    this.state = {petNum: []};
     this.canvasRef = React.createRef();
   }
 
-  componentDidMount() {
+  async getPetNum() {
+      try {
+          const response = await fetch(
+              `/caretakers/total-pet-care-by-month`,
+          );
+          return await response.json();
+      } catch (error) {
+          console.log(error);
+          return [];
+      }
+  }
+
+  componentDidMount() { 
+
+    this.getPetNum().then((res) => {
+        this.setState({
+            petNum : res,
+        })
+    });
+
+    const data = this.state.petNum.map(id => id.count);
+
     const chartOptions = {
       ...{
         responsive: true,
@@ -70,23 +91,48 @@ class TakenCarePetsChart extends React.Component {
 
     const PetsOverview = new Chart(this.canvasRef.current, {
       type: "LineWithLine",
-      data: this.props.chartData,
+      data: {
+        labels: [1, 2, 3, 4, 5],
+        datasets: [{
+            label: '# of Pets',
+            data: data,
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(255, 206, 86, 0.2)',
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(153, 102, 255, 0.2)',
+                'rgba(255, 159, 64, 0.2)'
+            ],
+            borderColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(255, 159, 64, 1)'
+            ],
+            borderWidth: 1
+        }]
+    },
       options: chartOptions
     });
 
     // They can still be triggered on hover.
-    const petMeta = PetsOverview.getDatasetMeta(0);
-    petMeta.data[0]._model.radius = 0;
-    petMeta.data[
-      this.props.chartData.datasets[0].data.length - 1
-    ]._model.radius = 0;
+    // const petMeta = PetsOverview.getDatasetMeta(0);
+    // petMeta.data[0]._model.radius = 0;
+    // petMeta.data[
+    //   this.props.chartData.datasets[0].data.length - 1
+    // ]._model.radius = 0;
 
     // Render the chart.
     PetsOverview.render();
   }
+  
 
   render() {
     const { title } = this.props;
+    const { petNum } = this.state;
     return (
       <Card small className="h-100">
         <CardHeader className="border-bottom">
@@ -118,19 +164,26 @@ class TakenCarePetsChart extends React.Component {
 }
 
 TakenCarePetsChart.propTypes = {
-  /**
-   * The component's title.
-   */
   title: PropTypes.string,
-  /**
-   * The chart dataset.
-   */
   chartData: PropTypes.object,
-  /**
-   * The Chart.js options.
-   */
   chartOptions: PropTypes.object
 };
+
+async function getPetNum() {
+    try {
+        const response = await fetch(
+            `/caretakers/total-pet-care-by-month/2020`
+        );
+        return await response.json().count;
+    } catch (error) {
+        console.log(error);
+        return [];
+    }
+};
+
+// var labels = getPetNum();
+
+// var petNum = labels.count.map(month => month.count);
 
 TakenCarePetsChart.defaultProps = {
   title: "Chart View of number of pets we took care of",
@@ -152,20 +205,7 @@ TakenCarePetsChart.defaultProps = {
       {
         label: "Current Month",
         fill: "start",
-        data: [
-          0,
-          5,
-          10,
-          12,
-          7,
-          8,
-          13,
-          9,
-          7,
-          22,
-          30,
-          25
-        ],
+        data: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
         backgroundColor: "rgba(0,123,255,0.1)",
         borderColor: "rgba(0,123,255,1)",
         pointBackgroundColor: "#ffffff",

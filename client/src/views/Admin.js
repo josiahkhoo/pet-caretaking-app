@@ -31,11 +31,11 @@ const Admin = () => {
       </Col>
     </Row>
 
-    <Row className="mb-4">
+    {/* <Row className="mb-4">
       <Col>
         <TakenCarePetsChart />
       </Col>
-    </Row>
+    </Row> */}
     
     <Row className="mb-4">
       <Col>
