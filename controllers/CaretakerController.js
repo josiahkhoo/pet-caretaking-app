@@ -211,6 +211,31 @@ module.exports = {
     }
   },
 
+  async getTotalPetByMonthYear(req, res) {
+    try {
+      const { year } = req.params;
+      const totalPet = await pool.query(
+        "SELECT EXTRACT(MONTH FROM end_date) AS month, " +
+          "EXTRACT(YEAR from end_date) AS year, COUNT(*)\n " +
+          "FROM bid\n" +
+          "WHERE is_success = TRUE AND EXTRACT(YEAR from end_date) = $1\n" +
+          "GROUP BY EXTRACT(MONTH FROM end_date),\n " +
+          "EXTRACT(YEAR FROM end_date) " +
+          "ORDER BY YEAR, MONTH",
+          [year]
+      );
+      if (totalPet.rows) {
+        res.status(200).json(totalPet.rows);
+      } else {
+        res.status(400).send("Invalid request");
+      }
+      console.log(totalPet.rows);
+    } catch (error) {
+      res.status(500);
+      console.error(error.message);
+    }
+  },
+
   async addCanTakeCareOf(req, res) {
     try {
       const { care_taker_user_id, category_name, price } = req.body;
