@@ -39,8 +39,7 @@ const Login = withRouter(({ history }) => {
         return
       }
       const body = { username, password };
-      const url = process.env.BACKEND_URL || "http://localhost:5000";
-      await fetch(url.concat("/login"), {
+      await fetch("/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
