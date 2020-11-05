@@ -149,6 +149,27 @@ module.exports = {
     }
   },
 
+  async getAverageSatisfactionPerCategoryYear(req, res) {
+    try {
+      const { month, year } = req.params;
+      const satisfaction = await pool.query(
+        "SELECT category_name, AVG(rating) AS Satisfaction FROM bid NATURAL JOIN ownedpets WHERE " +
+          "EXTRACT(MONTH FROM end_date) = $1 AND EXTRACT(YEAR from end_date) = $2 " + 
+          "AND is_success = TRUE GROUP BY category_name",
+        [month, year]
+      );
+      if (satisfaction.rows) {
+        res.status(200).json(satisfaction.rows);
+      } else {
+        res.status(400).send("Invalid month");
+      }
+      console.log(satisfaction.rows);
+    } catch (error) {
+      res.status(500);
+      console.error(error.message);
+    }
+  },
+
   async getHighestPetDaysMonth(req, res) {
     try {
       const highest = await pool.query(
