@@ -3,28 +3,79 @@ import PropTypes from "prop-types";
 import {
   Card,
   CardHeader,
+  CardBody,
   Button,
   ListGroup,
   ListGroupItem,
-  Progress
+  Progress,
+  Row,
+  Col,
 } from "shards-react";
+import CaretakerInfo from "./CaretakerInfo";
 
 const UserDetails = ({ user }) => (
   <Card small className="mb-4 pt-3">
     <CardHeader className="border-bottom text-center">
-      {<div className="mb-3 mx-auto">
-        <img
-          className="rounded-circle"
-          src={user.image_url}
-          alt={user.name}
-          width="200"
-        />
-      </div>}
+      {
+        <div className="mb-3 mx-auto">
+          <img
+            className="rounded-circle"
+            src={user.image_url}
+            alt={user.name}
+            width="200"
+          />
+        </div>
+      }
       <h4 className="mb-0">{user.name}</h4>
-      <Button pill outline size="sm" className="mb-2">
-        <i className="material-icons mr-1">person_add</i>
-      </Button>
+      <div
+        className="d-flex justify-content-center"
+        style={{
+          marginTop: 10,
+        }}
+      >
+        {user.is_full_time !== null ? (
+          <div
+            className="bg-success text-white text-center rounded p-2"
+            style={{
+              boxShadow: "inset 2 2 2px rgba(0,0,0,.1)",
+              marginLeft: 5,
+              marginRight: 5,
+            }}
+          >
+            Caretaker
+          </div>
+        ) : null}
+        {user.is_pet_owner === true ? (
+          <div
+            className="bg-info text-white text-center rounded p-2"
+            style={{
+              boxShadow: "inset 2 2 2px rgba(0,0,0,.1)",
+              marginLeft: 5,
+              marginRight: 5,
+            }}
+          >
+            Pet Owner
+          </div>
+        ) : null}
+        {user.is_admin === true ? (
+          <div
+            className="bg-danger text-white text-center rounded p-2"
+            style={{
+              boxShadow: "inset 2 2 2px rgba(0,0,0,.1)",
+              marginLeft: 5,
+              marginRight: 5,
+            }}
+          >
+            Admin
+          </div>
+        ) : null}
+      </div>
     </CardHeader>
+    {user.is_full_time !== null ? (
+      <CardBody>
+        <CaretakerInfo careTakerUserId={user.user_id} />
+      </CardBody>
+    ) : null}
   </Card>
 );
 

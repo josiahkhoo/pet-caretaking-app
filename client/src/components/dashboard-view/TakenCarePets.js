@@ -6,7 +6,6 @@ import {
 } from "shards-react";
 import PetNumRow from "./PetNumRow";
 
-
 export default class TakenCarePets extends Component {
 
   constructor(props) {
