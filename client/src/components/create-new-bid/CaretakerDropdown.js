@@ -43,7 +43,7 @@ export default class CareTakerDropdown extends Component {
   ) {
     try {
       const res = await fetch(
-        `http://localhost:5000/careTakers/availability/search?category=${category}&start=${moment(
+        `/careTakers/availability/search?category=${category}&start=${moment(
           startDate
         ).format("YYYY-MM-DD")}&end=${moment(endDate).format("YYYY-MM-DD")}`
       );
@@ -94,7 +94,7 @@ export default class CareTakerDropdown extends Component {
         <DropdownToggle caret>
           {selectedCareTaker != null
             ? `${selectedCareTaker}`
-            : "Select careTaker"}
+            : "Select caretaker"}
         </DropdownToggle>
         <Collapse tag={DropdownMenu} open={visible}>
           {availableCareTakers !== [] ? (

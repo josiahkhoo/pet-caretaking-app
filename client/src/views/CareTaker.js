@@ -3,6 +3,8 @@ import { Redirect } from "react-router-dom";
 
 import { Container, Row, Col } from "shards-react";
 import BidView from "../components/care-taker-view/bidView";
+import AvailabilityForm from "../components/care-taker/AvailabilityForm";
+import ViewAvailability from "../components/care-taker/ViewAvailability";
 import PageTitle from "../components/common/PageTitle";
 import Store from "../flux/store";
 
@@ -26,6 +28,8 @@ const CareTaker = () => {
           <BidView user={user}></BidView>
         </Col>
       </Row>
+      <AvailabilityForm user={user} />
+      <ViewAvailability user={user} />
     </Container>
   );
 };

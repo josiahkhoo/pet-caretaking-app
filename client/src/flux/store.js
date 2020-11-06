@@ -44,7 +44,6 @@ class Store extends EventEmitter {
 
   removeUser() {
     _store.user = null;
-    this.emit(Constants.CHANGE);
     localStorage.clear()
   }
 
@@ -53,10 +52,12 @@ class Store extends EventEmitter {
   }
 
   getSidebarItems() {
-    const user = _store.user;
+    const user = this.getUser();
 
-    if (user == null)
-      return [];
+    if (user == null) {
+      window.location.href = "/login"
+      // return []
+    }
 
     console.log(user)
     const isCaretaker = user.is_full_time != undefined;
@@ -71,8 +72,17 @@ class Store extends EventEmitter {
   }
 
   getUser() {
+    const localUser = localStorage.getItem("user")
+
+    if (localUser == null) {
+      return null
+    }
+    _store.user = JSON.parse(localUser);
+    console.log(_store.user)
     return _store.user;
   }
+
+
 
   addChangeListener(callback) {
     this.on(Constants.CHANGE, callback);

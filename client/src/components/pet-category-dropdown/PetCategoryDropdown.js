@@ -29,7 +29,7 @@ export default class PetCategoryDropdown extends Component {
 
   async getPetCategory() {
     try {
-      const response = await fetch("http://localhost:5000/categories", {
+      const response = await fetch("/categories", {
         method: "GET",
       });
       return await response.json();
@@ -42,7 +42,9 @@ export default class PetCategoryDropdown extends Component {
   componentDidMount() {
     this.getPetCategory().then((res) => {
       console.log(res);
-      this.setState({ categories: res });
+      if (Array.isArray(res)) {
+        this.setState({ categories: res });
+      }
     });
     console.log(this.state.categories);
   }

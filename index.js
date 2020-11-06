@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 const pool = require("./db");
-
+const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
@@ -16,11 +16,18 @@ const {
 } = require("./controllers/CaretakerController");
 const { viewReviews } = require("./controllers/PetOwnerController");
 const PetOwnerController = require("./controllers/PetOwnerController");
+
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static("./client/build"));
+}
 // Routes
 
 // User
 app.post("/register", AuthController.register);
 app.post("/login", AuthController.login);
+app.put("/users/:user_id", AuthController.update);
+app.delete("/users/:user_id", AuthController.delete);
+app.get("/users/:id", AuthController.getUser);
 
 // Get all users
 app.get("/users", async (req, res) => {
@@ -53,50 +60,6 @@ app.get(
   CaretakerController.getAvailabilityByPetType
 );
 
-// get user by id
-app.get("/users/:id", async (req, res) => {
-  try {
-    const { id } = req.params;
-    const user = await pool.query("SELECT * FROM users WHERE user_id = $1", [
-      id,
-    ]);
-    res.json(user.rows[0]);
-  } catch (error) {
-    console.error(error.message);
-  }
-});
-
-// update password
-app.put("/users/:id", async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { password } = req.body;
-    console.log(id, description);
-
-    const updatedUser = await pool.query(
-      `UPDATE users SET password = $1 WHERE user_id = $2`,
-      [password, id]
-    );
-
-    res.json("User updated");
-  } catch (error) {
-    console.error("error", error.message);
-  }
-});
-
-// delete
-app.delete("/user/:id", async (req, res) => {
-  try {
-    const { id } = req.params;
-    const deletedUser = await pool.query(
-      `DELETE FROM users WHERE user_id = $1`,
-      [id]
-    );
-    res.json("User deleted");
-  } catch (error) {
-    console.error("error", error.message);
-  }
-});
 // View reviews from a PetOwner for a pet category
 app.get(
   "/pet-owners/:pet_owner_user_id/categories/:category_name/reviews",
@@ -158,6 +121,11 @@ app.post("/pet-owners/bid/review", async (req, res) => {
 
 app.post("/pet-owners/pets", PetOwnerController.createPet);
 
+app.post(
+  "/pet-owners/:pet_owner_user_id/pets/:pet_name",
+  PetOwnerController.updatePet
+);
+
 app.post("/pet-owners/bid", PetOwnerController.createBid);
 // get all bids for a pet owner
 app.get("/pet-owners/:pet_owner_user_id/bid", PetOwnerController.getAllBids);
@@ -169,6 +137,12 @@ app.get("/pet-owners/:pet_owner_user_id/pets", PetOwnerController.getAllPets);
 app.get(
   "/pet-owners/:pet_owner_user_id/pets-without-userinfo",
   PetOwnerController.getAllPetsWithoutUserInfo
+);
+
+// view all pets owned by a certain pet owner
+app.get(
+  "/pet-owners/:pet_owner_user_id/pets/:pet_name",
+  PetOwnerController.getPet
 );
 
 // get all bids for a caretaker
@@ -201,6 +175,12 @@ app.get(
   CaretakerController.getAverageSatisfactionPerCategory
 );
 
+// Average Satisfaction Per Pet Category and by Year
+app.get(
+  "/caretakers/categories/satisfaction/:month/:year",
+  CaretakerController.getAverageSatisfactionPerCategoryYear
+);
+
 // Month with highest number of jobs -> highest number of petdays
 app.get(
   "/caretakers/highest-pet-care-month",
@@ -213,13 +193,25 @@ app.get(
   CaretakerController.getUnderPerformingCaretakers
 );
 
+//Underperforming Fulltime Care Takers ( months, year) -> Number of Pet Days < 60 or average rating < 2.5
+app.get(
+  "/caretakers/under-performing/:month/:year",
+  CaretakerController.getUnderPerformingCaretakersYear
+);
+
 // Total number of Pet taken care of in the month.
 app.get(
   "/caretakers/total-pet-care-by-month",
   CaretakerController.getTotalPetByMonth
 );
 
-//Get average rating of a caretaker
+// Total number of Pet taken care of in the month, sorted by year.
+app.get(
+  "/caretakers/total-pet-care-by-month/:year",
+  CaretakerController.getTotalPetByMonthYear
+);
+
+// Get average rating of a caretaker
 app.get(
   "/caretakers/:care_taker_user_id/average-rating",
   CaretakerController.getAverageRatingCaretaker
@@ -233,6 +225,12 @@ app.get(
 app.get(
   "/caretakers/getConfirmedBidById/:care_taker_user_id",
   CaretakerController.getConfirmedBidByCaretakerId
+);
+
+// Get all categories a caretaker can take care of
+app.get(
+  "/caretakers/:care_taker_user_id/categories",
+  CaretakerController.getCanTakeCarePetCategories
 );
 
 // caretaker input availability for part-time
@@ -250,6 +248,6 @@ app.get("/categories", async (req, res) => {
   }
 });
 
-app.listen(5000, () => {
-  console.log("server listening at 5000");
+app.listen(PORT, () => {
+  console.log("server listening at ", PORT);
 });

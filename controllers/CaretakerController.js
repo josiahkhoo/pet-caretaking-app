@@ -18,7 +18,6 @@ function getDates(startDate, stopDate) {
 module.exports = {
   async specifyAvailability(req, res) {
     try {
-      //   const { id } = req.params;
       // TODO: do not allow leave if currently taking care of pets
       const { user_id, start_date, end_date } = req.body;
       const result = await pool.query(
@@ -150,6 +149,27 @@ module.exports = {
     }
   },
 
+  async getAverageSatisfactionPerCategoryYear(req, res) {
+    try {
+      const { month, year } = req.params;
+      const satisfaction = await pool.query(
+        "SELECT category_name, AVG(rating) AS Satisfaction FROM bid NATURAL JOIN ownedpets WHERE " +
+          "EXTRACT(MONTH FROM end_date) = $1 AND EXTRACT(YEAR from end_date) = $2 " +
+          "AND is_success = TRUE GROUP BY category_name",
+        [month, year]
+      );
+      if (satisfaction.rows) {
+        res.status(200).json(satisfaction.rows);
+      } else {
+        res.status(400).send("Invalid month");
+      }
+      console.log(satisfaction.rows);
+    } catch (error) {
+      res.status(500);
+      console.error(error.message);
+    }
+  },
+
   async getHighestPetDaysMonth(req, res) {
     try {
       const highest = await pool.query(
@@ -171,11 +191,38 @@ module.exports = {
   async getTotalPetByMonth(req, res) {
     try {
       const totalPet = await pool.query(
-        "SELECT EXTRACT(MONTH FROM end_date) AS month, COUNT(*)\n" +
+        "SELECT EXTRACT(MONTH FROM end_date) AS month, " +
+          "EXTRACT(YEAR from end_date) AS year, COUNT(*)\n " +
           "FROM bid\n" +
           "WHERE is_success = TRUE\n" +
-          "GROUP BY EXTRACT(MONTH FROM end_date)\n" +
-          "ORDER BY month"
+          "GROUP BY EXTRACT(MONTH FROM end_date),\n " +
+          "EXTRACT(YEAR FROM end_date) " +
+          "ORDER BY YEAR, MONTH"
+      );
+      if (totalPet.rows) {
+        res.status(200).json(totalPet.rows);
+      } else {
+        res.status(400).send("Invalid request");
+      }
+      console.log(totalPet.rows);
+    } catch (error) {
+      res.status(500);
+      console.error(error.message);
+    }
+  },
+
+  async getTotalPetByMonthYear(req, res) {
+    try {
+      const { year } = req.params;
+      const totalPet = await pool.query(
+        "SELECT EXTRACT(MONTH FROM end_date) AS month, " +
+          "EXTRACT(YEAR from end_date) AS year, COUNT(*)\n " +
+          "FROM bid\n" +
+          "WHERE is_success = TRUE AND EXTRACT(YEAR from end_date) = $1\n" +
+          "GROUP BY EXTRACT(MONTH FROM end_date),\n " +
+          "EXTRACT(YEAR FROM end_date) " +
+          "ORDER BY YEAR, MONTH",
+        [year]
       );
       if (totalPet.rows) {
         res.status(200).json(totalPet.rows);
@@ -314,6 +361,29 @@ module.exports = {
     }
   },
 
+  async getUnderPerformingCaretakersYear(req, res) {
+    try {
+      const { month, year } = req.params;
+      const underPerforming = await pool.query(
+        "SELECT u.user_id, u.name FROM (SELECT care_taker_user_id FROM bid " +
+          "WHERE EXTRACT(MONTH FROM end_date) = $1 AND EXTRACT(YEAR FROM end_date) = $2 " +
+          "AND is_success = TRUE GROUP BY care_taker_user_id HAVING (sum(end_date - start_date + 1) < 60 " +
+          "OR AVG(rating) < 2.5)) as a " +
+          "INNER JOIN users u ON u.user_id = care_taker_user_id",
+        [month, year]
+      );
+      if (underPerforming.rows) {
+        res.status(200).json(underPerforming.rows);
+      } else {
+        res.status(400).send("Invalid month / year");
+      }
+      console.log(underPerforming.rows);
+    } catch (error) {
+      res.status(500);
+      console.error(error.message);
+    }
+  },
+
   async getAverageRatingCaretaker(req, res) {
     try {
       const { care_taker_user_id } = req.params;
@@ -430,7 +500,8 @@ module.exports = {
         `SELECT DISTINCT x.named,
         x.contact,
         x.price,
-        x.category,
+        x.category, 
+        x.userid,
         ROUND(AVG(y.avg_rating), 2) as rating
             FROM (SELECT DISTINCT u.user_id as userid,
             u.name as named,
@@ -550,6 +621,25 @@ module.exports = {
         res.status(400).send("Invalid caretaker id");
       }
       console.log(bids.rows);
+    } catch (error) {
+      res.status(500);
+      console.error(error.message);
+    }
+  },
+
+  async getCanTakeCarePetCategories(req, res) {
+    try {
+      const { care_taker_user_id } = req.params;
+      const categories = await pool.query(
+        "SELECT c.category_name FROM cantakecare c WHERE c.care_taker_user_id = $1",
+        [care_taker_user_id]
+      );
+      if (categories.rows) {
+        res.status(200).json(categories.rows);
+      } else {
+        res.status(400).send("Invalid user ID");
+      }
+      console.log(categories.rows);
     } catch (error) {
       res.status(500);
       console.error(error.message);

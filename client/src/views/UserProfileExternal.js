@@ -1,16 +1,32 @@
-import React from "react";
+import React, {useState} from "react";
 import { Container, Row, Col } from "shards-react";
-import { Redirect } from "react-router-dom";
 
 import PageTitle from "../components/common/PageTitle";
 import UserDetails from "../components/user-profile-lite/UserDetails";
 import UserAccountDetails from "../components/user-profile-lite/UserAccountDetails";
-import Store from "../flux/store";
+import { useHistory, useParams } from "react-router-dom";
 
-const UserProfileLite = () => {
-  const user = Store.getUser();
-  if (user == null) return <Redirect to="/login" />;
-  console.log(user)
+const UserProfileExternal = () => {
+  let { user_id } = useParams();
+
+
+  const getUser = async (userId) => {
+    try {
+      const res = await fetch(`/users/${userId}`);
+      return res.json();
+    } catch (error) {
+      alert("An error has occurred")
+      return null;
+    }
+  }
+
+  const [user, setUser] = useState(null);
+  
+  // Todo: add some loading indicator
+  if (user == null) {
+    getUser(user_id).then(user => setUser(user), err => console.log(err));
+    return<div/>
+  }
 
   return (
     <Container fluid className="main-content-container px-4">
@@ -34,4 +50,4 @@ const UserProfileLite = () => {
   );
 };
 
-export default UserProfileLite;
+export default UserProfileExternal;

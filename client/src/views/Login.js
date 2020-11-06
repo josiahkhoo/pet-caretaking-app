@@ -14,8 +14,9 @@ import {
 import { Dispatcher, Constants, Store } from "../flux";
 
 const Login = withRouter(({ history }) => {
-  const [username, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [isFirstLoad, setFirstLoad] = useState(true);
 
   const checkFormState = () => {
     return username == "" || password == "";
@@ -33,11 +34,12 @@ const Login = withRouter(({ history }) => {
 
   const onLogin = async (e) => {
     try {
-      if (!checkFormState) {
-        console.log("Empty fields");
+      setFirstLoad(true);
+      if (checkFormState()) {
+        return
       }
       const body = { username, password };
-      const response = await fetch("http://localhost:5000/login", {
+      await fetch("/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
@@ -46,20 +48,22 @@ const Login = withRouter(({ history }) => {
           if (response.status >= 400) {
             alert("Wrong password!")
           }
+          console.log(response.json)
           return response.json();
         })
         .then((data) => {
-          // Login success
           localStorage.setItem("user", JSON.stringify(data));
           handleLogin();
           history.push("/home");
         });
     } catch (error) {
-      // history.push("/errors")
+      console.log(error)
+      alert("Invalid username/password")
     }
-    
   };
-
+  if (Store.getUser == null) {
+    history.push("/")
+  }
   return (
     <Container fluid className=" main-content-container px-4 pb-4">
       {/* Page Header */}
@@ -79,10 +83,12 @@ const Login = withRouter(({ history }) => {
                 </Col>
                 <Col>
                   <FormInput
-                    type="username"
+                    type="text"
                     placeholder="Username"
                     value={username}
-                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    invalid={!isFirstLoad && username == ""}
+                    onChange={(e) => setUsername(e.target.value)}
                   />
                 </Col>
               </Row>
@@ -96,6 +102,8 @@ const Login = withRouter(({ history }) => {
                     type="password"
                     placeholder="Password"
                     value={password}
+                    required
+                    invalid={!isFirstLoad && password == ""}
                     onChange={(e) => setPassword(e.target.value)}
                   />
                 </Col>

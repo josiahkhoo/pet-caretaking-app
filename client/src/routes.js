@@ -7,7 +7,6 @@ import { DefaultLayout, NoNavLayout } from "./layouts";
 // Route Views
 import BlogOverview from "./views/BlogOverview";
 import UserProfileLite from "./views/UserProfileLite";
-import AddNewPost from "./views/AddNewPost";
 import Errors from "./views/Errors";
 import ComponentsOverview from "./views/ComponentsOverview";
 import Tables from "./views/Tables";
@@ -21,6 +20,11 @@ import AddNewPet from "./views/AddNewPet";
 import CreateBid from "./views/CreateBid";
 import Admin from "./views/Admin";
 import CareTaker from "./views/CareTaker";
+import PetProfile from "./views/PetProfile";
+import UserDetails from "./components/petowner-profile/UserDetails";
+import UserProfileExternal from "./views/UserProfileExternal";
+import EditPet from "./views/EditPet";
+import Store from "./flux/store"
 
 export default [
   {
@@ -56,11 +60,6 @@ export default [
     component: UserProfileLite,
   },
   {
-    path: "/add-new-post",
-    layout: DefaultLayout,
-    component: AddNewPost,
-  },
-  {
     path: "/errors",
     layout: DefaultLayout,
     component: Errors,
@@ -74,11 +73,6 @@ export default [
     path: "/tables",
     layout: DefaultLayout,
     component: Tables,
-  },
-  {
-    path: "/blog-posts",
-    layout: DefaultLayout,
-    component: BlogPosts,
   },
   {
     path: "/create-review",
@@ -109,5 +103,25 @@ export default [
     path: "/care-taker",
     layout: DefaultLayout,
     component: CareTaker,
+  },
+  {
+    path: "/pet-profile",
+    layout: DefaultLayout,
+    component: PetProfile,
+  },
+  {
+    path: "/user-profile-external",
+    layout: DefaultLayout,
+    component: UserProfileExternal,
+  },
+  {
+    path: "/user/:user_id",
+    layout: Store.getUser() != null ? DefaultLayout : NoNavLayout,
+    component: UserProfileExternal,
+  },
+  {
+    path: "/edit-pet",
+    layout: DefaultLayout,
+    component: EditPet,
   },
 ];

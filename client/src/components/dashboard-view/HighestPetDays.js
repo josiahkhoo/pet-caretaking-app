@@ -19,7 +19,7 @@ export default class HighestPetDays extends Component {
   async getPetNum() {
     try {
       const response = await fetch(
-        "http://localhost:5000/caretakers/highest-pet-care-month",
+        "/caretakers/highest-pet-care-month",
       );
       return await response.json();
     } catch (error) {
@@ -40,7 +40,7 @@ export default class HighestPetDays extends Component {
     const { highestMonth } = this.state;
     return (
         <Card>
-        <CardHeader><h5>Current Month with the highest number of jobs</h5></CardHeader>
+        <CardHeader><h5>Month with the highest number of pet days</h5></CardHeader>
         <CardBody>
           <table className="table mb-0">
             <thead className="bg-light">
@@ -49,7 +49,7 @@ export default class HighestPetDays extends Component {
                   Month
                 </th>
                 <th scope="col" className="border-0">
-                  No. of Jobs
+                  No. of Pet Days
                 </th>
               </tr>
             </thead>

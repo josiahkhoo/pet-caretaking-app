@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Card, CardBody, CardHeader } from "shards-react";
-import PetNumRow from "./petNumRow";
+import PetNumRow from "./PetNumRow";
 
 export default class TakenCarePets extends Component {
   constructor(props) {
@@ -12,9 +12,7 @@ export default class TakenCarePets extends Component {
 
   async getPetNum() {
     try {
-      const response = await fetch(
-        "http://localhost:5000/caretakers/total-pet-care-by-month"
-      );
+      const response = await fetch("/caretakers/total-pet-care-by-month");
       return await response.json();
     } catch (error) {
       console.log(error);
@@ -43,6 +41,9 @@ export default class TakenCarePets extends Component {
               <tr>
                 <th scope="col" className="border-0">
                   Month
+                </th>
+                <th scope="col" className="border-0">
+                  Year
                 </th>
                 <th scope="col" className="border-0">
                   No. of Pets
