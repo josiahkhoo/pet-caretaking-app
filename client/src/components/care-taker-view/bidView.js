@@ -14,9 +14,7 @@ export default class BidView extends Component {
 
   async getBids(care_id) {
     try {
-      const response = await fetch(
-        `http://localhost:5000/caretakers/getBidById/${care_id}`
-      );
+      const response = await fetch(`/caretakers/getBidById/${care_id}`);
       return await response.json();
     } catch (error) {
       console.log(error);
@@ -27,7 +25,7 @@ export default class BidView extends Component {
   async getConfirmedBids(care_id) {
     try {
       const response = await fetch(
-        `http://localhost:5000/caretakers/getConfirmedBidById/${care_id}`
+        `/caretakers/getConfirmedBidById/${care_id}`
       );
       return await response.json();
     } catch (error) {

@@ -18,14 +18,11 @@ export default class BidRow extends Component {
       pet_name: petName,
     };
     try {
-      const response = await fetch(
-        `http://localhost:5000/caretakers/part-time/bid/confirm`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(body),
-        }
-      );
+      const response = await fetch(`/caretakers/part-time/bid/confirm`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
       if (response.status === 200) {
       }
     } catch (error) {
