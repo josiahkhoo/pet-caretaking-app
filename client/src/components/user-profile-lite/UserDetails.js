@@ -20,7 +20,9 @@ const UserDetails = ({ user }) => (
         <div className="mb-3 mx-auto">
           <img
             className="rounded-circle"
-            src={user == null ? "./../../assets/default_image.png" : user.image_url}
+            src={
+              user == null ? "./../../assets/default_image.png" : user.image_url
+            }
             // alt={user.name}
             width="200"
           />
@@ -57,7 +59,7 @@ const UserDetails = ({ user }) => (
             Pet Owner
           </div>
         ) : null}
-        {user.is_admin === true ? (
+        {user.is_pcs_admin === true ? (
           <div
             className="bg-danger text-white text-center rounded p-2"
             style={{
