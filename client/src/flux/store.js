@@ -54,10 +54,10 @@ class Store extends EventEmitter {
   }
 
   getSidebarItems() {
-    const user = _store.user;
+    const user = this.getUser();
 
     if (user == null) 
-      return []
+      window.location.href = "/login"
 
     console.log(user)
     const isCaretaker = user.is_full_time != undefined;
@@ -72,6 +72,9 @@ class Store extends EventEmitter {
   }
 
   getUser() {
+    _store.user = JSON.parse(localStorage.getItem("user"));
+    console.log(_store.user)
+    console.log(_store.navItems)
     return _store.user;
   }
 
