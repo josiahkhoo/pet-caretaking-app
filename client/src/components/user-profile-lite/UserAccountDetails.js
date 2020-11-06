@@ -11,6 +11,7 @@ import {
   FormInput,
   Button
 } from "shards-react";
+import Store from "./../../flux/store"
 
 const UserAccountDetails = ({ user }) => {
   
@@ -23,8 +24,7 @@ const UserAccountDetails = ({ user }) => {
     try {
       const user_id = user.user_id;
       const body = { name, password, contact_number, address };
-      const url = process.env.BACKEND_URL || "http://localhost:5000";
-      await fetch(url.concat(`/users/${user_id}`), {
+      await fetch(`/users/${user_id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
@@ -33,6 +33,10 @@ const UserAccountDetails = ({ user }) => {
           return response.json();
         })
         .then((data) => {
+          // const user = JSON.stringify(data)
+          localStorage.setItem("user", JSON.stringify(data));
+          Store.addUser()
+          // setUser(JSON.stringify(data))
           alert("Update success")
         });
     } catch (error) {
@@ -44,8 +48,7 @@ const UserAccountDetails = ({ user }) => {
   const deleteAccount = async () => {
     try {
       const user_id = user.user_id;
-      const url = process.env.BACKEND_URL || "http://localhost:5000";
-      await fetch(url.concat(`/users/${user_id}`), {
+      await fetch(`/users/${user_id}`, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
       })
@@ -160,7 +163,7 @@ const UserAccountDetails = ({ user }) => {
               </Row>
                 <Button className="mb-2 mr-1" theme="accent" onClick={updateAccount}>Update Account</Button>
 
-                {/* <Button className="mb-2 mr-1" theme="danger" onClick={deleteAccount}>Delete Account</Button> */}
+                <Button className="mb-2 mr-1" theme="danger" onClick={deleteAccount}>Delete Account</Button>
 
             </Form>
           </Col>
