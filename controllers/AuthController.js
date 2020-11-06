@@ -132,7 +132,7 @@ module.exports = {
     try {
       const { id } = req.params;
       const user = await pool.query(
-        "SELECT users.user_id AS user_id, username, password, contact_number, name, is_pcs_admin, is_pet_owner, image_url, address, bonus_rate, base_salary, minimum_base_quota, commission_rate, is_full_time FROM users LEFT JOIN caretakers ON users.user_id = caretakers.user_id WHERE users.user_id = $1",
+        "SELECT * FROM users LEFT JOIN caretakers ON users.user_id = caretakers.user_id WHERE users.user_id = $1",
         [id]
       );
       if (user.rows.length == 1) {

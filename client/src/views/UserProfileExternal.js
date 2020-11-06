@@ -1,61 +1,53 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import { Card, CardBody, CardHeader, Row, Container, Col } from "shards-react";
-import SidebarActions from "../components/add-new-post/SidebarActions";
-import SidebarCategories from "../components/add-new-post/SidebarCategories";
+import React, {useState} from "react";
+import { Container, Row, Col } from "shards-react";
+
 import PageTitle from "../components/common/PageTitle";
 import UserDetails from "../components/user-profile-lite/UserDetails";
+import UserAccountDetails from "../components/user-profile-lite/UserAccountDetails";
+import { useHistory, useParams } from "react-router-dom";
 
-export default class UserProfileExternal extends Component {
-  static propTypes = {
-    prop: PropTypes,
-  };
-  constructor(props) {
-    super(props);
-    this.state = {
-      user: null,
-    };
-  }
+const UserProfileExternal = () => {
+  let { user_id } = useParams();
 
-  async getUser(userId) {
+
+  const getUser = async (userId) => {
     try {
-      const res = await fetch(`http://localhost:5000/users/${userId}`);
+      const res = await fetch(`/users/${userId}`);
       return res.json();
     } catch (error) {
+      alert("An error has occurred")
       return null;
     }
   }
 
-  componentDidMount() {
-    const { user, userId } = this.props.location.state;
-    if (user !== null) {
-      this.setState({
-        user: user,
-      });
-    } else {
-      this.getUser(userId).then((res) => {
-        this.setState({
-          user: res,
-        });
-      });
-    }
+  const [user, setUser] = useState(null);
+  
+  // Todo: add some loading indicator
+  if (user == null) {
+    getUser(user_id).then(user => setUser(user), err => console.log(err));
+    return<div/>
   }
 
-  render() {
-    const { user } = this.state;
-    return (
-      <Container fluid className="main-content-container px-4 pb-4">
-        {/* Page Header */}
-        <Row noGutters className="page-header py-4">
-          <PageTitle sm="4" title="User Profile" className="text-sm-left" />
-        </Row>
+  return (
+    <Container fluid className="main-content-container px-4">
+      <Row noGutters className="page-header py-4">
+        <PageTitle
+          title="User Profile"
+          subtitle="Overview"
+          md="12"
+          className="ml-sm-auto mr-sm-auto"
+        />
+      </Row>
+      <Row>
+        <Col lg="4">
+          <UserDetails user={user} />
+        </Col>
+        <Col lg="8">
+          <UserAccountDetails user={user}/>
+        </Col>
+      </Row>
+    </Container>
+  );
+};
 
-        <Row>
-          <Col lg="6" md="12">
-            {user !== null ? <UserDetails user={user} /> : null}
-          </Col>
-        </Row>
-      </Container>
-    );
-  }
-}
+export default UserProfileExternal;

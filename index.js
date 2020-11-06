@@ -27,6 +27,7 @@ app.post("/register", AuthController.register);
 app.post("/login", AuthController.login);
 app.put("/users/:user_id", AuthController.update);
 app.delete("/users/:user_id", AuthController.delete);
+app.get("/users/:id", AuthController.getUser);
 
 // Get all users
 app.get("/users", async (req, res) => {
@@ -59,8 +60,7 @@ app.get(
   CaretakerController.getAvailabilityByPetType
 );
 
-// get user by id
-app.get("/users/:id", AuthController.getUser);
+
 
 // View reviews from a PetOwner for a pet category
 app.get(

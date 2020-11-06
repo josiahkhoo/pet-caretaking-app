@@ -57,7 +57,7 @@ export default class CreateReviewForm extends Component {
     };
     try {
       const response = await fetch(
-        "http://localhost:5000/pet-owners/bid/review",
+        "/pet-owners/bid/review",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

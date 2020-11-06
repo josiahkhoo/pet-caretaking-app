@@ -49,9 +49,6 @@ export default class UserActions extends React.Component {
           <DropdownItem tag={Link} to="user-profile-lite">
             <i className="material-icons">&#xE7FD;</i> Profile
           </DropdownItem>
-          <DropdownItem tag={Link} to="user-profile-lite">
-            <i className="material-icons">&#xE8B8;</i> Edit Profile
-          </DropdownItem>
           <DropdownItem divider />
           <DropdownItem tag={Link} to="/" className="text-danger" onClick={logout}>
             <i className="material-icons text-danger">&#xE879;</i> Logout

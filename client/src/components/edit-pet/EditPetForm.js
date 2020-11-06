@@ -52,7 +52,7 @@ export default class EditPetForm extends Component {
     };
     try {
       const response = await fetch(
-        `http://localhost:5000/pet-owners/${pet.pet_owner_user_id}/pets/${pet.pet_name}`,
+        `/pet-owners/${pet.pet_owner_user_id}/pets/${pet.pet_name}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
