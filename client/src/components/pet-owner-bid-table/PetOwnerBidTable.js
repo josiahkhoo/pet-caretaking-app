@@ -12,9 +12,7 @@ export default class PetOwnerBidTable extends Component {
 
   async getAllBids(petOwnerUserId) {
     try {
-      const response = await fetch(
-        `http://localhost:5000/pet-owners/${petOwnerUserId}/bid`
-      );
+      const response = await fetch(`/pet-owners/${petOwnerUserId}/bid`);
       return await response.json();
     } catch (error) {
       console.log(error);

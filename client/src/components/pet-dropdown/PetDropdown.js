@@ -36,7 +36,7 @@ export default class PetDropdown extends Component {
   async getAllPets(petOwnerUserId) {
     try {
       const response = await fetch(
-        `http://localhost:5000/pet-owners/${petOwnerUserId}/pets-without-userinfo`,
+        `/pet-owners/${petOwnerUserId}/pets-without-userinfo`,
         {
           method: "GET",
         }

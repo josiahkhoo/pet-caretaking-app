@@ -23,7 +23,7 @@ export default class OwnedPetsViewTable extends Component {
   async getAllPets(getOwnerUserId) {
     try {
       const response = await fetch(
-        `http://localhost:5000/pet-owners/${getOwnerUserId}/pets-without-userinfo`
+        `/pet-owners/${getOwnerUserId}/pets-without-userinfo`
       );
       return await response.json();
     } catch (error) {
