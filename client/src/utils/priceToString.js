@@ -1,3 +1,3 @@
 export default function priceToString(price) {
-  return `${price / 100.0}`;
+  return `$${Number(price / 100.0).toFixed(2)}`;
 }

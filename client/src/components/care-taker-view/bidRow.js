@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { Button } from "shards-react";
 import moment from "moment";
+import priceToString from "../../utils/priceToString";
 
 export default class BidRow extends Component {
   async confirmBid(
@@ -39,7 +40,7 @@ export default class BidRow extends Component {
         <td>{row.name}</td>
         <td>{moment(row.start_date).format("YYYY-MM-DD")}</td>
         <td>{moment(row.end_date).format("YYYY-MM-DD")}</td>
-        <td>{row.total_price}</td>
+        <td>{priceToString(row.total_price)}</td>
         <td>
           <Button
             onClick={() =>

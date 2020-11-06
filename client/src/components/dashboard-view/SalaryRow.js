@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import priceToString from "../../utils/priceToString";
 
 export default class SalaryRow extends Component {
   render() {
@@ -7,10 +8,14 @@ export default class SalaryRow extends Component {
       <tr key={row}>
         <td>{row.care_taker_user_id}</td>
         <td>{row.pet_day}</td>
-        <td>{Number(row.total_earnings).toFixed(2)}</td>
-        <td>{row.post_60_days_earnings == null ? 0 : Number(row.post_60_days_earnings).toFixed(2)}</td>
+        <td>{priceToString(row.total_earnings)}</td>
+        <td>
+          {row.post_60_days_earnings == null
+            ? 0
+            : priceToString(row.post_60_days_earnings)}
+        </td>
         <td>{row.is_full_time ? "Yes" : "No"}</td>
-        <td>{Number(row.salary).toFixed(2)}</td>
+        <td>{priceToString(row.salary)}</td>
       </tr>
     );
   }

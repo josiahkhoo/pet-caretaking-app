@@ -1,89 +1,88 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import {
-  Card,
-  CardBody,
-  CardHeader,
-  Form,
-  FormGroup,
-} from "shards-react";
+import { Card, CardBody, CardHeader, Form, FormGroup } from "shards-react";
 import MonthDropdown from "./MonthDropdown";
 import monthName from "../../utils/monthName";
 import YearDropdown from "./YearDropdown";
 
 export default class AverageSatisfaction extends Component {
-    static propTypes = {
-        month: PropTypes.number,
+  static propTypes = {
+    month: PropTypes.number,
+  };
+
+  currDate = new Date();
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      month: this.currDate.getMonth(),
+      year: this.currDate.getFullYear(),
+      satisfaction: [],
     };
-    
-    currDate = new Date();
+  }
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            month: this.currDate.getMonth(),
-            year: this.currDate.getFullYear(),
-            satisfaction: [],
-        };
-    }
-    
-    onChangeMonth(month) {
-      if (this.state.year != null) {
-        this.getSatisfaction(month, this.state.year).then((res) => {
-            this.setState({
-                month: month,
-                satisfaction: res,
-            });
-        });
-      } else {
+  onChangeMonth(month) {
+    if (this.state.year != null) {
+      this.getSatisfaction(month, this.state.year).then((res) => {
         this.setState({
-          month: month
+          month: month,
+          satisfaction: res,
         });
-      }
-    }
-
-    onChangeYear(year) {
-      if (this.state.month != null) {
-        this.getSatisfaction(this.state.month, year).then((res) => {
-          this.setState({
-              year: year,
-              satisfaction: res,
-          });
-        });
-      } else {
-        this.setState({
-          year: year
-        });
-      }
-    }
-
-    async getSatisfaction(month, year) {
-      try {
-      const response = await fetch(
-          `/caretakers/categories/satisfaction/${month}/${year}`,
-      );
-          return await response.json();
-      } catch (error) {
-          console.log(error);
-          return [];
-      }
-    }
-
-    componentDidMount() {
-      this.getSatisfaction(this.state.month, this.state.year).then((res) => {
-        this.setState({
-          satisfaction : res,
-        })
+      });
+    } else {
+      this.setState({
+        month: month,
       });
     }
+  }
+
+  onChangeYear(year) {
+    if (this.state.month != null) {
+      this.getSatisfaction(this.state.month, year).then((res) => {
+        this.setState({
+          year: year,
+          satisfaction: res,
+        });
+      });
+    } else {
+      this.setState({
+        year: year,
+      });
+    }
+  }
+
+  async getSatisfaction(month, year) {
+    try {
+      const response = await fetch(
+        `/caretakers/categories/satisfaction/${month}/${year}`
+      );
+      return await response.json();
+    } catch (error) {
+      console.log(error);
+      return [];
+    }
+  }
+
+  componentDidMount() {
+    this.getSatisfaction(this.state.month, this.state.year).then((res) => {
+      this.setState({
+        satisfaction: res,
+      });
+    });
+  }
 
   render() {
     const { month, year, satisfaction } = this.state;
     return (
-        <Card>
-        <CardHeader><h5>Average satisfaction rate for all pet categories in {monthName(month)} {year}</h5></CardHeader>
+      <Card>
+        <CardHeader>
+          <h5>
+            Average satisfaction rate for all pet categories in{" "}
+            {monthName(month)} {year}
+          </h5>
+        </CardHeader>
         <CardBody>
-        <Form>
+          <Form>
             <FormGroup>
               <div
                 style={{
@@ -91,19 +90,19 @@ export default class AverageSatisfaction extends Component {
                   justifyContent: "flex-start",
                   flexFlow: "row",
                 }}
-                >
+              >
                 <MonthDropdown
                   month={month}
                   onChangeMonth={(month) => this.onChangeMonth(month)}
                 />
                 <div style={{ marginRight: "1em" }} />
-                  <YearDropdown 
-                    year={year}
-                    onChangeYear={(year) => this.onChangeYear(year)}
-                  />
+                <YearDropdown
+                  year={year}
+                  onChangeYear={(year) => this.onChangeYear(year)}
+                />
               </div>
             </FormGroup>
-        </Form>
+          </Form>
           <table className="table mb-0">
             <thead className="bg-light">
               <tr>
@@ -116,20 +115,20 @@ export default class AverageSatisfaction extends Component {
               </tr>
             </thead>
             <tbody>
-                {satisfaction.map((id) =>(
-                <tr key = {id}>
-                    <td>
-                        {id.category_name}
-                    </td>
-                    <td>
-                        {(id.satisfaction) == null ? "N.A." : Number(id.satisfaction).toFixed(2)}
-                    </td>
+              {satisfaction.map((id) => (
+                <tr key={id}>
+                  <td>{id.category_name}</td>
+                  <td>
+                    {id.satisfaction == null
+                      ? "N.A."
+                      : Number(id.satisfaction).toFixed(2)}
+                  </td>
                 </tr>
-                ))}
+              ))}
             </tbody>
           </table>
         </CardBody>
-        </Card>
+      </Card>
     );
   }
 }
