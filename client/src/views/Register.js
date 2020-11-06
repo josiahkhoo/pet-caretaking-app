@@ -93,7 +93,7 @@ const Register = withRouter(({ history }) => {
     }
   };
 
-  if (Store.getUser == null) {
+  if (Store.getUser() != null) {
     history.push("/")
   }
 
