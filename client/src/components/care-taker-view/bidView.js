@@ -72,7 +72,9 @@ export default class BidView extends Component {
           <Row>
             <Col className="mb-4">
               <Card>
-                <CardHeader>Part timer bidding confirmation</CardHeader>
+                <CardHeader>
+                  <h4>Part timer bidding confirmation</h4>
+                </CardHeader>
                 <CardBody>
                   <table className="table mb-0">
                     <thead className="bg-light">
@@ -117,7 +119,9 @@ export default class BidView extends Component {
         <Row>
           <Col className="mb-4">
             <Card>
-              <CardHeader>Confirmed bids</CardHeader>
+              <CardHeader>
+                <h4>Confirmed bids</h4>
+              </CardHeader>
               <CardBody>
                 <table className="table mb-0">
                   <thead className="bg-light">

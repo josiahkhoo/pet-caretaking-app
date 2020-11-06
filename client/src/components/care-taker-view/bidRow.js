@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Button } from "shards-react";
 import moment from "moment";
 import priceToString from "../../utils/priceToString";
+import Category from "../user-profile-lite/Category";
 
 export default class BidRow extends Component {
   async confirmBid(
@@ -35,7 +36,7 @@ export default class BidRow extends Component {
     const { row } = this.props;
     return (
       <tr key={row}>
-        <td>{row.category_name}</td>
+        <td>{<Category name={row.category_name} />}</td>
         <td>{row.pet_name}</td>
         <td>{row.name}</td>
         <td>{moment(row.start_date).format("YYYY-MM-DD")}</td>

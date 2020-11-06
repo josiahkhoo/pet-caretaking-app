@@ -8,6 +8,7 @@ import {
   ListGroupItem,
   Progress,
 } from "shards-react";
+import Category from "../user-profile-lite/Category";
 
 const PetDetails = ({ pet }) => (
   <Card small className="mb-4 pt-3">
@@ -29,9 +30,7 @@ const PetDetails = ({ pet }) => (
         <strong className="text-muted d-block mb-2">
           Owner: {pet.pet_owner_user_id}
         </strong>
-        <strong className="text-muted d-block mb-2">
-          Category: {pet.category_name}
-        </strong>
+        <Category name={pet.category_name} />
         <span>Special Requirements: {pet.special_requirements}</span>
       </ListGroupItem>
     </ListGroup>

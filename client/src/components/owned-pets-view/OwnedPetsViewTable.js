@@ -11,6 +11,7 @@ import {
   ListGroupItem,
 } from "shards-react";
 import { Link } from "react-router-dom";
+import Category from "../user-profile-lite/Category";
 
 export default class OwnedPetsViewTable extends Component {
   constructor(props) {
@@ -48,7 +49,7 @@ export default class OwnedPetsViewTable extends Component {
             {pet.pet_name}
           </Link>
         </td>
-        <td>{pet.category_name}</td>
+        <td>{<Category name={pet.category_name} />}</td>
         <td>{pet.special_requirements}</td>
         {/* <td>{pet.pic}</td> */}
       </tr>
