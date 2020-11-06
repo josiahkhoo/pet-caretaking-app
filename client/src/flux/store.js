@@ -82,7 +82,7 @@ class Store extends EventEmitter {
     return _store.user;
   }
 
-  getUpdate
+
 
   addChangeListener(callback) {
     this.on(Constants.CHANGE, callback);

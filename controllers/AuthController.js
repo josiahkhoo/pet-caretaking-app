@@ -98,12 +98,15 @@ module.exports = {
     try {
       const { user_id } = req.params;
       const { name, password, contact_number, address } = req.body;
-      const user = await pool.query(
-        "UPDATE users SET name = $2, password = $3, contact_number= $4, address = $5 WHERE user_id = $1 RETURNING *;",
+      const update = await pool.query(
+        "UPDATE users SET name = $2, password = $3, contact_number= $4, address = $5 WHERE user_id = $1 RETURNING *",
         [user_id, name, password, contact_number, address]
       );
-      console.log([user_id, name, password, contact_number, address]);
-      if (user.rows.length == 1) {
+      const user = await pool.query(
+        "SELECT * FROM users LEFT JOIN caretakers ON users.user_id = caretakers.user_id WHERE users.user_id=$1",
+        [user_id]
+      );
+      if (update.rows.length == 1 && user.rows.length == 1) {
         res.status(200).json(user.rows[0]);
       } else {
         res.status(400).send("Invalid user details");

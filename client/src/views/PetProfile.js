@@ -30,9 +30,7 @@ export default class PetProfile extends Component {
 
   async getPet(petOwnerUserId, petName) {
     try {
-      const res = await fetch(
-        `http://localhost:5000/pet-owners/${petOwnerUserId}/pets/${petName}`
-      );
+      const res = await fetch(`/pet-owners/${petOwnerUserId}/pets/${petName}`);
       return res.json();
     } catch (error) {
       return null;

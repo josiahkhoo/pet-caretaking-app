@@ -58,7 +58,7 @@ const Login = withRouter(({ history }) => {
         });
     } catch (error) {
       console.log(error)
-      alert("An error has occurred")
+      alert("Invalid username/password")
     }
   };
   if (Store.getUser == null) {

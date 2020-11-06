@@ -29,8 +29,7 @@ const AvailabilityForm = ({ user }) => {
     console.log(start_date, end_date);
     try {
       const body = { start_date, end_date };
-      const url = process.env.BACKEND_URL || "http://localhost:5000";
-      fetch(url.concat("/caretakers/availability"), {
+      fetch("/caretakers/availability", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
@@ -38,7 +37,7 @@ const AvailabilityForm = ({ user }) => {
         .then((response) => {
           return response.json();
         })
-        .then((data) => {
+        .then(() => {
           alert("Success")
         });
     } catch (error) {
