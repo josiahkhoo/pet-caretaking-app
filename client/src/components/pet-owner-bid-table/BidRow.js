@@ -22,12 +22,13 @@ export default class BidRow extends Component {
   createReview() {}
   render() {
     const { bid } = this.props;
+    console.log(bid)
     return (
       <tr key={bid}>
         <td>
           <Link
             to={{
-              pathname: "user-profile-external",
+              pathname: `user/${bid.care_taker_user_id}`,
               state: {
                 user: null,
                 userId: bid.care_taker_user_id,

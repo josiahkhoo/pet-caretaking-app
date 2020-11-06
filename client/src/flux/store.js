@@ -3,7 +3,7 @@ import { EventEmitter } from "events";
 import Dispatcher from "./dispatcher";
 import Constants from "./constants";
 import getSidebarNavItems from "../data/sidebar-nav-items";
-import { Redirect } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 
 let _store = {
   menuVisible: false,
@@ -56,8 +56,10 @@ class Store extends EventEmitter {
   getSidebarItems() {
     const user = this.getUser();
 
-    if (user == null) 
-      window.location.href = "/login"
+    if (user == null) {
+      const history = useHistory();
+      history.push("/login")
+    }
 
     console.log(user)
     const isCaretaker = user.is_full_time != undefined;

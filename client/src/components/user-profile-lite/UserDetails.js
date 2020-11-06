@@ -20,13 +20,13 @@ const UserDetails = ({ user }) => (
         <div className="mb-3 mx-auto">
           <img
             className="rounded-circle"
-            src={user.image_url}
-            alt={user.name}
+            src={user == null ? "./../../assets/default_image.png" : user.image_url}
+            // alt={user.name}
             width="200"
           />
         </div>
       }
-      <h4 className="mb-0">{user.name}</h4>
+      {/* <h4 className="mb-0">{user.name}</h4> */}
       <div
         className="d-flex justify-content-center"
         style={{
