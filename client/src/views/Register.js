@@ -13,6 +13,8 @@ import {
   FormRadio,
 } from "shards-react";
 
+import Store from "./../flux/store"
+
 const Register = withRouter(({ history }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -90,6 +92,10 @@ const Register = withRouter(({ history }) => {
       console.log(error);
     }
   };
+
+  if (Store.getUser == null) {
+    history.push("/")
+  }
 
   return (
     <Container fluid className=" main-content-container px-4 pb-4">

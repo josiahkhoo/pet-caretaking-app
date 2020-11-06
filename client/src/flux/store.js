@@ -3,7 +3,6 @@ import { EventEmitter } from "events";
 import Dispatcher from "./dispatcher";
 import Constants from "./constants";
 import getSidebarNavItems from "../data/sidebar-nav-items";
-import { useHistory } from "react-router-dom";
 
 let _store = {
   menuVisible: false,
@@ -45,7 +44,6 @@ class Store extends EventEmitter {
 
   removeUser() {
     _store.user = null;
-    this.emit(Constants.CHANGE);
     localStorage.clear()
   }
 
@@ -57,8 +55,8 @@ class Store extends EventEmitter {
     const user = this.getUser();
 
     if (user == null) {
-      const history = useHistory();
-      history.push("/login")
+      window.location.href = "/login"
+      // return []
     }
 
     console.log(user)
@@ -74,11 +72,17 @@ class Store extends EventEmitter {
   }
 
   getUser() {
-    _store.user = JSON.parse(localStorage.getItem("user"));
+    const localUser = localStorage.getItem("user")
+
+    if (localUser == null) {
+      return null
+    }
+    _store.user = JSON.parse(localUser);
     console.log(_store.user)
-    console.log(_store.navItems)
     return _store.user;
   }
+
+  getUpdate
 
   addChangeListener(callback) {
     this.on(Constants.CHANGE, callback);
