@@ -18,7 +18,7 @@ export default class CaretakerInfo extends Component {
   async getCategories() {
     try {
       const response = await fetch(
-        `http://localhost:5000/caretakers/${this.props.careTakerUserId}/categories`
+        `/caretakers/${this.props.careTakerUserId}/categories`
       );
       return await response.json().then((res) => {
         if (Array.isArray(res)) {
@@ -35,7 +35,7 @@ export default class CaretakerInfo extends Component {
   async getAverageRating() {
     try {
       const response = await fetch(
-        `http://localhost:5000/caretakers/${this.props.careTakerUserId}/average-rating`
+        `/caretakers/${this.props.careTakerUserId}/average-rating`
       );
       return await response.json().then((res) => {
         if (typeof res === "object" && res !== null) {
