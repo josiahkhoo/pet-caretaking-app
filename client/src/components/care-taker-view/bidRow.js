@@ -52,7 +52,7 @@ export default class BidRow extends Component {
                 row.end_date,
                 row.pet_owner_user_id,
                 row.pet_name
-              )
+              ).then(() => this.props.update())
             }
           >
             Confirm
