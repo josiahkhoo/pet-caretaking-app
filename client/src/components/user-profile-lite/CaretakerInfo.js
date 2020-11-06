@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { Rating } from "@material-ui/lab";
+import Category from "./Category";
 
 export default class CaretakerInfo extends Component {
   static propTypes = {
@@ -73,16 +74,7 @@ export default class CaretakerInfo extends Component {
           style={{ display: "flex", justifyContent: "center", marginTop: 10 }}
         >
           {categories.map((category) => (
-            <div
-              className="bg-secondary text-white text-center rounded p-1"
-              style={{
-                boxShadow: "inset 2 2 2px rgba(0,0,0,.1)",
-                marginLeft: 5,
-                marginRight: 5,
-              }}
-            >
-              {category.category_name}
-            </div>
+            <Category name={category.category_name} />
           ))}
         </div>
       </div>
