@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 const pool = require("./db");
-const PORT = process.env.PORT || 5000
+const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
@@ -17,8 +17,8 @@ const {
 const { viewReviews } = require("./controllers/PetOwnerController");
 const PetOwnerController = require("./controllers/PetOwnerController");
 
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static("./client/build"))
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static("./client/build"));
 }
 // Routes
 
@@ -59,8 +59,6 @@ app.get(
   "/caretakers/availability/:category_name",
   CaretakerController.getAvailabilityByPetType
 );
-
-
 
 // View reviews from a PetOwner for a pet category
 app.get(
@@ -217,6 +215,16 @@ app.get(
 app.get(
   "/caretakers/:care_taker_user_id/average-rating",
   CaretakerController.getAverageRatingCaretaker
+);
+
+app.get(
+  "/caretakers/getBidById/:care_taker_user_id",
+  CaretakerController.getBidByCaretakerId
+);
+
+app.get(
+  "/caretakers/getConfirmedBidById/:care_taker_user_id",
+  CaretakerController.getConfirmedBidByCaretakerId
 );
 
 // Get all categories a caretaker can take care of

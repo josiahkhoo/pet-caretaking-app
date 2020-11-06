@@ -154,7 +154,7 @@ module.exports = {
       const { month, year } = req.params;
       const satisfaction = await pool.query(
         "SELECT category_name, AVG(rating) AS Satisfaction FROM bid NATURAL JOIN ownedpets WHERE " +
-          "EXTRACT(MONTH FROM end_date) = $1 AND EXTRACT(YEAR from end_date) = $2 " + 
+          "EXTRACT(MONTH FROM end_date) = $1 AND EXTRACT(YEAR from end_date) = $2 " +
           "AND is_success = TRUE GROUP BY category_name",
         [month, year]
       );
@@ -222,7 +222,7 @@ module.exports = {
           "GROUP BY EXTRACT(MONTH FROM end_date),\n " +
           "EXTRACT(YEAR FROM end_date) " +
           "ORDER BY YEAR, MONTH",
-          [year]
+        [year]
       );
       if (totalPet.rows) {
         res.status(200).json(totalPet.rows);
@@ -259,23 +259,31 @@ module.exports = {
         pet_owner_user_id,
         pet_name,
       } = req.body;
-      const bids = await pool.query(
+      console.log(req.body);
+      await pool.query(
         `UPDATE bid 
         SET is_success = TRUE
-        WHERE care_taker_user_id = $2 
-        AND start_date = $3
-        AND end_date = $4
-        AND pet_owner_user_id = $5
-        AND pet_name = $6`,
+        WHERE care_taker_user_id = $1
+        AND start_date = $2
+        AND end_date = $3
+        AND pet_owner_user_id = $4
+        AND pet_name = $5`,
         [care_taker_user_id, start_date, end_date, pet_owner_user_id, pet_name]
       );
-      res.status(200).json({
-        care_taker_user_id: care_taker_user_id,
-        pet_owner_user_id: pet_owner_user_id,
-        pet_name: pet_name,
-        start_date: start_date,
-        end_date: end_date,
-      });
+      const bid = await pool.query(
+        `SELECT * FROM bid WHERE care_taker_user_id = $1
+        AND start_date = $2
+        AND end_date = $3
+        AND pet_owner_user_id = $4
+        AND pet_name = $5`,
+        [care_taker_user_id, start_date, end_date, pet_owner_user_id, pet_name]
+      );
+      if (bid.rows.length == 1) {
+        res.status(200).json(bid.rows[0]);
+      } else {
+        console.log(bid.rows);
+        res.status(400).send("Invalid request.");
+      }
     } catch (error) {
       res.status(500);
       console.error(error.message);
@@ -545,6 +553,74 @@ module.exports = {
         res.status(400).send("Invalid caretaker id");
       }
       console.log(avgRating.rows);
+    } catch (error) {
+      res.status(500);
+      console.error(error.message);
+    }
+  },
+
+  async getBidByCaretakerId(req, res) {
+    try {
+      const { care_taker_user_id } = req.params;
+      const bids = await pool.query(
+        `SELECT
+        category_name,
+        bid.pet_name,
+        name,
+        start_date,
+        end_date,
+        total_price,
+        care_taker_user_id,
+        bid.pet_owner_user_id
+      FROM (bid
+        JOIN users ON users.user_id = bid.pet_owner_user_id)
+      JOIN ownedpets ON (ownedpets.pet_owner_user_id = bid.pet_owner_user_id
+          AND ownedpets.pet_name = bid.pet_name)
+      WHERE
+        care_taker_user_id = $1
+        AND is_success = FALSE`,
+        [care_taker_user_id]
+      );
+      if (bids.rows.length) {
+        res.status(200).json(bids.rows);
+      } else {
+        res.status(400).send("Invalid caretaker id");
+      }
+      console.log(bids.rows);
+    } catch (error) {
+      res.status(500);
+      console.error(error.message);
+    }
+  },
+
+  async getConfirmedBidByCaretakerId(req, res) {
+    try {
+      const { care_taker_user_id } = req.params;
+      const bids = await pool.query(
+        `SELECT
+        category_name,
+        bid.pet_name,
+        name,
+        start_date,
+        end_date,
+        total_price,
+        care_taker_user_id,
+        bid.pet_owner_user_id
+      FROM (bid
+        JOIN users ON users.user_id = bid.pet_owner_user_id)
+      JOIN ownedpets ON (ownedpets.pet_owner_user_id = bid.pet_owner_user_id
+          AND ownedpets.pet_name = bid.pet_name)
+      WHERE
+        care_taker_user_id = $1
+        AND is_success = TRUE`,
+        [care_taker_user_id]
+      );
+      if (bids.rows.length) {
+        res.status(200).json(bids.rows);
+      } else {
+        res.status(400).send("Invalid caretaker id");
+      }
+      console.log(bids.rows);
     } catch (error) {
       res.status(500);
       console.error(error.message);
