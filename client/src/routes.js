@@ -24,6 +24,7 @@ import PetProfile from "./views/PetProfile";
 import UserDetails from "./components/petowner-profile/UserDetails";
 import UserProfileExternal from "./views/UserProfileExternal";
 import EditPet from "./views/EditPet";
+import Store from "./flux/store"
 
 export default [
   {
@@ -111,6 +112,11 @@ export default [
   {
     path: "/user-profile-external",
     layout: DefaultLayout,
+    component: UserProfileExternal,
+  },
+  {
+    path: "/user/:user_id",
+    layout: Store.getUser() != null ? DefaultLayout : NoNavLayout,
     component: UserProfileExternal,
   },
   {

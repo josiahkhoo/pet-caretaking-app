@@ -11,7 +11,7 @@ import {
   Button
 } from "shards-react";
 
-import { Dispatcher, Constants } from "../flux";
+import { Dispatcher, Constants, Store } from "../flux";
 
 const Login = withRouter(({ history }) => {
   const [username, setUsername] = useState("");
@@ -61,7 +61,9 @@ const Login = withRouter(({ history }) => {
       alert("An error has occurred")
     }
   };
-
+  if (Store.getUser == null) {
+    history.push("/")
+  }
   return (
     <Container fluid className=" main-content-container px-4 pb-4">
       {/* Page Header */}
