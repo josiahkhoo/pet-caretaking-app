@@ -21,7 +21,7 @@ module.exports = {
       // TODO: do not allow leave if currently taking care of pets
       const { user_id, start_date, end_date } = req.body;
       const result = await pool.query(
-        `SELECT is_full_time FROM caretakers WHERE user_id = $1 `,
+        `SELECT is_full_time FROM caretakers WHERE user_id = $1`,
         [user_id]
       );
 
