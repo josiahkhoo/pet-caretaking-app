@@ -479,6 +479,66 @@ module.exports = {
     }
   },
 
+  async getCaretakersSalary(req, res) {
+    try {
+      let start = req.params.start;
+      let end = req.params.end;
+      let care_taker_user_id = req.params.care_taker_user_id;
+      console.log(care_taker_user_id);
+      // in order to ensure sql input is null
+      start = start ? start : null;
+      end = end ? end : null;
+      console.log(start, end);
+      const expectedSalary = await pool.query(
+        `with RECURSIVE t as (
+        select care_taker_user_id, start_date, end_date, 1 as index, (end_date - start_date + 1) as date_count, 
+      (total_price/A.date_count) as daily_price
+        from (select care_taker_user_id, start_date,end_date,(end_date - start_date + 1) as date_count, total_price from bid) as A
+        where start_date >= (SELECT COALESCE(CAST($1 as date), DATE('1970-01-01')))
+        AND start_date <= (SELECT COALESCE(CAST($2 as date), DATE('9999-12-31') ))
+          union all
+        select care_taker_user_id, start_date, end_date, index + 1, date_count, daily_price
+        from t
+        where index < date_count 
+      )
+    SELECT care_taker_user_id, count(*) as pet_day, sum(t.daily_price) as total_earnings,
+       (SELECT sum(daily_price)
+      FROM (SELECT *,
+        rank() OVER (
+        PARTITION BY care_taker_user_id
+        ORDER BY care_taker_user_id, start_date, end_date, index ASC)
+        FROM t) as t2
+      WHERE rank > 60
+      AND t.care_taker_user_id = t2.care_taker_user_id
+      ) as post_60_days_earnings, caretakers.is_full_time,
+      (CASE WHEN caretakers.base_salary IS NULL AND caretakers.is_full_time = false
+          THEN sum(t.daily_price) * caretakers.commission_rate -- parttimers
+           WHEN count(*) > 60 THEN (SELECT sum(daily_price)
+      FROM (SELECT *,
+        rank() OVER (
+        PARTITION BY care_taker_user_id
+        ORDER BY care_taker_user_id, start_date, end_date, index ASC)
+        FROM t) as t2
+      WHERE rank > 60
+      AND t.care_taker_user_id = t2.care_taker_user_id
+      ) * caretakers.commission_rate + caretakers.base_salary
+       ELSE caretakers.base_salary
+       END) as salary
+    FROM t RIGHT JOIN caretakers ON t.care_taker_user_id = caretakers.user_id
+    WHERE caretakers.user_id = $3
+    GROUP BY t.care_taker_user_id, caretakers.is_full_time, caretakers.base_salary, caretakers.commission_rate;`,
+        [start, end, care_taker_user_id]
+      );
+      if (expectedSalary.rows.length != 1) {
+        res.status(500).json("Error");
+      }
+      res.status(200).json(expectedSalary.rows[0]);
+    } catch (error) {
+      console.error(error.message);
+      res.status(500).json("Error");
+    }
+  },
+
   async searchAvailability(req, res) {
     try {
       let name = req.query.name;
