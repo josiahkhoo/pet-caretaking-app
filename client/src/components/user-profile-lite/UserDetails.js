@@ -1,15 +1,8 @@
 import React from "react";
-import PropTypes from "prop-types";
 import {
   Card,
   CardHeader,
   CardBody,
-  Button,
-  ListGroup,
-  ListGroupItem,
-  Progress,
-  Row,
-  Col,
 } from "shards-react";
 import CaretakerInfo from "./CaretakerInfo";
 
