@@ -46,7 +46,7 @@ app.get("/users", async (req, res) => {
 app.get("/caretakers/workdays", CaretakerController.getAllCaretakersPetDays);
 
 //get expected salary within a certain date range(expecting a month range)
-app.get("/caretakers/salary", CaretakerController.getAllCaretakersSalary);
+app.get("/caretakers/salary/:start/:end", CaretakerController.getAllCaretakersSalary);
 
 // get combined available caretakers -> daterange, name, pet category
 app.get(
