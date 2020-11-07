@@ -427,11 +427,12 @@ module.exports = {
 
   async getAllCaretakersSalary(req, res) {
     try {
-      let start = req.query.start;
-      let end = req.query.end;
+      const { start, end } = req.params;
+      // let start = req.query.start;
+      // let end = req.query.end;
       // in order to ensure sql input is null
-      start = start ? start : null;
-      end = end ? end : null;
+      // start = start ? start : null;
+      // end = end ? end : null;
       console.log(start, end);
       const expectedSalary = await pool.query(
         `with RECURSIVE t as (
@@ -472,7 +473,7 @@ module.exports = {
     GROUP BY t.care_taker_user_id, caretakers.is_full_time, caretakers.base_salary, caretakers.commission_rate;`,
         [start, end]
       );
-      res.status(200).json(expectedSalary);
+      res.status(200).json(expectedSalary.rows);
     } catch (error) {
       console.error(error.message);
       res.status(500).json("Error");
