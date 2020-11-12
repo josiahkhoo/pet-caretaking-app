@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { Row, Col, Card, CardHeader, CardBody, Button } from "shards-react";
 
@@ -17,22 +17,25 @@ class TakenCarePetsChart extends React.Component {
           const response = await fetch(
               `/caretakers/total-pet-care-by-month`,
           );
-          return await response.json();
+          return response.json();
       } catch (error) {
           console.log(error);
           return [];
       }
   }
 
-  componentDidMount() { 
+  
 
-    this.getPetNum().then((res) => {
+  async componentDidMount() { 
+
+    const data = await this.getPetNum().then((res) => {
         this.setState({
             petNum : res,
         })
+        return this.state.petNum.map(id => id.count)
     });
 
-    const data = this.state.petNum.map(id => id.count);
+    console.log(data)
 
     const chartOptions = {
       ...{
@@ -139,7 +142,7 @@ class TakenCarePetsChart extends React.Component {
           <h6 className="m-0">{title}</h6>
         </CardHeader>
         <CardBody className="pt-0">
-          <Row className="border-bottom py-2 bg-light">
+          {/* <Row className="border-bottom py-2 bg-light">
             <Col sm="6" className="d-flex mb-2 mb-sm-0">
               <RangeDatePicker />
             </Col>
@@ -151,7 +154,7 @@ class TakenCarePetsChart extends React.Component {
                 View Full Report &rarr;
               </Button>
             </Col>
-          </Row>
+          </Row> */}
           <canvas
             height="120"
             ref={this.canvasRef}
@@ -169,24 +172,13 @@ TakenCarePetsChart.propTypes = {
   chartOptions: PropTypes.object
 };
 
-async function getPetNum() {
-    try {
-        const response = await fetch(
-            `/caretakers/total-pet-care-by-month/2020`
-        );
-        return await response.json().count;
-    } catch (error) {
-        console.log(error);
-        return [];
-    }
-};
 
 // var labels = getPetNum();
 
 // var petNum = labels.count.map(month => month.count);
 
 TakenCarePetsChart.defaultProps = {
-  title: "Chart View of number of pets we took care of",
+  title: "Chart View",
   chartData: {
     labels: ["1 - January", 
              "2 - February",

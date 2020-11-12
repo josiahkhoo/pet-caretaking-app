@@ -1,11 +1,14 @@
 import React from "react";
 import { Redirect } from "react-router-dom";
 
-import { Container, Row, Col } from "shards-react";
+import { Container, Row, Col, Card, CardBody } from "shards-react";
 import BidView from "../components/care-taker-view/bidView";
 import AvailabilityForm from "../components/care-taker/AvailabilityForm";
+import SalaryCard from "../components/care-taker/SalaryCard";
 import ViewAvailability from "../components/care-taker/ViewAvailability";
 import PageTitle from "../components/common/PageTitle";
+import SmallStats from "../components/common/SmallStats";
+import UserDetails from "../components/user-profile-lite/UserDetails";
 import Store from "../flux/store";
 
 const CareTaker = () => {
@@ -24,8 +27,13 @@ const CareTaker = () => {
         />
       </Row>
       <Row>
-        <Col>
+        <Col lg="8" className="mb-4">
           <BidView user={user}></BidView>
+        </Col>
+
+        <Col lg="4" className="mb-4">
+          <UserDetails user={user} />
+          <SalaryCard careTakerUserId={user.user_id} />
         </Col>
       </Row>
       <AvailabilityForm user={user} />

@@ -9,12 +9,6 @@ app.use(express.json());
 
 const AuthController = require("./controllers/AuthController");
 const CaretakerController = require("./controllers/CaretakerController");
-const { end, query } = require("./db");
-const {
-  addCanTakeCareOf,
-  fullTimeCareTakerTakeLeave,
-  getAllBids,
-} = require("./controllers/CaretakerController");
 const { viewReviews } = require("./controllers/PetOwnerController");
 const PetOwnerController = require("./controllers/PetOwnerController");
 
@@ -47,7 +41,12 @@ app.get("/users", async (req, res) => {
 app.get("/caretakers/workdays", CaretakerController.getAllCaretakersPetDays);
 
 //get expected salary within a certain date range(expecting a month range)
-app.get("/caretakers/salary", CaretakerController.getAllCaretakersSalary);
+app.get("/caretakers/salary/:start/:end", CaretakerController.getAllCaretakersSalary);
+
+app.get(
+  "/caretakers/:care_taker_user_id/salary/:start/:end",
+  CaretakerController.getCaretakersSalary
+);
 
 // get combined available caretakers -> daterange, name, pet category
 app.get(
@@ -237,6 +236,7 @@ app.get(
 // caretaker input availability for part-time
 // takes leave for full-time
 app.post("/caretakers/availability", CaretakerController.specifyAvailability);
+app.get("/caretakers/availability/user/:user_id", CaretakerController.getAvailability);
 app.get("/caretakers/earnings", CaretakerController.getEarnings);
 
 app.get("/categories", async (req, res) => {

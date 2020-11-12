@@ -1,10 +1,9 @@
 
 
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import {
   Card,
   CardHeader,
-  Button,
   CardBody,
   Form,
   FormGroup
@@ -16,23 +15,27 @@ import "react-big-calendar/lib/css/react-big-calendar.css"
 const ViewAvailability = ({ user }) => {
   const localizer = momentLocalizer(moment)
 
-  const myEventsList = [
-    {
-      start: moment().toDate(),
-      end: moment()
-        .add(1, "days")
-        .toDate(),
-      title: "Some title"
-    },
-    {
-      start: moment().toDate(),
-      end: moment()
-        .add(5, "days")
-        .toDate(),
-      title: "Some title2"
-    }
+  const [availableDates, setData] = useState([]);
+  const [isLoading, setLoading] = useState(true);
 
-  ]
+
+  useEffect(async () => {
+    try {
+      const result = await fetch(`/caretakers/availability/user/${user.user_id}`, {
+        method: "GET"
+      }).then((response) => {
+        return response.json()
+      })
+      setData(result)
+      setLoading(false)
+    } catch (error) {
+      console.log(error);
+    }
+  }, []);
+
+  const myEventsList = availableDates.map(date => ({ start: moment(date.available_date).toDate(), end: moment(date.available_date).add(1, "days").toDate(), title: "Available" }));
+
+  if (isLoading) return null;
 
   return (
   <Card small className="mb-4 pt-3">
@@ -43,7 +46,7 @@ const ViewAvailability = ({ user }) => {
           width="110"
         />
       </div>
-      <h2 className="mb-0">{user.is_full_time ? "On Leave Dates" : "Available Dates"}</h2>
+      <h2 className="mb-0">Available Dates</h2>
 
     </CardHeader>
     <div>

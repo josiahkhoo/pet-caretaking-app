@@ -39,11 +39,9 @@ const UserProfileExternal = () => {
         />
       </Row>
       <Row>
-        <Col lg="4">
+        <Col lg="3" md="0"></Col>
+        <Col lg="6" md="12">
           <UserDetails user={user} />
-        </Col>
-        <Col lg="8">
-          <UserAccountDetails user={user}/>
         </Col>
       </Row>
     </Container>

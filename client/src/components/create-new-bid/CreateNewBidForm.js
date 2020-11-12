@@ -14,6 +14,7 @@ import RangeDatePicker from "../common/RangeDatePicker";
 import TransferTypeDropdown from "./TransferTypeDropdown";
 import PaymentTypeDropdown from "./PaymentTypeDropdown";
 import CaretakerDropdown from "./CaretakerDropdown";
+import moment from "moment";
 
 export default class CreateNewBidForm extends Component {
   constructor(props) {
@@ -103,8 +104,8 @@ export default class CreateNewBidForm extends Component {
     const body = {
       pet_name: petName,
       care_taker_user_id: careTakerUserId,
-      start_date: startDate,
-      end_date: endDate,
+      start_date: moment(startDate).format("YYYY-MM-DD"),
+      end_date: moment(endDate).format("YYYY-MM-DD"),
       transfer_type: transferType,
       payment_type: paymentType,
       pet_owner_user_id: petOwnerUserId,
