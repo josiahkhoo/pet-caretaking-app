@@ -8,12 +8,6 @@ app.use(express.json());
 
 const AuthController = require("./controllers/AuthController");
 const CaretakerController = require("./controllers/CaretakerController");
-const { end, query } = require("./db");
-const {
-  addCanTakeCareOf,
-  fullTimeCareTakerTakeLeave,
-  getAllBids,
-} = require("./controllers/CaretakerController");
 const { viewReviews } = require("./controllers/PetOwnerController");
 const PetOwnerController = require("./controllers/PetOwnerController");
 
@@ -241,6 +235,7 @@ app.get(
 // caretaker input availability for part-time
 // takes leave for full-time
 app.post("/caretakers/availability", CaretakerController.specifyAvailability);
+app.get("/caretakers/availability/user/:user_id", CaretakerController.getAvailability);
 app.get("/caretakers/earnings", CaretakerController.getEarnings);
 
 app.get("/categories", async (req, res) => {

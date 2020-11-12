@@ -14,7 +14,7 @@ const UserDetails = ({ user }) => (
           <img
             className="rounded-circle"
             src={
-              user == null ? "./../../assets/default_image.png" : user.image_url
+              user == null || !user.image_url ? "./../../assets/default_image.png" : user.image_url
             }
             alt={user.name}
             width="200"

@@ -18,7 +18,6 @@ function getDates(startDate, stopDate) {
 module.exports = {
   async specifyAvailability(req, res) {
     try {
-      // TODO: do not allow leave if currently taking care of pets
       const { user_id, start_date, end_date } = req.body;
       const result = await pool.query(
         `SELECT is_full_time FROM caretakers WHERE user_id = $1`,
@@ -65,7 +64,21 @@ module.exports = {
       console.error(error.message);
     }
   },
+  async getAvailability(req, res) {
+    try {
+      const { user_id } = req.params;
 
+      const result = await pool.query(
+        `SELECT * FROM isavailableon WHERE care_taker_user_id = $1`, [user_id]
+      );
+      console.log(user_id, result)
+      res.status(200).json(result.rows);
+
+    } catch (error) {
+      res.status(500).json("Error");
+      console.error(error.message);
+    }
+  },
   async getEarnings(req, res) {
     try {
       //   const { id } = req.params;
