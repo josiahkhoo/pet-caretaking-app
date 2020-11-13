@@ -1,11 +1,11 @@
 export default function() {
   return [
-    {
-      title: "Home",
-      to: "/home",
-      htmlBefore: '<i class="material-icons">home</i>',
-      htmlAfter: "",
-    },
+    // {
+    //   title: "Home",
+    //   to: "/home",
+    //   htmlBefore: '<i class="material-icons">home</i>',
+    //   htmlAfter: "",
+    // },
     {
       title: "Admin Dashboard",
       htmlBefore: '<i class="material-icons">admin_panel_settings</i>',

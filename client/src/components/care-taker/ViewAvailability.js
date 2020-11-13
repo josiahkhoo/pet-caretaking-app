@@ -33,7 +33,7 @@ const ViewAvailability = ({ user }) => {
     }
   }, []);
 
-  const myEventsList = availableDates.map(date => ({ start: moment(date.available_date).toDate(), end: moment(date.available_date).add(1, "days").toDate(), title: "Available" }));
+  const myEventsList = availableDates.map(date => ({ start: moment(date.available_date).toDate(), end: moment(date.available_date).toDate(), title: "Available" }));
 
   if (isLoading) return null;
 

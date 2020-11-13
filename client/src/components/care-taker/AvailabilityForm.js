@@ -16,18 +16,18 @@ const AvailabilityForm = ({ user }) => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
 
-  const submit = () => {
+  const submit = async () => {
     const now = moment();
     if (startDate > endDate || startDate < now || endDate < now) {
-      alert("Invalid date entries");
+      alert(`Invalid Dates! Dates should not be before ${now.format("MM-DD-YYYY")}`);
+      return
     }
     const start_date = moment(startDate).format("YYYY-MM-DD");
     const end_date = moment(endDate).format("YYYY-MM-DD");
-    console.log(start_date, end_date);
     const user_id = user.user_id;
     try {
       const body = { start_date, end_date, user_id };
-      fetch("/caretakers/availability", {
+      const response = await fetch("/caretakers/availability", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
@@ -35,9 +35,10 @@ const AvailabilityForm = ({ user }) => {
         .then((response) => {
           return response.json();
         })
-        .then(() => {
-          alert("Success");
-        });
+      if (response) {
+        alert("Success")
+        window.location.reload();
+      }
     } catch (error) {
       console.log(error);
       alert("An error has occurred");

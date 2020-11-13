@@ -117,8 +117,9 @@ const Register = withRouter(({ history }) => {
                 <Col>
                   <FormInput
                     required
-                    type="username"
+                    type="text"
                     value={username}
+                    maxlength="100"
                     required
                     invalid={!isFirstLoad && username == ""}
                     onChange={(e) => setUsername(e.target.value)}
@@ -136,6 +137,7 @@ const Register = withRouter(({ history }) => {
                   <FormInput
                     type="password"
                     required
+                    maxlength="100"
                     invalid={!isFirstLoad && password == ""}
                     onChange={(e) => setPassword(e.target.value)}
                   />
@@ -151,6 +153,7 @@ const Register = withRouter(({ history }) => {
                   <FormInput
                     type="password"
                     required
+                    maxlength="100"
                     invalid={!isFirstLoad && confirmPassword != password}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                   />
@@ -167,6 +170,7 @@ const Register = withRouter(({ history }) => {
                   <FormInput
                     placeholder=""
                     required
+                    maxlength="100"
                     invalid={!isFirstLoad && name == ""}
                     onChange={(e) => setName(e.target.value)}
                   />
@@ -181,6 +185,7 @@ const Register = withRouter(({ history }) => {
                 <Col>
                   <FormInput
                     type="number"
+                    maxlength="8"
                     placeholder=""
                     required
                     invalid={!isFirstLoad && contact_number == ""}
@@ -197,6 +202,7 @@ const Register = withRouter(({ history }) => {
                 <Col>
                   <FormInput
                     placeholder=""
+                    maxlength="255"
                     required
                     invalid={!isFirstLoad && address == ""}
                     onChange={(e) => setAddress(e.target.value)}
