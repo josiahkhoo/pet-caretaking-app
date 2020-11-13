@@ -38,8 +38,8 @@ class SidebarMainNavbar extends React.Component {
                 src={require("../../../images/shards-dashboards-logo.svg")}
               />
               {!hideLogoText && (
-                <span className="d-none d-md-inline ml-1">
-                  Pet Caretaking
+                <span className="d-none d-md-inline ml-1" onClick={() => window.location.href="/"}>
+                  Pet Caretaking Service 
                 </span>
               )}
             </div>

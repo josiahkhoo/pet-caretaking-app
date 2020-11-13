@@ -5,6 +5,7 @@ import { Redirect } from "react-router-dom";
 import PageTitle from "../components/common/PageTitle";
 import UserDetails from "../components/user-profile-lite/UserDetails";
 import UserAccountDetails from "../components/user-profile-lite/UserAccountDetails";
+import TakeCareCategory from "../components/care-taker/TakeCareCategory";
 import Store from "../flux/store";
 
 const UserProfileLite = () => {
@@ -17,7 +18,6 @@ const UserProfileLite = () => {
       <Row noGutters className="page-header py-4">
         <PageTitle
           title="User Profile"
-          subtitle="Overview"
           md="12"
           className="ml-sm-auto mr-sm-auto"
         />
@@ -28,6 +28,11 @@ const UserProfileLite = () => {
         </Col>
         <Col lg="8">
           <UserAccountDetails user={user}/>
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+          <TakeCareCategory user={user} />
         </Col>
       </Row>
     </Container>
