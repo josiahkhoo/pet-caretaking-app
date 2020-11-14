@@ -39,7 +39,7 @@ class SidebarMainNavbar extends React.Component {
               />
               {!hideLogoText && (
                 <span className="d-none d-md-inline ml-1" onClick={() => window.location.href="/"}>
-                  Pet Caretaking Service 
+                  PCS
                 </span>
               )}
             </div>
