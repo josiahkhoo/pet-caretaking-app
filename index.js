@@ -230,7 +230,12 @@ app.get(
 // Get all categories a caretaker can take care of
 app.get(
   "/caretakers/:care_taker_user_id/categories",
-  CaretakerController.getCanTakeCarePetCategories
+  CaretakerController.getPetCategories
+);
+
+app.post(
+  "/caretakers/:care_taker_user_id/categories",
+  CaretakerController.updatePetCategories
 );
 
 // caretaker input availability for part-time

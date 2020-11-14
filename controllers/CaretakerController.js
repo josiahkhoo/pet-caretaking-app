@@ -701,11 +701,11 @@ module.exports = {
     }
   },
 
-  async getCanTakeCarePetCategories(req, res) {
+  async getPetCategories(req, res) {
     try {
       const { care_taker_user_id } = req.params;
       const categories = await pool.query(
-        "SELECT c.category_name FROM cantakecare c WHERE c.care_taker_user_id = $1",
+        "SELECT category_name, daily_price FROM cantakecare WHERE care_taker_user_id = $1",
         [care_taker_user_id]
       );
       if (categories.rows) {
@@ -714,6 +714,35 @@ module.exports = {
         res.status(400).send("Invalid user ID");
       }
       console.log(categories.rows);
+    } catch (error) {
+      res.status(500);
+      console.error(error.message);
+    }
+  },
+
+  async updatePetCategories(req, res) {
+    try {
+      // const { care_taker_user_id } = req.params;
+      const { care_taker_user_id, category_names, daily_prices } = req.body;
+      const deleted = await pool.query("DELETE FROM cantakecare WHERE care_taker_user_id = $1", [care_taker_user_id])
+
+      if (!deleted) {
+        res.status(400).json("Error");
+      }
+      var result = [];
+      for (var i = 0; i < category_names.length; i++) {
+        const categories = await pool.query(
+          "INSERT INTO cantakecare VALUES ($1, $2, $3) RETURNING *",
+          [care_taker_user_id, category_names[i], daily_prices[i]]
+        );
+        result.push(categories.rows[0])
+        console.log(categories.rows);
+      }
+      if (result.length == category_names.length) {
+        res.status(200).json(result);
+      } else {
+        res.status(400).json("Invalid user ID");
+      }
     } catch (error) {
       res.status(500);
       console.error(error.message);
