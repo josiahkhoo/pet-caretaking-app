@@ -31,6 +31,16 @@ export default class PetOwnerBidTable extends Component {
     });
   }
 
+  update() {
+    this.getAllBids(this.props.petOwnerUserId).then((res) => {
+      if (Array.isArray(res)) {
+        this.setState({
+          bids: res,
+        });
+      }
+    });
+  }
+
   render() {
     const { bids } = this.state;
     return (
@@ -76,7 +86,7 @@ export default class PetOwnerBidTable extends Component {
             </thead>
             <tbody>
               {bids.map((bid) => (
-                <BidRow bid={bid} />
+                <BidRow bid={bid} onUpdate={() => this.update()} />
               ))}
             </tbody>
           </table>

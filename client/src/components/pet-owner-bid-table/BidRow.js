@@ -19,10 +19,31 @@ export default class BidRow extends Component {
     }
     return !this.props.bid.is_success;
   }
-  createReview() {}
+
+  async deleteBid() {
+    const { bid } = this.props;
+    try {
+      const response = await fetch(`/pet-owners/bid`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          care_taker_user_id: bid.care_taker_user_id,
+          pet_name: bid.pet_name,
+          pet_owner_user_id: bid.pet_owner_user_id,
+          start_date: moment(bid.start_date).format("YYYY-MM-DD"),
+          end_date: moment(bid.end_date).format("YYYY-MM-DD"),
+        }),
+      });
+      return await response.json();
+    } catch (error) {
+      console.log(error);
+      return [];
+    }
+  }
+
   render() {
     const { bid } = this.props;
-    console.log(bid)
+    console.log(bid);
     return (
       <tr key={bid}>
         <td>
@@ -81,7 +102,12 @@ export default class BidRow extends Component {
         </td>
         <td>
           {this.canDeleteBid() ? (
-            <Button theme="danger">Delete</Button>
+            <Button
+              onClick={() => this.deleteBid().then(() => this.props.onUpdate())}
+              theme="danger"
+            >
+              Delete
+            </Button>
           ) : (
             <Button outline disabled theme="secondary">
               Delete

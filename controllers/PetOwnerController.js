@@ -168,6 +168,33 @@ module.exports = {
     }
   },
 
+  async deleteBid(req, res) {
+    try {
+      const {
+        start_date,
+        end_date,
+        pet_owner_user_id,
+        care_taker_user_id,
+        pet_name,
+      } = req.body;
+      const bid = await pool.query(
+        `DELETE FROM bid WHERE start_date = $1 AND end_date = $2 AND pet_owner_user_id = $3 AND care_taker_user_id = $4 AND pet_name = $5`,
+        [start_date, end_date, pet_owner_user_id, care_taker_user_id, pet_name]
+      );
+      console.log(req.body);
+      res.status(200).json({
+        care_taker_user_id: care_taker_user_id,
+        pet_owner_user_id: pet_owner_user_id,
+        pet_name: pet_name,
+        start_date: start_date,
+        end_date: end_date,
+      });
+    } catch (error) {
+      console.error("error", error.message);
+      res.status(400).json(error.message);
+    }
+  },
+
   async getAllBids(req, res) {
     try {
       const { pet_owner_user_id } = req.params;

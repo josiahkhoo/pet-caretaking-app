@@ -10,6 +10,7 @@ import {
   NavLink,
 } from "shards-react";
 import moment from "moment";
+import priceToString from "../../utils/priceToString";
 
 export default class CareTakerDropdown extends Component {
   static propTypes = {
@@ -86,6 +87,12 @@ export default class CareTakerDropdown extends Component {
     }
   }
 
+  dateDiff(first, second) {
+    // Take the difference between the dates and divide by milliseconds per day.
+    // Round to nearest whole number to deal with DST.
+    return Math.round((second - first) / (1000 * 60 * 60 * 24));
+  }
+
   render() {
     const { visible, availableCareTakers } = this.state;
     const { selectedCareTaker, onSelectCareTaker } = this.props;
@@ -107,7 +114,11 @@ export default class CareTakerDropdown extends Component {
                   })
                 }
               >
-                {careTaker.named}
+                {`${careTaker.named} ${priceToString(
+                  careTaker.price *
+                    (this.dateDiff(this.props.startDate, this.props.endDate) +
+                      1)
+                )}`}
               </DropdownItem>
             ))
           ) : (
