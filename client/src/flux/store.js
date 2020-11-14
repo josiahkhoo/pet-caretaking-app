@@ -56,9 +56,9 @@ class Store extends EventEmitter {
 
     if (user == null) {
       window.location.href = "/login"
+      return
       // return []
     }
-
     console.log(user)
     const isCaretaker = user.is_full_time != undefined;
     const isAdmin = user.is_pcs_admin;
@@ -73,11 +73,11 @@ class Store extends EventEmitter {
 
   getUser() {
     const localUser = localStorage.getItem("user")
+    _store.user = JSON.parse(localUser);
 
     if (localUser == null) {
       return null
     }
-    _store.user = JSON.parse(localUser);
     console.log(_store.user)
     return _store.user;
   }

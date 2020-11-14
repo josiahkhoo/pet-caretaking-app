@@ -1,7 +1,6 @@
 import React from "react";
 import { Nav } from "shards-react";
 
-import Notifications from "./Notifications";
 import UserActions from "./UserActions";
 
 import { Store } from "../../../../flux";
@@ -35,7 +34,6 @@ class NavbarNav extends React.Component {
   render() {
     return (
       <Nav navbar className="border-left flex-row">
-        <Notifications />
         <UserActions user={this.state.user} />
       </Nav>
     );

@@ -39,6 +39,7 @@ const UserProfileExternal = () => {
         />
       </Row>
       <Row>
+        <Col lg="3" md="0"></Col>
         <Col lg="6" md="12">
           <UserDetails user={user} />
         </Col>

@@ -7,7 +7,6 @@ import AvailabilityForm from "../components/care-taker/AvailabilityForm";
 import SalaryCard from "../components/care-taker/SalaryCard";
 import ViewAvailability from "../components/care-taker/ViewAvailability";
 import PageTitle from "../components/common/PageTitle";
-import SmallStats from "../components/common/SmallStats";
 import UserDetails from "../components/user-profile-lite/UserDetails";
 import Store from "../flux/store";
 
@@ -22,7 +21,7 @@ const CareTaker = () => {
       <Row noGutters className="page-header py-4">
         <PageTitle
           sm="4"
-          title="Care Taker Home Page"
+          title="Care Taker"
           className="text-sm-left"
         />
       </Row>

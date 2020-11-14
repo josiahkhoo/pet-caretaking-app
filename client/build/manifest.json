@@ -1,0 +1,9 @@
+{
+  "short_name": "Pet Caretaking",
+  "name": "Pet Caretaking",
+
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#ffffff"
+}

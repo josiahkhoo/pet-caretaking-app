@@ -14,7 +14,7 @@ const UserDetails = ({ user }) => (
           <img
             className="rounded-circle"
             src={
-              user == null ? "./../../assets/default_image.png" : user.image_url
+              user == null || user.image_url == null ? require("./../../assets/default_image.png") : user.image_url
             }
             alt={user.name}
             width="200"
@@ -27,7 +27,7 @@ const UserDetails = ({ user }) => (
         style={{
           marginTop: 10,
         }}
-      >
+      > 
         {user.is_full_time !== null ? (
           <div
             className="bg-success text-white text-center rounded p-2"

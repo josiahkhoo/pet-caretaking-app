@@ -45,10 +45,6 @@ const Login = withRouter(({ history }) => {
         body: JSON.stringify(body),
       })
         .then((response) => {
-          if (response.status >= 400) {
-            alert("Wrong password!")
-          }
-          console.log(response.json)
           return response.json();
         })
         .then((data) => {
@@ -61,7 +57,7 @@ const Login = withRouter(({ history }) => {
       alert("Invalid username/password")
     }
   };
-  if (Store.getUser == null) {
+  if (Store.getUser() != null) {
     history.push("/")
   }
   return (
@@ -84,6 +80,7 @@ const Login = withRouter(({ history }) => {
                 <Col>
                   <FormInput
                     type="text"
+                    maxlength="100"
                     placeholder="Username"
                     value={username}
                     required
@@ -100,6 +97,7 @@ const Login = withRouter(({ history }) => {
                 <Col>
                   <FormInput
                     type="password"
+                    maxlength="100"
                     placeholder="Password"
                     value={password}
                     required

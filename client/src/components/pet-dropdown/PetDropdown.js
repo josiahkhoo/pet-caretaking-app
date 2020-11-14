@@ -7,7 +7,6 @@ import {
   DropdownItem,
   Collapse,
   NavItem,
-  NavLink,
 } from "shards-react";
 
 export default class PetDropdown extends Component {
