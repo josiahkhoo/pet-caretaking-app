@@ -21,16 +21,19 @@ const PetDetails = ({ pet }) => (
             alt={pet.pet_name}
             width="200"
           />
+          <h4 className="mb-0">{pet.pet_name}</h4>
+
+          <div style={{ marginTop: "1em" }}>
+            <Category name={pet.category_name} />
+          </div>
         </div>
       }
-      <h4 className="mb-0">{pet.pet_name}</h4>
     </CardHeader>
     <ListGroup flush>
       <ListGroupItem className="p-4">
         <strong className="text-muted d-block mb-2">
           Owner: {pet.pet_owner_user_id}
         </strong>
-        <Category name={pet.category_name} />
         <span>Special Requirements: {pet.special_requirements}</span>
       </ListGroupItem>
     </ListGroup>

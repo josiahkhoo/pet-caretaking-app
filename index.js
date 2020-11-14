@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 const pool = require("./db");
-const path = require("path")
+const path = require("path");
 const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
@@ -41,7 +41,10 @@ app.get("/users", async (req, res) => {
 app.get("/caretakers/workdays", CaretakerController.getAllCaretakersPetDays);
 
 //get expected salary within a certain date range(expecting a month range)
-app.get("/caretakers/salary/:start/:end", CaretakerController.getAllCaretakersSalary);
+app.get(
+  "/caretakers/salary/:start/:end",
+  CaretakerController.getAllCaretakersSalary
+);
 
 app.get(
   "/caretakers/:care_taker_user_id/salary/:start/:end",
@@ -138,6 +141,8 @@ app.get(
   "/pet-owners/:pet_owner_user_id/pets-without-userinfo",
   PetOwnerController.getAllPetsWithoutUserInfo
 );
+
+app.delete("/pet-owners/bid", PetOwnerController.deleteBid);
 
 // view all pets owned by a certain pet owner
 app.get(
@@ -236,7 +241,10 @@ app.get(
 // caretaker input availability for part-time
 // takes leave for full-time
 app.post("/caretakers/availability", CaretakerController.specifyAvailability);
-app.get("/caretakers/availability/user/:user_id", CaretakerController.getAvailability);
+app.get(
+  "/caretakers/availability/user/:user_id",
+  CaretakerController.getAvailability
+);
 app.get("/caretakers/earnings", CaretakerController.getEarnings);
 
 app.get("/categories", async (req, res) => {
@@ -253,6 +261,6 @@ app.listen(PORT, () => {
   console.log("server listening at ", PORT);
 });
 
-app.get('*', (req, res) => {
-  res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
+app.get("*", (req, res) => {
+  res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
 });
